@@ -585,7 +585,9 @@ model Lead {
   nextFollowUpAt      DateTime?
   tags                String[]
   lostReason          String?
-  convertedClientId   String?          @unique
+  convertedClientId   String?
+  /// set when a signed-in returning client submits a new request from the portal
+  existingClientId    String?
   isDemo              Boolean          @default(false)
   createdAt           DateTime         @default(now())
   updatedAt           DateTime         @updatedAt
@@ -601,6 +603,7 @@ model Lead {
   @@index([workspaceId, temperature])
   @@index([email])
   @@index([assignedToId])
+  @@index([existingClientId])
   @@map("leads")
 }
 
@@ -679,21 +682,21 @@ model Client {
   updatedAt      DateTime     @updatedAt
   archivedAt     DateTime?
 
-  organization  Organization    @relation(fields: [organizationId], references: [id], onDelete: Cascade)
-  user          User?           @relation("ClientUser", fields: [userId], references: [id], onDelete: SetNull)
-  manager       User?           @relation("ClientManager", fields: [managerId], references: [id], onDelete: SetNull)
-  profile       ClientProfile?
-  brandKit      ClientBrandKit?
-  convertedFrom Lead?           @relation("LeadConvertedClient")
-  projects      Project[]
-  quotes        Quote[]
-  contracts     Contract[]
-  invoices      Invoice[]
-  payments      Payment[]
-  retainers     Retainer[]
-  messages      Message[]
-  meetings      Meeting[]
-  assets        Asset[]
+  organization Organization    @relation(fields: [organizationId], references: [id], onDelete: Cascade)
+  user         User?           @relation("ClientUser", fields: [userId], references: [id], onDelete: SetNull)
+  manager      User?           @relation("ClientManager", fields: [managerId], references: [id], onDelete: SetNull)
+  profile      ClientProfile?
+  brandKit     ClientBrandKit?
+  leads        Lead[]          @relation("LeadConvertedClient")
+  projects     Project[]
+  quotes       Quote[]
+  contracts    Contract[]
+  invoices     Invoice[]
+  payments     Payment[]
+  retainers    Retainer[]
+  messages     Message[]
+  meetings     Meeting[]
+  assets       Asset[]
 
   @@index([workspaceId, status])
   @@index([organizationId])
@@ -1225,6 +1228,10 @@ model Project {
   projectTypeId   String?
   templateId      String?
   sourceProjectId String?
+  /// set when the work is billed against a monthly retainer allowance
+  retainerId      String?
+  /// the inquiry this project originated from
+  leadId          String?
   name            String
   description     String?
   status          ProjectStatus @default(INQUIRY)
@@ -1571,6 +1578,8 @@ model VideoVersion {
   createdById   String?
   reviewStatus  VersionReviewStatus @default(PENDING_CLIENT)
   isFinal       Boolean             @default(false)
+  /// null until the version has been released to the client (internal drafts stay invisible to them)
+  releasedAt    DateTime?
   approvedById  String?
   approvedAt    DateTime?
   approvalNotes String?

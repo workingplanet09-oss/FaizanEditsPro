@@ -1,0 +1,452 @@
+/**
+ * Declarative definitions of every admin-editable content type. Shared by the admin UI (to render forms/lists)
+ * and the server (to validate + coerce input), so the two can never drift apart.
+ */
+export type FieldType =
+  | "text"
+  | "textarea"
+  | "markdown"
+  | "number"
+  | "money"
+  | "boolean"
+  | "select"
+  | "relation"
+  | "tags"
+  | "lines"
+  | "url"
+  | "image"
+  | "slug"
+  | "datetime"
+  | "metrics"
+  | "tasklist"
+  | "deliverables"
+  | "icon";
+
+export interface FieldDef {
+  key: string;
+  label: string;
+  type: FieldType;
+  required?: boolean;
+  options?: { value: string; label: string }[];
+  /** for type 'relation': the resource whose rows provide the options */
+  relation?: string;
+  help?: string;
+  placeholder?: string;
+  showInList?: boolean;
+  half?: boolean;
+  readOnlyOnEdit?: boolean;
+  group?: string;
+}
+
+export interface ResourceDef {
+  key: string;
+  label: string;
+  singular: string;
+  description: string;
+  model: string;
+  perm: string;
+  titleField: string;
+  subtitleField?: string;
+  fields: FieldDef[];
+  /** column used to show the on/off pill in lists */
+  flagField?: string;
+  orderBy: Record<string, "asc" | "desc">;
+  sortable?: boolean;
+  allowCreate?: boolean;
+  allowDelete?: boolean;
+  allowDuplicate?: boolean;
+  publicPath?: (row: any) => string | null;
+  searchFields: string[];
+  defaults?: Record<string, unknown>;
+}
+
+const CATEGORY_OPTIONS = ["Real Estate", "Podcast", "Finance", "SaaS", "Corporate", "Gaming", "Fitness", "Personal Brand", "Ads", "VSL", "Short Form", "Long Form", "Other"].map((c) => ({ value: c, label: c }));
+export const FAQ_CATEGORIES = ["Pricing", "Turnaround", "Revisions", "Files", "Payments", "Editing", "Retainers", "Contracts"];
+export const SERVICE_ICONS = ["clapperboard", "smartphone", "youtube", "mic", "home", "building", "monitor", "megaphone", "camera", "sparkles", "gamepad", "calendar", "users", "layers", "film", "video", "scissors", "wand", "music", "image", "globe", "trending"];
+const publishOptions = [
+  { value: "PUBLISHED", label: "Published" },
+  { value: "DRAFT", label: "Draft" },
+];
+
+export const RESOURCES: Record<string, ResourceDef> = {
+  services: {
+    key: "services",
+    label: "Services",
+    singular: "service",
+    description: "The service grid and detail pages on the public site.",
+    model: "service",
+    perm: "cms:manage",
+    titleField: "title",
+    subtitleField: "shortDescription",
+    flagField: "published",
+    orderBy: { sortOrder: "asc" },
+    sortable: true,
+    allowDuplicate: true,
+    searchFields: ["title", "slug", "shortDescription"],
+    publicPath: (r) => `/services/${r.slug}`,
+    defaults: { published: true, currency: "USD", icon: "clapperboard", faqCategory: "Editing" },
+    fields: [
+      { key: "title", label: "Title", type: "text", required: true, showInList: true, group: "Basics" },
+      { key: "slug", label: "URL slug", type: "slug", help: "Leave blank to generate from the title.", group: "Basics" },
+      { key: "icon", label: "Icon", type: "icon", group: "Basics", half: true },
+      { key: "published", label: "Published", type: "boolean", group: "Basics", half: true },
+      { key: "featured", label: "Show on homepage", type: "boolean", group: "Basics", half: true },
+      { key: "shortDescription", label: "Short description", type: "textarea", required: true, group: "Basics" },
+      { key: "description", label: "Full description", type: "markdown", group: "Basics" },
+      { key: "useCase", label: "Typical use case", type: "text", group: "Card" },
+      { key: "turnaround", label: "Turnaround", type: "text", placeholder: "e.g. 48–72 hours per batch", group: "Card", half: true },
+      { key: "startingPrice", label: "Starting price", type: "money", help: "Leave empty to show the price label instead.", group: "Card", half: true },
+      { key: "currency", label: "Currency", type: "text", group: "Card", half: true },
+      { key: "priceLabel", label: "Price label", type: "text", placeholder: "Custom quote", group: "Card", half: true },
+      { key: "deliverables", label: "Deliverables (card)", type: "lines", help: "One per line.", group: "Card" },
+      { key: "whoFor", label: "Who it's for", type: "lines", group: "Detail page" },
+      { key: "included", label: "What's included", type: "lines", group: "Detail page" },
+      { key: "exampleDeliverables", label: "Example deliverables", type: "lines", group: "Detail page" },
+      { key: "platforms", label: "Platforms", type: "tags", group: "Detail page" },
+      { key: "editingStyle", label: "Editing style", type: "markdown", group: "Detail page" },
+      { key: "addOns", label: "Optional add-ons", type: "lines", help: "One per line, e.g. “Thumbnail design — from $25”.", group: "Detail page" },
+      { key: "workflow", label: "Workflow steps", type: "lines", help: "One step per line.", group: "Detail page" },
+      { key: "revisionPolicy", label: "Revision policy", type: "textarea", group: "Detail page" },
+      { key: "faqCategory", label: "FAQ category shown here", type: "select", options: FAQ_CATEGORIES.map((c) => ({ value: c, label: c })), group: "Detail page" },
+      { key: "onboardingCategories", label: "Onboarding question groups", type: "tags", help: "Keys like SHORT_FORM, PODCAST — added to the project brief questions.", group: "Advanced" },
+      { key: "seoTitle", label: "SEO title", type: "text", group: "SEO" },
+      { key: "seoDescription", label: "Meta description", type: "textarea", group: "SEO" },
+      { key: "heroImage", label: "Hero image URL", type: "image", group: "SEO" },
+    ],
+  },
+  "pricing-plans": {
+    key: "pricing-plans",
+    label: "Pricing plans",
+    singular: "plan",
+    description: "Plans shown on the pricing page. Rename tiers freely — nothing is hard-coded.",
+    model: "pricingPlan",
+    perm: "cms:manage",
+    titleField: "name",
+    subtitleField: "description",
+    flagField: "enabled",
+    orderBy: { sortOrder: "asc" },
+    sortable: true,
+    allowDuplicate: true,
+    searchFields: ["name", "description"],
+    defaults: { enabled: true, currency: "USD", billingType: "ONE_TIME" },
+    fields: [
+      { key: "name", label: "Plan name", type: "text", required: true, showInList: true, group: "Basics" },
+      { key: "tier", label: "Tier label", type: "text", placeholder: "Starter / Growth / Premium / Enterprise", group: "Basics", half: true },
+      { key: "enabled", label: "Visible on site", type: "boolean", group: "Basics", half: true },
+      { key: "highlighted", label: "Highlight as recommended", type: "boolean", group: "Basics", half: true },
+      { key: "description", label: "Description", type: "textarea", group: "Basics" },
+      {
+        key: "billingType",
+        label: "Billing type",
+        type: "select",
+        required: true,
+        group: "Price",
+        half: true,
+        options: [
+          { value: "ONE_TIME", label: "One-time project" },
+          { value: "PER_VIDEO", label: "Per video" },
+          { value: "PER_SHORT", label: "Per short" },
+          { value: "MONTHLY_RETAINER", label: "Monthly retainer" },
+          { value: "HOURLY", label: "Hourly" },
+          { value: "CUSTOM_QUOTE", label: "Custom quote" },
+        ],
+      },
+      { key: "price", label: "Price", type: "money", help: "Leave empty for “Custom quote”.", group: "Price", half: true },
+      { key: "currency", label: "Currency", type: "text", group: "Price", half: true },
+      { key: "priceNote", label: "Price note", type: "text", placeholder: "per video, billed monthly…", group: "Price", half: true },
+      { key: "includedVideos", label: "Included videos", type: "number", group: "Includes", half: true },
+      { key: "includedShorts", label: "Included shorts", type: "number", group: "Includes", half: true },
+      { key: "includedRevisions", label: "Included revisions", type: "number", group: "Includes", half: true },
+      { key: "hoursIncluded", label: "Included hours", type: "number", group: "Includes", half: true },
+      { key: "turnaround", label: "Turnaround", type: "text", group: "Includes", half: true },
+      { key: "resolution", label: "Resolution", type: "text", placeholder: "Up to 4K", group: "Includes", half: true },
+      { key: "storageGb", label: "Storage (GB)", type: "number", group: "Includes", half: true },
+      { key: "motionGraphics", label: "Motion graphics", type: "boolean", group: "Includes", half: true },
+      { key: "captions", label: "Captions", type: "boolean", group: "Includes", half: true },
+      { key: "soundDesign", label: "Sound design", type: "boolean", group: "Includes", half: true },
+      { key: "prioritySupport", label: "Priority support", type: "boolean", group: "Includes", half: true },
+      { key: "dedicatedEditor", label: "Dedicated editor", type: "boolean", group: "Includes", half: true },
+      { key: "features", label: "Custom features", type: "lines", help: "One per line.", group: "Includes" },
+      { key: "ctaLabel", label: "Button label", type: "text", placeholder: "Get started", group: "Includes" },
+    ],
+  },
+  portfolio: {
+    key: "portfolio",
+    label: "Portfolio",
+    singular: "portfolio item",
+    description: "Work shown on the Work page. Only add real projects and real results.",
+    model: "portfolioProject",
+    perm: "cms:manage",
+    titleField: "title",
+    subtitleField: "clientName",
+    flagField: "status",
+    orderBy: { sortOrder: "asc" },
+    sortable: true,
+    allowDuplicate: true,
+    searchFields: ["title", "clientName", "category"],
+    publicPath: (r) => `/work#${r.slug}`,
+    defaults: { status: "PUBLISHED" },
+    fields: [
+      { key: "title", label: "Title", type: "text", required: true, showInList: true, group: "Basics" },
+      { key: "slug", label: "URL slug", type: "slug", group: "Basics" },
+      { key: "clientName", label: "Client / project name", type: "text", group: "Basics", half: true },
+      { key: "industry", label: "Client industry", type: "text", group: "Basics", half: true },
+      { key: "category", label: "Category", type: "select", required: true, options: CATEGORY_OPTIONS, group: "Basics", half: true },
+      { key: "projectType", label: "Project type", type: "text", group: "Basics", half: true },
+      { key: "status", label: "Status", type: "select", options: publishOptions, group: "Basics", half: true },
+      { key: "featured", label: "Featured", type: "boolean", group: "Basics", half: true },
+      { key: "description", label: "Description", type: "markdown", group: "Basics" },
+      { key: "platforms", label: "Platforms", type: "tags", group: "Basics" },
+      { key: "tags", label: "Tags", type: "tags", group: "Basics" },
+      { key: "videoUrl", label: "Video URL", type: "url", group: "Media" },
+      { key: "thumbnailUrl", label: "Thumbnail URL", type: "image", group: "Media" },
+      { key: "beforeVideoUrl", label: "Before video URL", type: "url", group: "Media", half: true },
+      { key: "afterVideoUrl", label: "After video URL", type: "url", group: "Media", half: true },
+      { key: "results", label: "Results (optional)", type: "metrics", help: "Only enter numbers you can verify. Empty fields are not shown.", group: "Results" },
+      { key: "testimonial", label: "Client quote", type: "textarea", group: "Results" },
+    ],
+  },
+  "case-studies": {
+    key: "case-studies",
+    label: "Case studies",
+    singular: "case study",
+    description: "In-depth stories with the real numbers you can verify.",
+    model: "caseStudy",
+    perm: "cms:manage",
+    titleField: "title",
+    subtitleField: "clientName",
+    flagField: "status",
+    orderBy: { createdAt: "desc" },
+    allowDuplicate: true,
+    searchFields: ["title", "clientName", "industry"],
+    publicPath: (r) => `/case-studies/${r.slug}`,
+    defaults: { status: "PUBLISHED" },
+    fields: [
+      { key: "title", label: "Title", type: "text", required: true, showInList: true, group: "Basics" },
+      { key: "slug", label: "URL slug", type: "slug", group: "Basics" },
+      { key: "clientName", label: "Client", type: "text", required: true, group: "Basics", half: true },
+      { key: "industry", label: "Industry", type: "text", group: "Basics", half: true },
+      { key: "status", label: "Status", type: "select", options: publishOptions, group: "Basics", half: true },
+      { key: "timeline", label: "Timeline", type: "text", placeholder: "3 weeks from brief to delivery", group: "Basics", half: true },
+      { key: "summary", label: "Summary", type: "textarea", group: "Story" },
+      { key: "problem", label: "Problem", type: "markdown", group: "Story" },
+      { key: "objective", label: "Objective", type: "markdown", group: "Story" },
+      { key: "strategy", label: "Editing strategy", type: "markdown", group: "Story" },
+      { key: "creativeDirection", label: "Creative direction", type: "markdown", group: "Story" },
+      { key: "heroImage", label: "Hero image URL", type: "image", group: "Media" },
+      { key: "beforeVideoUrl", label: "Before video URL", type: "url", group: "Media", half: true },
+      { key: "afterVideoUrl", label: "After video URL", type: "url", group: "Media", half: true },
+      { key: "deliverables", label: "Deliverables", type: "lines", group: "Results" },
+      { key: "results", label: "Results (optional)", type: "metrics", help: "Views, watch time, engagement, CTR, leads, conversions — only what's real.", group: "Results" },
+      { key: "clientFeedback", label: "Client feedback", type: "textarea", group: "Results" },
+      { key: "feedbackAuthor", label: "Feedback author", type: "text", group: "Results" },
+      { key: "seoTitle", label: "SEO title", type: "text", group: "SEO" },
+      { key: "seoDescription", label: "Meta description", type: "textarea", group: "SEO" },
+    ],
+  },
+  testimonials: {
+    key: "testimonials",
+    label: "Testimonials",
+    singular: "testimonial",
+    description: "Client feedback is never published automatically — approve it here.",
+    model: "testimonial",
+    perm: "cms:manage",
+    titleField: "name",
+    subtitleField: "quote",
+    flagField: "status",
+    orderBy: { createdAt: "desc" },
+    searchFields: ["name", "company", "quote"],
+    defaults: { status: "PENDING", rating: 5 },
+    fields: [
+      { key: "name", label: "Name", type: "text", required: true, showInList: true, half: true },
+      { key: "role", label: "Role", type: "text", half: true },
+      { key: "company", label: "Company", type: "text", half: true },
+      { key: "rating", label: "Rating (1–5)", type: "number", required: true, half: true },
+      { key: "quote", label: "Testimonial", type: "textarea", required: true },
+      { key: "imageUrl", label: "Image / logo URL", type: "image" },
+      {
+        key: "status",
+        label: "Status",
+        type: "select",
+        half: true,
+        options: [
+          { value: "PENDING", label: "Pending review" },
+          { value: "APPROVED", label: "Approved" },
+          { value: "REJECTED", label: "Rejected" },
+          { value: "HIDDEN", label: "Hidden" },
+        ],
+      },
+      { key: "permissionToPublish", label: "Client gave permission to publish", type: "boolean", half: true },
+      { key: "featured", label: "Featured on homepage", type: "boolean", half: true },
+    ],
+  },
+  faqs: {
+    key: "faqs",
+    label: "FAQs",
+    singular: "FAQ",
+    description: "Reusable answers. Attach them to service pages by slug.",
+    model: "faq",
+    perm: "cms:manage",
+    titleField: "question",
+    subtitleField: "category",
+    flagField: "published",
+    orderBy: { sortOrder: "asc" },
+    sortable: true,
+    allowDuplicate: true,
+    searchFields: ["question", "answer", "category"],
+    defaults: { published: true, category: "Pricing" },
+    fields: [
+      { key: "question", label: "Question", type: "text", required: true, showInList: true },
+      { key: "answer", label: "Answer", type: "markdown", required: true },
+      { key: "category", label: "Category", type: "select", required: true, options: FAQ_CATEGORIES.map((c) => ({ value: c, label: c })), half: true },
+      { key: "published", label: "Published", type: "boolean", half: true },
+      { key: "serviceSlugs", label: "Show on service pages", type: "tags", help: "Service slugs, e.g. short-form-video-editing" },
+    ],
+  },
+  "kb-articles": {
+    key: "kb-articles",
+    label: "Help articles",
+    singular: "article",
+    description: "Knowledge-base articles for the help center.",
+    model: "kbArticle",
+    perm: "cms:manage",
+    titleField: "title",
+    subtitleField: "category",
+    flagField: "published",
+    orderBy: { sortOrder: "asc" },
+    sortable: true,
+    searchFields: ["title", "content", "category"],
+    publicPath: (r) => `/help#${r.slug}`,
+    defaults: { published: true, category: "Getting started" },
+    fields: [
+      { key: "title", label: "Title", type: "text", required: true, showInList: true },
+      { key: "slug", label: "URL slug", type: "slug" },
+      { key: "category", label: "Category", type: "text", half: true },
+      { key: "published", label: "Published", type: "boolean", half: true },
+      { key: "content", label: "Content", type: "markdown", required: true },
+    ],
+  },
+  "blog-posts": {
+    key: "blog-posts",
+    label: "Blog & resources",
+    singular: "post",
+    description: "Editing tips, creator resources, guides.",
+    model: "blogPost",
+    perm: "cms:manage",
+    titleField: "title",
+    subtitleField: "excerpt",
+    flagField: "status",
+    orderBy: { createdAt: "desc" },
+    allowDuplicate: true,
+    searchFields: ["title", "excerpt", "content"],
+    publicPath: (r) => `/blog/${r.slug}`,
+    defaults: { status: "DRAFT" },
+    fields: [
+      { key: "title", label: "Title", type: "text", required: true, showInList: true, group: "Content" },
+      { key: "slug", label: "URL slug", type: "slug", group: "Content" },
+      { key: "excerpt", label: "Excerpt", type: "textarea", group: "Content" },
+      { key: "content", label: "Content (Markdown)", type: "markdown", required: true, group: "Content" },
+      { key: "featuredImage", label: "Featured image URL", type: "image", group: "Content" },
+      { key: "categoryId", label: "Category", type: "relation", relation: "blog-categories", group: "Meta", half: true },
+      { key: "authorName", label: "Author", type: "text", group: "Meta", half: true },
+      { key: "status", label: "Status", type: "select", options: publishOptions, group: "Meta", half: true },
+      { key: "publishedAt", label: "Publish date", type: "datetime", group: "Meta", half: true },
+      { key: "tags", label: "Tags", type: "tags", group: "Meta" },
+      { key: "seoTitle", label: "SEO title", type: "text", group: "SEO" },
+      { key: "metaDescription", label: "Meta description", type: "textarea", group: "SEO" },
+    ],
+  },
+  "blog-categories": {
+    key: "blog-categories",
+    label: "Blog categories",
+    singular: "category",
+    description: "Categories for the blog.",
+    model: "blogCategory",
+    perm: "cms:manage",
+    titleField: "name",
+    orderBy: { name: "asc" },
+    searchFields: ["name", "slug"],
+    fields: [
+      { key: "name", label: "Name", type: "text", required: true, showInList: true },
+      { key: "slug", label: "URL slug", type: "slug" },
+    ],
+  },
+  "project-types": {
+    key: "project-types",
+    label: "Project types",
+    singular: "project type",
+    description: "Types of work. Each maps to onboarding question groups and default turnaround.",
+    model: "projectType",
+    perm: "cms:manage",
+    titleField: "name",
+    subtitleField: "key",
+    orderBy: { sortOrder: "asc" },
+    sortable: true,
+    searchFields: ["name", "key"],
+    defaults: { defaultTurnaroundDays: 5, defaultRevisionLimit: 2 },
+    fields: [
+      { key: "name", label: "Name", type: "text", required: true, showInList: true, half: true },
+      { key: "key", label: "Key", type: "slug", required: true, readOnlyOnEdit: true, half: true },
+      { key: "defaultTurnaroundDays", label: "Default turnaround (business days)", type: "number", half: true },
+      { key: "defaultRevisionLimit", label: "Default revision rounds", type: "number", half: true },
+      { key: "onboardingCategories", label: "Onboarding question groups", type: "tags", help: "e.g. PODCAST, SHORT_FORM" },
+    ],
+  },
+  "project-templates": {
+    key: "project-templates",
+    label: "Project templates",
+    singular: "template",
+    description: "Reusable production plans: tasks, deliverables, required assets.",
+    model: "projectTemplate",
+    perm: "cms:manage",
+    titleField: "name",
+    subtitleField: "description",
+    orderBy: { name: "asc" },
+    allowDuplicate: true,
+    searchFields: ["name", "description"],
+    defaults: { defaultTurnaroundDays: 5, defaultRevisionLimit: 2 },
+    fields: [
+      { key: "name", label: "Name", type: "text", required: true, showInList: true },
+      { key: "description", label: "Description", type: "textarea" },
+      { key: "serviceId", label: "Service", type: "relation", relation: "services", half: true },
+      { key: "projectTypeKey", label: "Project type key", type: "text", half: true },
+      { key: "defaultTurnaroundDays", label: "Default turnaround (business days)", type: "number", half: true },
+      { key: "defaultRevisionLimit", label: "Default revision rounds", type: "number", half: true },
+      { key: "tasks", label: "Task list", type: "tasklist", help: "One task per line. Start a line with “- ” to make it a subtask of the task above." },
+      { key: "deliverables", label: "Default deliverables", type: "deliverables", help: "One per line, e.g. “5 x Shorts”." },
+      { key: "requiredAssets", label: "Required assets", type: "lines", help: "Each becomes an “Action required” request for the client, e.g. “Brand logo (PNG or SVG)”." },
+      { key: "questionKeys", label: "Extra onboarding question keys", type: "tags" },
+    ],
+  },
+  "email-templates": {
+    key: "email-templates",
+    label: "Email templates",
+    singular: "template",
+    description: "Edit the emails clients and your team receive. Use {{variables}}.",
+    model: "emailTemplate",
+    perm: "automations:manage",
+    titleField: "name",
+    subtitleField: "subject",
+    flagField: "enabled",
+    orderBy: { name: "asc" },
+    allowCreate: false,
+    allowDelete: false,
+    searchFields: ["name", "subject", "key"],
+    fields: [
+      { key: "name", label: "Template", type: "text", required: true, showInList: true, readOnlyOnEdit: true },
+      { key: "key", label: "Key", type: "text", readOnlyOnEdit: true },
+      { key: "enabled", label: "Enabled", type: "boolean" },
+      { key: "subject", label: "Subject", type: "text", required: true },
+      {
+        key: "body",
+        label: "Body",
+        type: "textarea",
+        required: true,
+        help: "Plain text. Blank line = new paragraph. [[Button label|{{review_url}}]] makes a button; [text](url) makes a link.",
+      },
+      { key: "variables", label: "Available variables", type: "tags", readOnlyOnEdit: true },
+    ],
+  },
+};
+
+export const EMAIL_VARIABLES = ["client_name", "project_name", "project_id", "deadline", "amount", "invoice_number", "quote_number", "version_label", "review_url", "dashboard_url", "project_url", "invoice_url", "quote_url", "contract_url", "business_name"];
