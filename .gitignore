@@ -1,0 +1,16 @@
+node_modules
+.next
+out
+build
+.env
+.env.local
+.env.*.local
+.storage
+src/generated
+*.tsbuildinfo
+next-env.d.ts
+.DS_Store
+coverage
+playwright-report
+test-results
+.claude/scratch
