@@ -10,7 +10,8 @@ for (const p of paths) {
   page.removeAllListeners("console");
   page.on("console", async (m) => { if (m.type() === "error" || m.type() === "warning") { const args = await Promise.all(m.args().map((a) => a.jsonValue().catch(() => "?"))); msgs.push(args.map(String).join(" ").slice(0, 300)); } });
   page.on("pageerror", (e) => msgs.push("pageerror: " + e.message));
-  await page.goto(base + p, { waitUntil: "networkidle" });
+  const resp = await page.goto(base + p, { waitUntil: "networkidle" });
+  if (resp && resp.status() >= 400) msgs.push(`HTTP ${resp.status()}`);
   await page.waitForTimeout(500);
   console.log(p, msgs.length ? "\n  " + msgs.join("\n  ") : "clean");
 }

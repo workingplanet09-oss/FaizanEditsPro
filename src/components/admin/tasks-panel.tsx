@@ -28,9 +28,9 @@ export interface TaskRow {
 const STATUSES = Object.entries(TASK_STATUS_META);
 
 /** Task list with inline status/assignee changes. Used on project pages, the admin task board and the editor workspace. */
-export function TasksPanel({ tasks, staff, projectId, canWrite, showProject = false, base = "/admin", title = "Tasks", meId }: { tasks: TaskRow[]; staff: { id: string; name: string }[]; projectId?: string; canWrite: boolean; showProject?: boolean; base?: "/admin" | "/editor"; title?: string; meId?: string }) {
+export function TasksPanel({ tasks, staff, projectId, canWrite, showProject = false, base = "/admin", title = "Tasks", meId, projects, openNew }: { tasks: TaskRow[]; staff: { id: string; name: string }[]; projectId?: string; canWrite: boolean; showProject?: boolean; base?: "/admin" | "/editor"; title?: string; meId?: string; projects?: { id: string; label: string }[]; openNew?: boolean }) {
   const toast = useToast();
-  const [open, setOpen] = useState(false);
+  const [open, setOpen] = useState(!!openNew && canWrite);
   const [v, setV] = useState({ title: "", assigneeId: meId ?? "", priority: "NORMAL", dueDate: "", projectId: projectId ?? "" });
   const patch = useAction(async (id: string, body: Record<string, unknown>) => api(`/api/tasks/${id}`, { method: "PATCH", body }), { onError: (e) => toast.error("Couldn't update task", e.message) });
   const del = useAction(async (id: string) => api(`/api/tasks/${id}`, { method: "DELETE" }), { onSuccess: () => toast.success("Task deleted") });
@@ -90,6 +90,7 @@ export function TasksPanel({ tasks, staff, projectId, canWrite, showProject = fa
         <div className="space-y-4">
           {add.error ? <p role="alert" className="rounded-xl bg-danger-soft px-4 py-3 text-sm font-medium text-danger">{add.error}</p> : null}
           <Field label="Title" required>{(p) => <Input {...p} autoFocus value={v.title} onChange={(e) => setV({ ...v, title: e.target.value })} placeholder="e.g. Colour-grade the opening" />}</Field>
+          {projects ? <Field label="Project">{(p) => <Select {...p} value={v.projectId} onChange={(e) => setV({ ...v, projectId: e.target.value })}><option value="">— none (internal task) —</option>{projects.map((c) => <option key={c.id} value={c.id}>{c.label}</option>)}</Select>}</Field> : null}
           <div className="grid grid-cols-2 gap-4">
             <Field label="Assignee">{(p) => <Select {...p} value={v.assigneeId} onChange={(e) => setV({ ...v, assigneeId: e.target.value })}><option value="">Unassigned</option>{staff.map((s) => <option key={s.id} value={s.id}>{s.name}</option>)}</Select>}</Field>
             <Field label="Priority">{(p) => <Select {...p} value={v.priority} onChange={(e) => setV({ ...v, priority: e.target.value })}>{Object.entries(PRIORITY_META).map(([k, m]) => <option key={k} value={k}>{m.label}</option>)}</Select>}</Field>
