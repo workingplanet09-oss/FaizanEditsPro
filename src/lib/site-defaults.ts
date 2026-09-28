@@ -21,6 +21,7 @@ export const SETTING_DEFAULTS = {
   business: {
     name: "FaizanEdits Pro",
     legalName: "FaizanEdits Pro",
+    taxId: "",
     tagline: "Video editing studio for creators, brands and teams.",
     email: "hello@faizaneditspro.com",
     phone: "",

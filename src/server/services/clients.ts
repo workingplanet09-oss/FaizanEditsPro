@@ -253,6 +253,14 @@ export async function getBrandKit(actor: Actor, clientId: string) {
   return c.brandKit ?? (await db.clientBrandKit.create({ data: { clientId } }));
 }
 
+/** Files uploaded to the client's brand kit (not tied to any project). */
+export async function listBrandAssets(actor: Actor, clientId: string) {
+  const c = await db.client.findFirst({ where: { AND: [{ id: clientId }, clientScope(actor)] }, select: { id: true } });
+  if (!c) throw notFound("Client");
+  const rows = await db.asset.findMany({ where: { clientId, projectId: null, deletedAt: null, status: "READY" }, orderBy: { createdAt: "desc" }, select: { id: true, displayName: true, mimeType: true, sizeBytes: true, createdAt: true, thumbnailKey: true } });
+  return rows.map((a) => ({ id: a.id, displayName: a.displayName, mimeType: a.mimeType, sizeBytes: Number(a.sizeBytes), createdAt: a.createdAt, hasThumbnail: !!a.thumbnailKey, status: "READY", version: 1, folderKey: null, folderName: null }));
+}
+
 export interface BrandKitPatch {
   logoAssetId?: string | null;
   altLogoAssetIds?: string[];

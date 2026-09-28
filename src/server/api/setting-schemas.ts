@@ -10,6 +10,7 @@ export const SETTING_SCHEMAS: Record<SettingKey, z.ZodType<any>> = {
   business: z.object({
     name: z.string().trim().min(1).max(80),
     legalName: z.string().max(120),
+    taxId: z.string().max(60).default(""),
     tagline: z.string().max(200),
     email: z.string().email().max(200).or(z.literal("")),
     phone: z.string().max(40),

@@ -1,6 +1,6 @@
 /**
  * Screenshot helper for visual QA:
- *   node scripts/shot.mjs <outDir> <width>x<height> [--full] [--dark] [--as=admin|editor|client] <path> [<path>…]
+ *   node scripts/shot.mjs <outDir> <width>x<height> [--full] [--dark] [--as=admin|editor|client] [--login=email] <path> [<path>…]
  * Uses the Chromium that ships in the container (PLAYWRIGHT_BROWSERS_PATH). Demo login is used for --as.
  */
 import { chromium } from "playwright-core";
@@ -13,6 +13,7 @@ const [w, h] = size.split("x").map(Number);
 const full = flags.includes("--full");
 const dark = flags.includes("--dark");
 const as = flags.find((f) => f.startsWith("--as="))?.slice(5);
+const loginAs = flags.find((f) => f.startsWith("--login="))?.slice(8);
 const base = process.env.E2E_BASE_URL ?? "http://localhost:3000";
 mkdirSync(outDir, { recursive: true });
 
@@ -25,7 +26,10 @@ const errors = [];
 page.on("pageerror", (e) => errors.push(`pageerror: ${e.message}`));
 page.on("console", (m) => m.type() === "error" && errors.push(`console: ${m.text().slice(0, 200)}`));
 
-if (as) {
+if (loginAs) {
+  const r = await page.request.post(`${base}/api/auth/login`, { data: { email: loginAs, password: "demo-password-123" }, headers: { "content-type": "application/json" } });
+  if (!r.ok()) console.log(`login failed for ${loginAs}: ${r.status()} ${(await r.text()).slice(0, 200)}`);
+} else if (as) {
   const r = await page.request.post(`${base}/api/auth/demo`, { data: { kind: as }, headers: { "content-type": "application/json" } });
   if (!r.ok()) console.log(`demo login failed for ${as}: ${r.status()} ${(await r.text()).slice(0, 200)}`);
 }

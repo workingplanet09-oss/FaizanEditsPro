@@ -118,7 +118,7 @@ async function backdate(projectId: string, days: number) {
   const iv = `${days} days`;
   const p = await db.project.findUniqueOrThrow({ where: { id: projectId } });
   const q = (sql: string) => db.$executeRawUnsafe(sql, projectId);
-  await q(`UPDATE projects SET "createdAt"="createdAt"-interval '${iv}', "startDate"="startDate"-interval '${iv}', "completionDate"="completionDate"-interval '${iv}', "deliveredAt"="deliveredAt"-interval '${iv}', "deadline"="deadline"-interval '${iv}' WHERE id=$1`);
+  await q(`UPDATE projects SET "createdAt"="createdAt"-interval '${iv}', "startDate"="startDate"-interval '${iv}', "completionDate"="completionDate"-interval '${iv}', "deliveredAt"="deliveredAt"-interval '${iv}'${p.status === "DELIVERED" ? `, "deadline"="deadline"-interval '${iv}'` : ""} WHERE id=$1`);
   await q(`UPDATE project_status_changes SET "createdAt"="createdAt"-interval '${iv}' WHERE "projectId"=$1`);
   await q(`UPDATE activity_logs SET "createdAt"="createdAt"-interval '${iv}' WHERE "projectId"=$1`);
   await q(`UPDATE quotes SET "createdAt"="createdAt"-interval '${iv}', "sentAt"="sentAt"-interval '${iv}', "acceptedAt"="acceptedAt"-interval '${iv}', "viewedAt"="viewedAt"-interval '${iv}' WHERE "projectId"=$1`);

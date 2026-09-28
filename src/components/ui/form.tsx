@@ -30,6 +30,7 @@ export const Select = forwardRef<HTMLSelectElement, React.SelectHTMLAttributes<H
 export function Field({
   label,
   required,
+  optional = true,
   hint,
   error,
   children,
@@ -38,6 +39,8 @@ export function Field({
 }: {
   label?: React.ReactNode;
   required?: boolean;
+  /** show the “optional” tag on non-required fields (turn off for read-only values) */
+  optional?: boolean;
   hint?: React.ReactNode;
   error?: string | null;
   children: (p: { id: string; "aria-describedby"?: string; invalid: boolean }) => React.ReactNode;
@@ -55,9 +58,9 @@ export function Field({
             <span className="text-danger" aria-hidden title="Required">
               *
             </span>
-          ) : (
+          ) : optional ? (
             <span className="text-xs font-normal text-subtle">optional</span>
-          )}
+          ) : null}
           {required ? <span className="sr-only">(required)</span> : null}
           {tooltip ? (
             <span className="group relative inline-flex">
