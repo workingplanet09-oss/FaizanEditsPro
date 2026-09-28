@@ -163,6 +163,11 @@ export interface ProjectListQuery extends PageInput {
 
 export async function listProjects(actor: Actor, query: ProjectListQuery = {}) {
   if (!actor.isStaff) return listClientProjectsPaged(actor, query);
+  return listProjectsStaff(actor, query);
+}
+
+/** Staff project list (filters, sorting, payment state, revisions). */
+export async function listProjectsStaff(actor: Actor, query: ProjectListQuery = {}) {
   if (!can(actor, "projects:read_all") && !can(actor, "projects:read_assigned")) throw forbidden();
   const { page, pageSize, skip, take } = pageArgs(query);
   const and: Prisma.ProjectWhereInput[] = [projectScope(actor)];

@@ -1,0 +1,21 @@
+import { chromium } from "playwright-core";
+const base = "http://localhost:3000";
+const browser = await chromium.launch({ executablePath: "/opt/pw-browsers/chromium-1194/chrome-linux/chrome", args: ["--no-sandbox"] });
+const ctx = await browser.newContext({ viewport: { width: 1280, height: 900 } });
+await ctx.addInitScript(() => localStorage.setItem("fe-theme", "light"));
+const page = await ctx.newPage();
+const errs = [];
+page.on("pageerror", (e) => errs.push(e.message));
+page.on("console", (m) => m.type() === "error" && errs.push(m.text().slice(0, 200)));
+const r = await page.request.post(`${base}/api/auth/login`, { data: { email: "robert@demo.faizaneditspro.test", password: "demo-password-123" } });
+console.log("login", r.status());
+await page.goto(`${base}/dashboard/quotes`, { waitUntil: "networkidle" });
+await page.locator("table a, tbody a").first().click();
+await page.waitForURL(/quotes\//);
+console.log("quote page:", (await page.locator("h1").textContent())?.trim());
+await page.getByRole("button", { name: "Accept quote" }).click();
+await page.waitForURL(/projects\//, { timeout: 15000 });
+console.log("after accept →", page.url().replace(base, ""));
+// contract is created as a draft and must be sent by the studio; simulate the studio sending it via admin API
+await browser.close();
+console.log(errs.length ? "errors: " + errs.join(" | ") : "no console errors");

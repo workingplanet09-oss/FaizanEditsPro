@@ -386,6 +386,7 @@ async function main() {
   // ── leads (CRM) ──
   const src = Object.fromEntries((await db.leadSource.findMany()).map((s) => [s.key, s.id]));
   const budgetMax = (k: string) => (BUDGET_RANGES.find((b) => b.value === k)?.maxUsd ?? 0) * 100;
+  const BUDGET_FIX: Record<string, string> = { "5k_10k": "5000_plus", "10k_plus": "5000_plus", "2k_5k": "2500_5000", "1k_2k": "1000_2500", under_500: "250_500", "500_1k": "500_1000" };
   const year = new Date().getFullYear();
   const L = [
     { name: "Hannah Brooks", email: "hannah@brightpath.example", company: "BrightPath Learning", source: "instagram", lookingFor: "long_form", budget: "5k_10k", type: "business", vol: 8, status: "NEW", desc: "We publish two course videos a week and need a dependable editing partner.", ago: 0.2 },
@@ -400,7 +401,9 @@ async function main() {
     { name: "Chris Patel", email: "chris@patel.example", company: "Patel Dental", source: "google", lookingFor: "social_media", budget: "500_1k", type: "business", vol: 4, status: "CONTACTED", desc: "Monthly social videos for a dental clinic.", ago: 5 },
   ];
   for (const l of L) {
-    const scored = scoreLead({ budget: l.budget, client_type: l.type, looking_for: l.lookingFor, company: l.company, website: l.company ? "https://example.com" : "", videos_per_month: l.vol, project_description: l.desc });
+    l.budget = BUDGET_FIX[l.budget] ?? l.budget;
+    const freq = l.vol >= 8 ? "weekly" : l.vol >= 4 ? "few_per_month" : l.vol >= 1 ? "occasionally" : "one_time";
+    const scored = scoreLead({ budget: l.budget, client_type: l.type, looking_for: l.lookingFor, company: l.company, website: l.company ? "https://example.com" : "", videos_per_month: l.vol, video_frequency: freq, turnaround: l.ago < 1 ? "rush" : "standard", project_description: l.desc });
     const seq = await nextNumber(ws.id, `lead-${year}`, 0);
     const created = new Date(Date.now() - l.ago * 86_400_000);
     const lead = await db.lead.create({

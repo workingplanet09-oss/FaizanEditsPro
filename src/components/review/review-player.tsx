@@ -667,7 +667,7 @@ function ChangesModal({ open, onClose, projectId, version, openNotes, used, limi
         </div>
         {!openNotes ? <p className="text-sm text-muted">You haven't added any timestamped notes, so describe what should change below.</p> : null}
         <Field label="Overall message">{(p) => <Textarea {...p} rows={3} value={desc} onChange={(e) => setDesc(e.target.value)} placeholder="Anything that doesn't belong to a single moment — pacing, music, tone…" />}</Field>
-        <Field label="Priority">{(p) => (
+        <Field label="Priority">{({ invalid: _i, ...p }) => (
           <select {...p} value={priority} onChange={(e) => setPriority(e.target.value as typeof priority)} className="h-11 w-full rounded-xl border border-line-strong bg-surface px-3 text-sm">
             <option value="NORMAL">Normal</option><option value="HIGH">High — needed soon</option><option value="URGENT">Urgent — deadline at risk</option>
           </select>
