@@ -100,7 +100,13 @@ export function PlanCard({ p }: { p: PlanData }) {
     { on: p.dedicatedEditor, label: "Dedicated editor" },
     { on: p.storageGb != null, label: `${p.storageGb} GB storage` },
     ...p.features.map((f) => ({ on: true, label: f })),
-  ].filter((x) => x.on);
+  ].filter((x) => x.on && x.label.trim());
+  // the same phrase can come from a structured field and the free-text feature list
+  const seen = new Set<string>();
+  const unique = included.filter((x) => {
+    const k = x.label.trim().toLowerCase();
+    return seen.has(k) ? false : (seen.add(k), true);
+  });
   const custom = p.billingType === "CUSTOM_QUOTE" || p.price == null;
   return (
     <div className={cn("relative flex h-full flex-col rounded-[var(--radius-card)] border p-7", p.highlighted ? "border-accent bg-surface shadow-[0_0_0_1px_var(--accent),0_30px_80px_-30px_color-mix(in_srgb,var(--accent)_50%,transparent)]" : "border-line bg-surface shadow-soft")}>
@@ -120,7 +126,7 @@ export function PlanCard({ p }: { p: PlanData }) {
       </div>
       <div className="mt-1 text-xs text-subtle">{titleCase(p.billingType.toLowerCase())}</div>
       <ul className="mt-6 space-y-3 border-t border-line pt-6 text-sm">
-        {included.map((i) => (
+        {unique.map((i) => (
           <li key={i.label} className="flex gap-3">
             <Icon name="check-circle" size={17} className="mt-px shrink-0 text-accent" />
             <span>{i.label}</span>

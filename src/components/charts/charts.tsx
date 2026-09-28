@@ -26,6 +26,15 @@ function A11yTable({ caption, data, format }: { caption: string; data: Point[]; 
   );
 }
 
+/** "2026-09" → "Sep" (with the year on January and the first bar); anything else is left alone. */
+const shortLabel = (label: string, i: number) => {
+  const m = /^(\d{4})-(\d{2})$/.exec(label);
+  if (!m) return label.length > 10 ? label.slice(0, 9) + "…" : label;
+  const d = new Date(Date.UTC(Number(m[1]), Number(m[2]) - 1, 1));
+  const mon = d.toLocaleString("en", { month: "short", timeZone: "UTC" });
+  return i === 0 || m[2] === "01" ? `${mon} '${m[1].slice(2)}` : mon;
+};
+
 const niceMax = (v: number) => {
   if (v <= 0) return 1;
   const p = 10 ** Math.floor(Math.log10(v));
@@ -54,7 +63,7 @@ export function BarChart({ data, format = (n) => String(n), label, height = 200 
               <rect x={x} y={H - pad.b - h} width={bw * 0.64} height={Math.max(h, d.value ? 2 : 0)} rx={4} fill="var(--accent)" opacity={0.92}>
                 <title>{`${d.label}: ${format(d.value)}`}</title>
               </rect>
-              <text x={x + (bw * 0.64) / 2} y={H - 8} textAnchor="middle" fontSize="11" fill="var(--subtle)">{d.label.length > 5 ? d.label.slice(2) : d.label}</text>
+              <text x={x + (bw * 0.64) / 2} y={H - 8} textAnchor="middle" fontSize="11" fill="var(--subtle)">{shortLabel(d.label, i)}</text>
             </g>
           );
         })}
@@ -85,7 +94,7 @@ export function LineChart({ data, format = (n) => String(n), label, height = 180
         {data.map((d, i) => (
           <g key={d.label}>
             <circle cx={x(i)} cy={y(d.value)} r="3.5" fill="var(--surface)" stroke={color} strokeWidth="2"><title>{`${d.label}: ${format(d.value)}`}</title></circle>
-            {i % Math.ceil(data.length / 8) === 0 || i === data.length - 1 ? <text x={x(i)} y={H - 8} textAnchor="middle" fontSize="11" fill="var(--subtle)">{d.label.slice(2)}</text> : null}
+            {i % Math.ceil(data.length / 8) === 0 || i === data.length - 1 ? <text x={x(i)} y={H - 8} textAnchor="middle" fontSize="11" fill="var(--subtle)">{shortLabel(d.label, i)}</text> : null}
           </g>
         ))}
       </svg>

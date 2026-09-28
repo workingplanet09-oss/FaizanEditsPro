@@ -39,6 +39,7 @@ async function buildForm(workspaceId: string, key: string, includeInactive: bool
           placeholder: q.placeholder,
           type: q.type,
           required: q.required,
+          active: q.active,
           categoryKeys: q.categories.map((c) => c.key),
           conditionalLogic: (q.conditionalLogic as any) ?? null,
           meta: (q.meta as any) ?? null,

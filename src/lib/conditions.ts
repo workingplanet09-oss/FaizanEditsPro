@@ -113,6 +113,8 @@ export interface QuestionDef {
   options: QuestionOptionDef[];
   sectionKey: string;
   sortOrder: number;
+  /** false = hidden from visitors (only present in the admin builder view) */
+  active?: boolean;
 }
 
 export interface SectionDef {
