@@ -42,6 +42,7 @@ export async function myTimer(actor: Actor) {
 
 export async function listTime(actor: Actor, opts: { projectId?: string; userId?: string } = {}) {
   assertCan(actor, "time:track");
+  if (opts.projectId) await requireProject(actor, opts.projectId);
   const all = can(actor, "time:read_all");
   const rows = await db.timeEntry.findMany({
     where: { workspaceId: actor.workspaceId, ...(opts.projectId ? { projectId: opts.projectId } : {}), ...(all ? (opts.userId ? { userId: opts.userId } : {}) : { userId: actor.userId }) },

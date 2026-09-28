@@ -195,7 +195,10 @@ export async function primaryClientFor(actor: Actor, organizationId?: string) {
 
 export async function listMembers(actor: Actor, organizationId: string) {
   assertOrgAction(actor, organizationId, "view");
-  if (actor.isStaff) assertCan(actor, "clients:read");
+  if (actor.isStaff) {
+    assertCan(actor, "clients:read");
+    if (!(await db.organization.count({ where: { id: organizationId, workspaceId: actor.workspaceId } }))) throw notFound("Company");
+  }
   const rows = await db.organizationMember.findMany({ where: { organizationId }, include: { user: { select: { id: true, name: true, email: true, status: true, lastLoginAt: true, avatarUrl: true } } }, orderBy: { createdAt: "asc" } });
   return rows;
 }

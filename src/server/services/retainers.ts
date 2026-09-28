@@ -78,7 +78,14 @@ export async function listRetainers(actor: Actor, query: { status?: string; clie
   return Promise.all(rows.map(async (r) => ({ ...r, usage: await retainerAllowance(r.id) })));
 }
 
-/** "You have used 7 of 12 included edits this month." */
+/** Scope-checked usage view for a single retainer (the API entry point). */
+export async function getRetainerUsage(actor: Actor, id: string) {
+  const r = await db.retainer.findFirst({ where: { AND: [{ id }, retainerScope(actor)] } });
+  if (!r) throw notFound("Retainer");
+  return retainerAllowance(id);
+}
+
+/** "You have used 7 of 12 included edits this month." (internal — callers must have authorised the retainer first) */
 export async function retainerAllowance(retainerId: string) {
   const r = await db.retainer.findUniqueOrThrow({ where: { id: retainerId } });
   const periodStart = currentPeriodStart(r.renewalDate);
