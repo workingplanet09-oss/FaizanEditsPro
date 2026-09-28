@@ -18,6 +18,7 @@ const BASE = (process.env.E2E_BASE_URL ?? "http://localhost:3000").replace(/\/$/
 const CRON = process.env.CRON_SECRET ?? "";
 const RUN = Date.now().toString(36);
 const PASSWORD = "e2e-Password-123!";
+const STARTED = new Date();
 
 let passed = 0;
 let failed = 0;
@@ -603,9 +604,21 @@ async function main() {
   }
 }
 
+/** Flags everything this run created as demo data, so `npm run db:clear-demo` removes the test records too. */
+async function flagRunAsDemo() {
+  const models = ["Client", "Organization", "Lead", "Project", "Quote", "Contract", "Invoice", "Payment", "Asset", "VideoVersion", "VideoComment", "RevisionRequest", "Message", "Notification", "Testimonial", "Retainer", "Meeting", "User"];
+  for (const name of models) {
+    const delegate = (db as any)[name.charAt(0).toLowerCase() + name.slice(1)];
+    await delegate.updateMany({ where: { createdAt: { gte: STARTED }, isDemo: false }, data: { isDemo: true } }).catch(() => {});
+  }
+}
+
 main()
   .catch((e) => {
     console.error("\nE2E crashed:", e);
     process.exitCode = 1;
   })
-  .finally(() => db.$disconnect());
+  .finally(async () => {
+    await flagRunAsDemo();
+    await db.$disconnect();
+  });

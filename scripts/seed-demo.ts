@@ -417,6 +417,34 @@ async function main() {
     await db.leadActivity.create({ data: { leadId: lead.id, type: "inquiry_submitted", title: "Inquiry submitted", createdAt: created } });
     if (l.status !== "NEW") await db.leadActivity.create({ data: { leadId: lead.id, type: "status_changed", title: `Status changed to ${l.status}`, actorId: uPm.id, createdAt: new Date(created.getTime() + 3_600_000) } });
   }
+  // Leads that became today's clients, so the funnel and lead-to-client conversion rate reflect real history.
+  const won = [
+    { c: northwind, u: uJordan, source: "referral", lookingFor: "real_estate", budget: "2500_5000", type: "business", ago: 75, desc: "Need launch films for new listings." },
+    { c: lumen, u: uMia, source: "instagram", lookingFor: "podcast", budget: "1000_2500", type: "creator", ago: 104, desc: "Weekly podcast plus trailers." },
+    { c: arcadia, u: uDevon, source: "linkedin", lookingFor: "saas", budget: "5000_plus", type: "business", ago: 9, desc: "Launch explainer for v3." },
+    { c: pixel, u: uLena, source: "youtube", lookingFor: "gaming", budget: "1000_2500", type: "creator", ago: 40, desc: "Weekly highlights and a monthly retainer." },
+  ];
+  for (const w of won) {
+    const scored = scoreLead({ budget: w.budget, client_type: w.type, looking_for: w.lookingFor, company: w.c.companyName, website: "https://example.com", videos_per_month: 6, video_frequency: "few_per_month", turnaround: "standard", project_description: w.desc });
+    const seq = await nextNumber(ws.id, `lead-${year}`, 0);
+    const created = new Date(Date.now() - w.ago * 86_400_000);
+    const lead = await db.lead.create({
+      data: {
+        workspaceId: ws.id, requestCode: `REQ-${year}-${String(seq).padStart(4, "0")}`, name: w.u.name, email: w.u.email, company: w.c.companyName, lookingFor: w.lookingFor, projectType: w.lookingFor,
+        clientType: w.type, budgetRange: w.budget, budgetMax: budgetMax(w.budget), description: w.desc, answers: { looking_for: w.lookingFor, client_type: w.type, budget: w.budget, project_description: w.desc },
+        sourceId: src[w.source], status: "CONVERTED", score: scored.score, scoreBreakdown: scored.breakdown, temperature: scored.temperature, convertedClientId: w.c.id, assignedToId: uPm.id,
+        lastContactAt: new Date(created.getTime() + 3_600_000), isDemo: true, createdAt: created, updatedAt: new Date(created.getTime() + 2 * 86_400_000),
+      },
+    });
+    await db.leadActivity.createMany({ data: [
+      { leadId: lead.id, type: "inquiry_submitted", title: "Inquiry submitted", createdAt: created },
+      { leadId: lead.id, type: "status_changed", title: "Status changed to QUALIFIED", actorId: uPm.id, createdAt: new Date(created.getTime() + 3_600_000) },
+      { leadId: lead.id, type: "converted", title: "Converted to client", actorId: uPm.id, createdAt: new Date(created.getTime() + 2 * 86_400_000) },
+    ] });
+  }
+
+  // Delivered work took about a week, not zero days, so turnaround analytics have a believable value.
+  await db.$executeRawUnsafe(`UPDATE projects SET "startDate" = "deliveredAt" - interval '7 days' WHERE "isDemo" = true AND "deliveredAt" IS NOT NULL`);
   log("leads ✓");
 
   // ── public website content (all flagged demo, hidden when you clear demo data) ──

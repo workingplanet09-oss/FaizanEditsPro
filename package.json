@@ -21,6 +21,7 @@
     "db:reset": "prisma migrate reset --force",
     "worker": "tsx scripts/worker.ts",
     "test:e2e": "tsx scripts/e2e-workflow.ts",
+    "test:ui": "node scripts/ui-flows.mjs",
     "postinstall": "prisma generate",
     "admin:create": "tsx scripts/create-admin.ts"
   },
