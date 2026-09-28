@@ -347,8 +347,9 @@ export async function getProjectDetail(actor: Actor, id: string) {
     manager: p.manager,
     members: p.members.map((m) => ({ id: m.id, role: m.role, user: m.user })),
     brief: p.brief ? { status: p.brief.status, version: p.brief.version, confirmedAt: p.brief.confirmedAt, lockedAt: p.brief.lockedAt, content: p.brief.content as any } : null,
-    paymentState: paymentStateOf(invoices),
-    gate,
+    // staff without billing access (e.g. editors) never see payment state or amounts
+    paymentState: staff && !can(actor, "invoices:read") ? ("NONE" as PaymentState) : paymentStateOf(invoices),
+    gate: staff && !can(actor, "invoices:read") ? { ...gate, outstanding: 0 } : gate,
     counts,
     history: history.map((h) => ({ id: h.id, from: h.fromStatus, to: h.toStatus, at: h.createdAt, by: h.actor?.name ?? "System", comment: h.comment, override: staff ? h.override : false })),
     allowedNext: canMove ? TRANSITIONS[status] : [],
@@ -362,9 +363,9 @@ export async function getProjectDetail(actor: Actor, id: string) {
 export async function projectDocuments(actor: Actor, projectId: string) {
   await requireProject(actor, projectId);
   const [quotes, contracts, invoices] = await Promise.all([
-    db.quote.findMany({ where: { AND: [{ projectId }, quoteScope(actor)] }, orderBy: { createdAt: "desc" }, select: { id: true, number: true, title: true, status: true, total: true, currency: true, validUntil: true, createdAt: true } }),
-    db.contract.findMany({ where: { AND: [{ projectId }, contractScope(actor)] }, orderBy: { createdAt: "desc" }, select: { id: true, number: true, title: true, status: true, signedAt: true, createdAt: true } }),
-    db.invoice.findMany({ where: { AND: [{ projectId }, invoiceScope(actor)] }, orderBy: { createdAt: "desc" }, select: { id: true, number: true, kind: true, status: true, total: true, amountPaid: true, currency: true, dueDate: true, createdAt: true } }),
+    !actor.isStaff || can(actor, "quotes:read") ? db.quote.findMany({ where: { AND: [{ projectId }, quoteScope(actor)] }, orderBy: { createdAt: "desc" }, select: { id: true, number: true, title: true, status: true, total: true, currency: true, validUntil: true, createdAt: true } }) : Promise.resolve([]),
+    !actor.isStaff || can(actor, "contracts:read") ? db.contract.findMany({ where: { AND: [{ projectId }, contractScope(actor)] }, orderBy: { createdAt: "desc" }, select: { id: true, number: true, title: true, status: true, signedAt: true, createdAt: true } }) : Promise.resolve([]),
+    !actor.isStaff || can(actor, "invoices:read") ? db.invoice.findMany({ where: { AND: [{ projectId }, invoiceScope(actor)] }, orderBy: { createdAt: "desc" }, select: { id: true, number: true, kind: true, status: true, total: true, amountPaid: true, currency: true, dueDate: true, createdAt: true } }) : Promise.resolve([]),
   ]);
   return { quotes, contracts, invoices };
 }

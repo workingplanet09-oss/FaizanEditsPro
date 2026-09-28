@@ -27,7 +27,7 @@ const AREA_LABEL = { admin: "Admin console", editor: "Editor workspace", client:
 export function AppShell({ area, groups, perms, user, business, unread, badges, bottomNav, children }: ShellProps) {
   const home = { admin: "/admin", editor: "/editor", client: "/dashboard" }[area];
   const menu = [
-    ...(area === "client" ? [{ label: "Settings", href: "/dashboard/settings", icon: "settings" }] : []),
+    area === "client" ? { label: "Settings", href: "/dashboard/settings", icon: "settings" } : { label: "My account", href: `${home}/account`, icon: "user" },
     { label: "View website", href: "/", icon: "external" },
     { label: "Help center", href: "/help", icon: "help" },
   ];

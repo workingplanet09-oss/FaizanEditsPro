@@ -79,6 +79,7 @@ export function FileManager({
   extraParams,
   showProject,
   staff = false,
+  projectBase,
 }: {
   projectId?: string;
   files: FileRow[];
@@ -93,6 +94,8 @@ export function FileManager({
   extraParams?: Record<string, string | undefined>;
   showProject?: boolean;
   staff?: boolean;
+  /** Where project links point, e.g. "/editor". Defaults to /admin for staff and /dashboard for clients. */
+  projectBase?: string;
 }) {
   const router = useRouter();
   const toast = useToast();
@@ -182,7 +185,7 @@ export function FileManager({
                   {f.durationMs ? <span>{formatTimecode(f.durationMs)}</span> : null}
                   {f.folderName ? <span>{f.folderName}</span> : null}
                   <span>{f.uploadedBy ?? "—"} · {formatDateShort(f.createdAt)}</span>
-                  {showProject && f.project ? <Link href={`/${staff ? "admin" : "dashboard"}/projects/${f.project.id}`} className="hover:text-fg hover:underline">{f.project.code}</Link> : null}
+                  {showProject && f.project ? <Link href={`${projectBase ?? (staff ? "/admin" : "/dashboard")}/projects/${f.project.id}`} className="hover:text-fg hover:underline">{f.project.code}</Link> : null}
                 </div>
               </div>
               <div className="flex items-center gap-1">

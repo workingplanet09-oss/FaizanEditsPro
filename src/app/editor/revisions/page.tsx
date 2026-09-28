@@ -4,7 +4,7 @@ import type { SearchParams } from "@/server/page";
 
 export const metadata = { title: "Revisions", robots: { index: false, follow: false } };
 
-export default async function RevisionsAdmin({ searchParams }: { searchParams: SearchParams }) {
-  const actor = await requirePageActor("admin", "/admin/revisions");
-  return <RevisionsBoard actor={actor} sp={await searchParams} base="/admin" />;
+export default async function RevisionsEditor({ searchParams }: { searchParams: SearchParams }) {
+  const actor = await requirePageActor("editor", "/editor/revisions");
+  return <RevisionsBoard actor={actor} sp={await searchParams} base="/editor" />;
 }
