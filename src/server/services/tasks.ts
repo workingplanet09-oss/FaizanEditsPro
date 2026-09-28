@@ -26,6 +26,7 @@ export interface TaskListQuery extends PageInput {
 }
 
 export async function listTasks(actor: Actor, query: TaskListQuery = {}) {
+  assertCan(actor, "tasks:read");
   const { page, pageSize, skip, take } = pageArgs(query, 50, 200);
   const and: Prisma.TaskWhereInput[] = [taskScope(actor)];
   if (query.topLevel !== false) and.push({ parentId: null });

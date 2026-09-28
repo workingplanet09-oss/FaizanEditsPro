@@ -224,6 +224,8 @@ export function validateAnswer(q: QuestionDef, value: unknown): string | null {
     case "TEXT":
     case "TEXTAREA": {
       const max = q.meta?.maxLength ?? (q.type === "TEXT" ? 300 : 8000);
+      const min = q.meta?.minLength as number | undefined;
+      if (min && String(s).length < min) return `Please write at least ${min} characters so we can help properly.`;
       return String(s).length > max ? `Keep this under ${max} characters.` : null;
     }
     default:

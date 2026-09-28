@@ -91,7 +91,7 @@ export const getPublicService = (slug: string) =>
 export const listPublicPlans = () =>
   cached("public:plans", TTL, async () => {
     const ws = await getWorkspaceId();
-    return db.pricingPlan.findMany({ where: { workspaceId: ws, enabled: true }, orderBy: { sortOrder: "asc" } });
+    return db.pricingPlan.findMany({ where: { workspaceId: ws, enabled: true, ...demoOnly() }, orderBy: { sortOrder: "asc" } });
   });
 
 export const listPublicPortfolio = (opts: { category?: string; featured?: boolean; limit?: number } = {}) =>

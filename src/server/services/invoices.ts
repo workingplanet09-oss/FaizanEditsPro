@@ -138,6 +138,7 @@ export interface InvoiceListQuery extends PageInput {
 }
 
 export async function listInvoices(actor: Actor, query: InvoiceListQuery = {}) {
+  if (actor.isStaff) assertCan(actor, "invoices:read");
   const { page, pageSize, skip, take } = pageArgs(query);
   const where: Prisma.InvoiceWhereInput = {
     AND: [invoiceScope(actor), query.status ? { status: query.status as InvoiceStatus } : {}, query.clientId ? { clientId: query.clientId } : {}, query.projectId ? { projectId: query.projectId } : {}, query.q ? { OR: [{ number: { contains: query.q, mode: "insensitive" } }, { client: { companyName: { contains: query.q, mode: "insensitive" } } }] } : {}],
@@ -280,6 +281,7 @@ export async function handlePaymentWebhook(event: WebhookEvent) {
 }
 
 export async function listPayments(actor: Actor, query: PageInput & { invoiceId?: string } = {}) {
+  if (actor.isStaff) assertCan(actor, "payments:read");
   const { page, pageSize, skip, take } = pageArgs(query);
   const where: Prisma.PaymentWhereInput = { AND: [paymentScope(actor), query.invoiceId ? { invoiceId: query.invoiceId } : {}] };
   const [rows, total] = await Promise.all([

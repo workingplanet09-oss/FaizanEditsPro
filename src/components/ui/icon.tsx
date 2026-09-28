@@ -12,7 +12,7 @@ export const ICONS = {
   film: Film, folder: Folder, gamepad: Gamepad2, globe: Globe, grip: GripVertical, help: HelpCircle, home: Home, image: ImageIcon, inbox: Inbox, info: Info, layers: Layers, dashboard: LayoutDashboard, link: Link2, loader: Loader2, lock: Lock, logout: LogOut,
   mail: Mail, megaphone: Megaphone, menu: Menu, message: MessageSquare, mic: Mic, monitor: Monitor, moon: Moon, more: MoreHorizontal, music: Music, palette: Palette, pause: Pause, pencil: Pencil, phone: Phone, play: Play, plus: Plus, receipt: Receipt,
   refresh: RefreshCw, repeat: Repeat, scissors: Scissors, search: Search, send: Send, settings: Settings, share: Share2, shield: Shield, smartphone: Smartphone, sparkles: Sparkles, star: Star, sun: Sun, trash: Trash2, trending: TrendingUp, upload: Upload,
-  user: User, users: Users, video: Video, wand: Wand2, x: X, youtube: zap: Zap, chart: BarChart3, book: BookOpen, briefcase: Briefcase, "calendar-days": CalendarDays, money: CircleDollarSign, clipboard: ClipboardList, sign: FileSignature,
+  user: User, users: Users, video: Video, wand: Wand2, x: X, youtube: Play, zap: Zap, chart: BarChart3, book: BookOpen, briefcase: Briefcase, "calendar-days": CalendarDays, money: CircleDollarSign, clipboard: ClipboardList, sign: FileSignature,
   "folder-open": FolderOpen, gift: Gift, checklist: ListChecks, news: Newspaper, package: Package, panel: PanelLeft, quote: Quote, rocket: Rocket, target: Target, timer: Timer, wallet: Wallet, workflow: Workflow,
 } satisfies Record<string, LucideIcon>;
 

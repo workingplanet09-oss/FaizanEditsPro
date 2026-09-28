@@ -127,8 +127,9 @@ export async function createVersion(actor: Actor, projectId: string, input: Crea
   await audit(actor, { workspaceId: actor.workspaceId, action: "version.uploaded", entityType: "video_version", entityId: version.id, message: `${actor.name} uploaded ${label} to ${project.code}` });
   await logActivity(actor, { workspaceId: actor.workspaceId, type: "version.uploaded", message: `${actor.name} uploaded ${label}${draftOnly ? " (team only)" : toInternal ? " for internal review" : ""}`, projectId, clientId: project.clientId, visibility: draftOnly || toInternal ? "INTERNAL" : "CLIENT", entityType: "video_version", entityId: version.id });
   if (!draftOnly && !toInternal) {
-    await emit("draft.uploaded", { workspaceId: actor.workspaceId, actorId: actor.userId, projectId, clientId: project.clientId, versionId: version.id });
+    // one clear notification per upload: "revision completed" when it answers a revision, otherwise "draft ready"
     if (input.revisionId) await emit("revision.completed", { workspaceId: actor.workspaceId, actorId: actor.userId, projectId, clientId: project.clientId, versionId: version.id, revisionId: input.revisionId });
+    else await emit("draft.uploaded", { workspaceId: actor.workspaceId, actorId: actor.userId, projectId, clientId: project.clientId, versionId: version.id });
   } else if (toInternal) {
     const reviewers = await db.projectMember.findMany({ where: { projectId, role: { in: ["REVIEWER", "MANAGER"] } }, select: { userId: true } });
     await notify({ workspaceId: actor.workspaceId, userIds: reviewers.map((r) => r.userId), exclude: [actor.userId], category: "REVIEW", type: "version.internal_review", title: `${label} needs internal review`, message: `${project.name} (${project.code})`, link: `/admin/projects/${projectId}/review/${version.id}`, email: false });

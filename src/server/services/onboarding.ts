@@ -106,8 +106,10 @@ export async function saveDraft(input: { workspaceId: string; token?: string | n
       return { token: d.token, step: d.step, updatedAt: d.updatedAt };
     }
   }
+  // The browser may mint its own unguessable token (used to tie file uploads to this draft); adopt it if well-formed.
+  const token = input.token && /^[A-Za-z0-9_-]{16,64}$/.test(input.token) && !(await db.onboardingDraft.findUnique({ where: { token: input.token }, select: { id: true } })) ? input.token : randomToken(24);
   const d = await db.onboardingDraft.create({
-    data: { workspaceId: input.workspaceId, token: randomToken(24), userId: input.userId ?? null, formKey: input.formKey, data, step: input.step, subjectType: input.subjectType, subjectId: input.subjectId },
+    data: { workspaceId: input.workspaceId, token, userId: input.userId ?? null, formKey: input.formKey, data, step: input.step, subjectType: input.subjectType, subjectId: input.subjectId },
   });
   return { token: d.token, step: d.step, updatedAt: d.updatedAt };
 }

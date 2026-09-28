@@ -162,6 +162,8 @@ export interface ProjectListQuery extends PageInput {
 }
 
 export async function listProjects(actor: Actor, query: ProjectListQuery = {}) {
+  if (!actor.isStaff) return listClientProjectsPaged(actor, query);
+  if (!can(actor, "projects:read_all") && !can(actor, "projects:read_assigned")) throw forbidden();
   const { page, pageSize, skip, take } = pageArgs(query);
   const and: Prisma.ProjectWhereInput[] = [projectScope(actor)];
   if (query.status) and.push({ status: { in: query.status.split(",") as ProjectStatus[] } });
@@ -228,6 +230,11 @@ export async function listProjects(actor: Actor, query: ProjectListQuery = {}) {
     page,
     pageSize,
   );
+}
+
+async function listClientProjectsPaged(actor: Actor, query: ProjectListQuery) {
+  const rows = await listClientProjects(actor, { includeClosed: query.view === "all" });
+  return { items: rows, total: rows.length, page: 1, pageSize: rows.length || 1, pages: 1 };
 }
 
 /** Portal: the client's projects, grouped for the dashboard. */

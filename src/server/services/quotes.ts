@@ -175,6 +175,7 @@ export interface QuoteListQuery extends PageInput {
 }
 
 export async function listQuotes(actor: Actor, query: QuoteListQuery = {}) {
+  if (actor.isStaff) assertCan(actor, "quotes:read");
   const { page, pageSize, skip, take } = pageArgs(query);
   const where: Prisma.QuoteWhereInput = {
     AND: [quoteScope(actor), query.status ? { status: query.status as QuoteStatus } : {}, query.clientId ? { clientId: query.clientId } : {}, query.q ? { OR: [{ number: { contains: query.q, mode: "insensitive" } }, { client: { companyName: { contains: query.q, mode: "insensitive" } } }, { title: { contains: query.q, mode: "insensitive" } }] } : {}],

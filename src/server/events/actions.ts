@@ -64,6 +64,7 @@ async function buildVars(ctx: Ctx, base: Base): Promise<Record<string, string>> 
     contract_number: ctx.contract?.number ?? "",
     version_label: ctx.version?.label ?? String(d.versionLabel ?? ""),
     request_code: ctx.lead?.requestCode ?? "",
+    request_id: ctx.lead?.requestCode ?? "",
     lead_name: ctx.lead?.name ?? "",
     status: String(d.toStatusLabel ?? ""),
     detail: String(d.detail ?? ""),
@@ -211,7 +212,8 @@ export async function runAutomationAction(job: { automationId: string; actionId:
           await notify({
             workspaceId: ws,
             userIds: g.userIds,
-            exclude,
+            // staff don't need an alert about their own action, but a client still wants confirmation of theirs
+            exclude: g.base === "/dashboard" ? [] : exclude,
             category,
             type: job.event,
             title: title || vars.project_name || job.event,

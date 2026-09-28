@@ -145,6 +145,7 @@ export async function getContract(actor: Actor, id: string, opts: { markViewed?:
 }
 
 export async function listContracts(actor: Actor, query: PageInput & { status?: string; q?: string } = {}) {
+  if (actor.isStaff) assertCan(actor, "contracts:read");
   const { page, pageSize, skip, take } = pageArgs(query);
   const where: Prisma.ContractWhereInput = { AND: [contractScope(actor), query.status ? { status: query.status as any } : {}, query.q ? { OR: [{ number: { contains: query.q, mode: "insensitive" } }, { title: { contains: query.q, mode: "insensitive" } }, { client: { companyName: { contains: query.q, mode: "insensitive" } } }] } : {}] };
   const [rows, total] = await Promise.all([

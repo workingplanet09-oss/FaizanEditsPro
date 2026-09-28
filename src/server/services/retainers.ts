@@ -1,7 +1,7 @@
 import type { Prisma, RetainerStatus } from "@/generated/prisma/client";
 import { db } from "../db";
-import { AppError, badRequest, notFound } from "../errors";
-import { assertCan, assertOrgAction, type Actor } from "../auth/actor";
+import { AppError, badRequest, forbidden, notFound } from "../errors";
+import { assertCan, assertOrgAction, can, type Actor } from "../auth/actor";
 import { retainerScope } from "../auth/access";
 import { emit } from "../events/bus";
 import { audit } from "./audit";
@@ -70,6 +70,7 @@ export async function updateRetainer(actor: Actor, id: string, patch: Partial<Om
 }
 
 export async function listRetainers(actor: Actor, query: { status?: string; clientId?: string } = {}) {
+  if (actor.isStaff && !can(actor, "retainers:manage") && !can(actor, "clients:read")) throw forbidden();
   const rows = await db.retainer.findMany({
     where: { AND: [retainerScope(actor), query.status ? { status: query.status as RetainerStatus } : {}, query.clientId ? { clientId: query.clientId } : {}] },
     orderBy: [{ status: "asc" }, { renewalDate: "asc" }],

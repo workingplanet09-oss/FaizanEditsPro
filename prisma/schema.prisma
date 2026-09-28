@@ -864,6 +864,7 @@ model PricingPlan {
   highlighted       Boolean     @default(false)
   ctaLabel          String?
   enabled           Boolean     @default(true)
+  isDemo            Boolean     @default(false)
   sortOrder         Int         @default(0)
   createdAt         DateTime    @default(now())
   updatedAt         DateTime    @updatedAt

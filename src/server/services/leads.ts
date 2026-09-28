@@ -2,7 +2,7 @@ import type { LeadStatus, LeadTemperature, Prisma } from "@/generated/prisma/cli
 import { db } from "../db";
 import { AppError, badRequest, notFound } from "../errors";
 import { assertCan, can, type Actor } from "../auth/actor";
-import { leadScope } from "../auth/access";
+import { leadScope, projectScope } from "../auth/access";
 import { emit } from "../events/bus";
 import { queueEmail, absoluteUrl } from "../email";
 import { rateLimit } from "../security/ratelimit";
@@ -184,6 +184,35 @@ export async function submitInquiry(input: InquiryInput) {
   return { requestCode, projectType: projectLabel, responseTime: contact.responseTime, nextStep: existingClientId ? "We'll prepare a quote and share it in your portal." : "We'll review your request and reply by email with next steps — usually a short call or a quote." };
 }
 
+// ───────────────────────────── wizard helpers (signed-in clients) ─────────────────────────────
+
+/** Contact details a signed-in client doesn't need to retype, plus their earlier projects to start from. */
+export async function inquiryPrefill(actor: Actor | null) {
+  const empty = { skipContact: false, answers: {} as Answers, previousProjects: [] as { id: string; name: string }[] };
+  if (!actor || actor.isStaff) return empty;
+  const client = await db.client.findFirst({ where: { organizationId: { in: actor.orgs.map((o) => o.organizationId) } }, orderBy: { createdAt: "asc" } });
+  if (!client) return empty;
+  const form = await getFormDef(actor.workspaceId, "inquiry");
+  const answers: Answers = {};
+  const fields: Record<string, string | null | undefined> = { name: client.name, email: client.email, phone: client.phone, company: client.companyName, website: client.website };
+  for (const s of form?.sections ?? []) for (const q of s.questions) {
+    const f = q.meta?.leadField as string | undefined;
+    if (f && fields[f]) answers[q.key] = fields[f];
+  }
+  const projects = await db.project.findMany({ where: { organizationId: { in: actor.orgs.map((o) => o.organizationId) }, clientVisible: true, leadId: { not: null } }, orderBy: { createdAt: "desc" }, take: 10, select: { id: true, name: true } });
+  return { skipContact: true, answers, previousProjects: projects };
+}
+
+/** Answers from the request that started one of the client's earlier projects (minus one-off fields). */
+export async function previousAnswersForProject(actor: Actor, projectId: string): Promise<Answers> {
+  const project = await db.project.findFirst({ where: { AND: [{ id: projectId }, projectScope(actor)] }, select: { leadId: true } });
+  const lead = project?.leadId ? await db.lead.findUnique({ where: { id: project.leadId }, select: { answers: true } }) : null;
+  if (!lead) throw notFound("Project");
+  const answers = { ...((lead.answers as Answers) ?? {}) };
+  for (const k of ["project_description", "deadline", "special_requests", "reference_links", "reference_files", "examples", "deadline_date"]) delete answers[k];
+  return answers;
+}
+
 // ───────────────────────────── admin CRM ─────────────────────────────
 
 export interface LeadListQuery extends PageInput {
@@ -206,6 +235,7 @@ const SECTION_STATUSES: Record<string, LeadStatus[]> = {
 const effectiveTemp = (l: { temperature: LeadTemperature; temperatureOverride: LeadTemperature | null }) => l.temperatureOverride ?? l.temperature;
 
 export async function listLeads(actor: Actor, query: LeadListQuery = {}) {
+  assertCan(actor, "leads:read");
   const { page, pageSize, skip, take } = pageArgs(query);
   const and: Prisma.LeadWhereInput[] = [leadScope(actor)];
   if (query.status) and.push({ status: query.status as LeadStatus });
