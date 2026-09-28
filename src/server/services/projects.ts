@@ -2,7 +2,7 @@ import type { Prisma, Priority, ProjectMemberRole, ProjectStatus } from "@/gener
 import { db } from "../db";
 import { AppError, badRequest, forbidden, notFound } from "../errors";
 import { assertCan, assertOrgAction, can, type Actor } from "../auth/actor";
-import { projectScope, projectWhere } from "../auth/access";
+import { contractScope, invoiceScope, projectScope, projectWhere, quoteScope } from "../auth/access";
 import { emit } from "../events/bus";
 import { audit, logActivity, whoName } from "./audit";
 import { addBusinessDays, nextNumber, pageArgs, paged, type PageInput } from "./common";
@@ -351,6 +351,17 @@ export async function getProjectDetail(actor: Actor, id: string) {
     ...(staff && can(actor, "profitability:read") ? { internalCost: p.internalCost } : {}),
     ...(staff ? { rushFee: p.rushFee, gateOverride: p.gateOverride, tags: p.tags, retainerId: p.retainerId } : {}),
   };
+}
+
+/** Quotes, contracts and invoices attached to one project, scoped to what this actor may see. */
+export async function projectDocuments(actor: Actor, projectId: string) {
+  await requireProject(actor, projectId);
+  const [quotes, contracts, invoices] = await Promise.all([
+    db.quote.findMany({ where: { AND: [{ projectId }, quoteScope(actor)] }, orderBy: { createdAt: "desc" }, select: { id: true, number: true, title: true, status: true, total: true, currency: true, validUntil: true, createdAt: true } }),
+    db.contract.findMany({ where: { AND: [{ projectId }, contractScope(actor)] }, orderBy: { createdAt: "desc" }, select: { id: true, number: true, title: true, status: true, signedAt: true, createdAt: true } }),
+    db.invoice.findMany({ where: { AND: [{ projectId }, invoiceScope(actor)] }, orderBy: { createdAt: "desc" }, select: { id: true, number: true, kind: true, status: true, total: true, amountPaid: true, currency: true, dueDate: true, createdAt: true } }),
+  ]);
+  return { quotes, contracts, invoices };
 }
 
 // ───────────────────────────── update ─────────────────────────────

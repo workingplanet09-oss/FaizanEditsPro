@@ -1,3 +1,4 @@
+import { contentDisposition } from "@/server/http";
 import { NextRequest, NextResponse } from "next/server";
 import { createReadStream, createWriteStream, promises as fs } from "node:fs";
 import path from "node:path";
@@ -37,11 +38,11 @@ export async function GET(req: NextRequest) {
   }
   const type = tok.ct && SAFE_INLINE.test(tok.ct) ? tok.ct : tok.ct ?? "application/octet-stream";
   const inline = !!tok.inl && SAFE_INLINE.test(type);
-  const name = (tok.fn ?? path.basename(file)).replace(/[\r\n"]/g, "_");
+  const name = tok.fn ?? path.basename(file);
   const headers: Record<string, string> = {
     "content-type": type,
     "accept-ranges": "bytes",
-    "content-disposition": `${inline ? "inline" : "attachment"}; filename="${name}"; filename*=UTF-8''${encodeURIComponent(name)}`,
+    "content-disposition": contentDisposition(name, inline),
     "x-content-type-options": "nosniff",
     "content-security-policy": "sandbox; default-src 'none'",
     "cache-control": "private, max-age=300",

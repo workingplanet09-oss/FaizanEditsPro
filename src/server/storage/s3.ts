@@ -1,3 +1,4 @@
+import { contentDisposition } from "../http";
 import { DeleteObjectCommand, GetObjectCommand, HeadObjectCommand, PutObjectCommand, S3Client } from "@aws-sdk/client-s3";
 import { getSignedUrl } from "@aws-sdk/s3-request-presigner";
 import { env } from "../env";
@@ -31,7 +32,7 @@ export class S3StorageProvider implements StorageProvider {
   }
 
   async downloadUrl(key: string, opts: DownloadOptions = {}): Promise<string> {
-    const disposition = opts.filename ? `${opts.inline ? "inline" : "attachment"}; filename="${opts.filename.replace(/"/g, "")}"` : undefined;
+    const disposition = opts.filename ? contentDisposition(opts.filename, !!opts.inline) : undefined;
     return getSignedUrl(
       this.client,
       new GetObjectCommand({ Bucket: this.bucket, Key: key, ResponseContentDisposition: disposition, ResponseContentType: opts.contentType }),
