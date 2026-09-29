@@ -1,10 +1,17 @@
 import type { NextRequest } from "next/server";
 import { env } from "../env";
 
+/**
+ * The caller's IP, used for rate limiting and audit trails. Each reverse proxy appends the address it saw to X-Forwarded-For, so
+ * the LEFT-most entry is whatever the client chose to send and can be forged to dodge limits. The trustworthy entry is the one added by
+ * our own proxy: `hops` from the right (TRUSTED_PROXY_HOPS, default 1). With no proxy in front, the header can't be trusted at all.
+ */
 export function clientIp(req: Request | NextRequest): string {
   const h = req.headers;
-  const fwd = h.get("x-forwarded-for");
-  return (fwd?.split(",")[0]?.trim() || h.get("x-real-ip") || "0.0.0.0").slice(0, 64);
+  const parts = (h.get("x-forwarded-for") ?? "").split(",").map((p) => p.trim()).filter(Boolean);
+  const hops = env.trustedProxyHops;
+  const fromProxy = hops > 0 && parts.length > 0 ? parts[Math.max(0, parts.length - hops)] : undefined;
+  return (fromProxy || h.get("x-real-ip") || "0.0.0.0").slice(0, 64);
 }
 
 export function userAgent(req: Request | NextRequest): string {

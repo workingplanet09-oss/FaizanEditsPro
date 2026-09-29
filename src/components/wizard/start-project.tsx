@@ -25,6 +25,7 @@ export function StartProject({
   skipContact,
   previousProjects,
   portalHref,
+  turnstileSiteKey,
 }: {
   form: FormDef;
   initialAnswers: Answers;
@@ -34,9 +35,11 @@ export function StartProject({
   skipContact: boolean;
   previousProjects: { id: string; name: string }[];
   portalHref: string;
+  turnstileSiteKey?: string;
 }) {
   return (
     <FormWizard<Result>
+      turnstileSiteKey={turnstileSiteKey}
       form={form}
       mode="inquiry"
       initialAnswers={initialAnswers}
@@ -70,6 +73,7 @@ export function StartProject({
             referralCode: (urlRef || a.ref || "").slice(0, 24) || null,
             hp: ctx.hp,
             t: ctx.startedAt,
+            turnstile: ctx.turnstile,
           },
         });
       }}

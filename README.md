@@ -109,7 +109,11 @@ To confirm a cleared system is genuinely empty, create an admin and run `node sc
 | `npm run worker` | Stand-alone background job worker |
 | `npm run test:e2e` | 32-step business workflow + security checks against a running app |
 | `npm run test:ui` | Browser flows (invoice, contract signing, form builder, automations, version upload) |
+| `npm run test:security` | Black-box audit of every API handler: signed-out access, CSRF, a second workspace, cross-client and cross-role object probes with real mutations, page-level access, uploads, request limits (~4,000 checks). Run it against a **production** build |
 | `node scripts/qa-layout.mjs [--dark]` | Overflow / label / heading / console-error sweep at phone, tablet and desktop widths |
+| `BASE=… PUBLIC_ORIGIN=https://your-domain node scripts/qa-seo.mjs` | Crawls robots.txt, the sitemap and every internal link; checks titles, descriptions, canonicals, Open Graph/Twitter tags, headings, alt text and that no URL points at localhost |
+| `node scripts/qa-keyboard.mjs` | Skip link, visible focus, dialog focus trap / Escape / focus restore, form error announcements |
+| `node scripts/qa-runtime-config.mjs` | Starts from three production instances of one build (plain, S3 storage, Turnstile keys) and checks that the Content-Security-Policy and the spam check follow the settings the server **starts** with, not the ones it was built with. Cloudflare itself is replaced by a stand-in |
 | `node scripts/qa-links.mjs` | Signs in as each demo user and opens every link in their real notifications; fails on 404s or links that bounce them to another portal |
 | `node scripts/qa-empty.mjs <admin-email> <password>` | On a cleared database: every public and admin page renders without errors or broken values (`NaN`, `undefined`) |
 | `TZ_ID=Asia/Karachi node scripts/qa-timezone.mjs` | Loads the portals in a browser set to another time zone and fails on any hydration mismatch |
@@ -128,15 +132,16 @@ All configuration is environment variables, read in one place (`src/server/env.t
 | `DATABASE_URL` | PostgreSQL connection string |
 | `AUTH_SECRET` | 32+ random characters. Signs CSRF tokens and storage URLs, encrypts 2FA secrets. **Production refuses to start with a short or placeholder value.** `openssl rand -base64 48` |
 | `APP_URL` | Public origin, used in emails, redirects, payment return URLs and cookie flags |
-| `DEMO_MODE` | `true` enables demo login buttons and console-only providers. **Set `false` in production** (a warning is logged if it's on) |
+| `DEMO_MODE` | `true` enables demo login buttons, the **simulated "pay" button** and console-only providers. **Must be `false` in production** — the simulated payment marks an invoice paid without any money moving, so it is refused unless this is on (a warning is logged if it is on in production) |
 | `CRON_SECRET` | Bearer token for `POST /api/cron/run` |
+| `TRUSTED_PROXY_HOPS` | Reverse proxies in front of the app (default `1`). Rate limits use the client address *your* proxy recorded (the entry that many hops from the right of `X-Forwarded-For`); the left-most entry is client-controlled and ignored. Set `0` if nothing sits in front |
 | `JOBS_INLINE` | `true` runs the job loop inside the web process; set `false` and run `npm run worker` for scale |
 | `STORAGE_PROVIDER` | `local` (default, `.storage/`) or `s3` — with `STORAGE_BUCKET`, `STORAGE_REGION`, `STORAGE_ENDPOINT`, `STORAGE_ACCESS_KEY`, `STORAGE_SECRET_KEY`, `STORAGE_FORCE_PATH_STYLE`. Works with AWS S3, Cloudflare R2, MinIO, Supabase Storage, GCS interoperability |
 | `STORAGE_MAX_UPLOAD_GB` | Per-file cap (default 20) |
-| `PAYMENT_PROVIDER` | `demo` or `stripe` — with `PAYMENT_SECRET_KEY`, `PAYMENT_WEBHOOK_SECRET` |
+| `PAYMENT_PROVIDER` | `demo` or `stripe` — with `PAYMENT_SECRET_KEY`, `PAYMENT_WEBHOOK_SECRET`. With `demo` and `DEMO_MODE=false` there is no online payment: invoices show the studio's payment instructions (Settings → Invoice) and staff record payments as they arrive |
 | `EMAIL_PROVIDER` | `console` (logs + stores in the email log), `resend`, `postmark` or `sendgrid` — with `EMAIL_API_KEY`, `EMAIL_FROM` |
 | `GOOGLE_CLIENT_ID/SECRET` | Optional "Continue with Google" |
-| `TURNSTILE_SECRET_KEY`, `NEXT_PUBLIC_TURNSTILE_SITE_KEY` | Optional bot protection on public forms |
+| `TURNSTILE_SECRET_KEY`, `TURNSTILE_SITE_KEY` | Optional Cloudflare Turnstile on the Start Project and Contact forms. Both keys are read at runtime (no rebuild needed) and the challenge is only enforced when both are set |
 | `SCAN_PROVIDER`, `CLAMAV_URL` | Optional malware scanning of uploads (`none` \| `clamav-http`) |
 
 Business settings that are not secrets (business details, brand colour, quote and invoice defaults, workflow rules such as payment-before-delivery and rush fee, booking hours, SEO, notification defaults…) are edited in **/admin/settings** and stored in the database.
@@ -205,11 +210,15 @@ Editors see only projects they're assigned to and never see quotes, invoices or 
 
 * **Passwords** hashed with scrypt; **sessions** are random tokens stored hashed in the database, `HttpOnly`, `SameSite=Lax`, `Secure` in production, individually revocable from Settings → Security. Optional **TOTP 2FA** with recovery codes; magic-link and Google sign-in.
 * **CSRF**: mutating API calls require a signed double-submit token *and* a same-origin check. **Rate limits** on login, registration, password reset, public forms and uploads.
+* **Client address for rate limits** is taken from the trusted end of `X-Forwarded-For` (see `TRUSTED_PROXY_HOPS`); a forged header cannot pick its own bucket. Run the app behind a proxy that sets the header — with none in front, the header cannot be trusted at all.
 * The built-in rate limiter is **in-memory per process**. Behind several instances, put a shared limiter (Redis) at `hit()` in `src/server/security/ratelimit.ts` or limit at your proxy/CDN. `DISABLE_RATE_LIMIT` is a local testing switch and is ignored in production.
-* **Uploads**: type and size validation, filename sanitising, optional malware scan hook, no public bucket, signed short-lived URLs, RFC 5987 download names.
-* **User-supplied HTML and Markdown** (blog, case studies, help articles) is sanitised; React escapes everything else. CSP, frame denial, `nosniff`, referrer policy and HSTS are set in `next.config.ts`.
+* **Uploads**: blocked executable extensions, declared-type and size validation, filename sanitising, and — when an upload completes — a look at the file's actual first bytes: programs (Windows/Linux/macOS executables, shebang scripts) and web pages posing as media or documents are deleted and refused. Optional ClamAV scan (files over 200 MB are released unscanned and marked `skipped_large`), private bucket, signed short-lived URLs, user files served as attachments with `nosniff` and a sandboxing CSP. Uploads that never complete, and inquiry attachments never submitted, are removed by the housekeeping sweep.
+* **Money**: a payment is only ever recorded by `recordPayment` — from a signature-verified provider webhook (Stripe HMAC with a replay window; the demo provider accepts none) or by staff with `payments:write`. Balance updates are atomic, so concurrent payments cannot overwrite each other; provider events are idempotent; a provider payment the invoice cannot absorb (already settled offline, or paid twice) is acknowledged and flagged for review with an audit entry and a notification to admins and finance.
+* **Sign-in**: single-use, expiring links; a password account registered for an address nobody has verified is stripped of its password and sessions when the real owner proves the address via Google or a magic link (blocks "pre-hijacking"); post-login redirects accept only same-site rooted paths. **Email log**: bodies are never returned by the API, and sign-in/invite/reset links are scrubbed from stored copies once a real provider has delivered them.
+* **User-supplied HTML and Markdown** (blog, case studies, help articles) is sanitised; React escapes everything else. CSP, frame denial, `nosniff`, referrer policy and HSTS are set in `next.config.ts` (the CSP allows inline scripts because Next.js emits them without nonces here; everything else is locked to this origin, your storage origin and the video embeds).
 * **Audit log** for logins, permission changes, status changes and overrides, money events, exports, settings and CMS edits.
 * Lead scores, internal notes, margins and audit data are never serialised to client-role responses.
+* JSON request bodies are capped at 1 MB (files go straight to storage).
 * Set `DEMO_MODE=false` and remove demo data (`npm run db:clear-demo`) before going live.
 
 ---
@@ -295,9 +304,18 @@ DISABLE_RATE_LIMIT=true npm run dev
 npm run db:seed:demo           # UI suite expects demo data
 npm run test:e2e               # API/business workflow + security (158 checks)
 npm run test:ui                # browser flows
+node scripts/qa-links.mjs      # every notification link, as its recipient
+node scripts/qa-keyboard.mjs   # keyboard-only checks: skip link, focus, dialogs, form errors
 node scripts/qa-layout.mjs     # responsive/structure sweep (add --dark for dark mode)
 node scripts/qa-axe.mjs        # WCAG 2.1 AA audit with axe-core (add --dark for dark mode)
 TZ_ID=Asia/Karachi node scripts/qa-timezone.mjs   # server/browser time-zone hydration check
+```
+
+`test:security`, `qa-seo` and `qa-runtime-config` check behaviour that only exists in a **production** build (rate limiting cannot be switched off there, and the Content-Security-Policy, `robots.txt` and canonical URLs follow the runtime environment), so run them against `npm run build && npm start` instead:
+
+```bash
+E2E_BASE_URL=http://localhost:3100 npm run test:security
+BASE=http://localhost:3101 PUBLIC_ORIGIN=https://studio.example.com node scripts/qa-seo.mjs   # server started with APP_URL=https://studio.example.com
 ```
 
 `test:e2e` walks the full 32-step lifecycle (inquiry → quote → contract → payment → onboarding → files → editing → revision → approval → delivery → testimonial) and then attacks it: cross-client access (IDOR) on projects, quotes, invoices, contracts, files, video streams, comments and messages; RBAC; CSRF; illegal status transitions; payment gating. Records it creates are flagged as demo data so `db:clear-demo` removes them.
@@ -310,20 +328,24 @@ The UI suites use the Chromium that ships with Playwright (`PLAYWRIGHT_BROWSERS_
 
 Verified in this repository (all re-run after the final code change):
 
-* type-check and production `next build` — with and without a database; production server start, sign-in and role redirects
-* the 158-check business-workflow and security suite (`test:e2e`) and the 27 browser flows (`test:ui`)
+* type-check and production `next build` — with and without a database; production server start, sign-in and role redirects; the server refuses to start in production with a short or placeholder `AUTH_SECRET`
+* the 158-check business-workflow suite (`test:e2e`) and the 29 browser checks (`test:ui`, on a freshly seeded database; re-runnable without reseeding)
+* a black-box security audit of the production build (`test:security`, ~4,150 checks): every API handler signed out, with and without CSRF tokens, against a second workspace, and as the wrong client / editor / role with real mutations and foreign identifiers; page-level access returns the correct 404/403 status codes; open-redirect, content-sniffing and secret-scrubbing helpers; upload rejection; request-size limits
+* every link in every demo user's real notifications opens in that user's own portal (`qa-links`, 152 distinct links)
 * layout sweep across 75+ pages at 375 / 820 / 1440 px in light and dark mode (`qa-layout`): no horizontal overflow, labelled controls, one `<h1>` per page, no console errors
-* axe-core WCAG 2.1 A/AA audit of the public, client, admin and editor pages in light and dark mode (`qa-axe`): zero violations
+* axe-core WCAG 2.1 A/AA audit of the public, client, admin and editor pages in light and dark mode (`qa-axe`): zero violations; keyboard-only checks for the skip link, focus visibility, dialog focus handling and announced form errors (`qa-keyboard`)
+* SEO crawl of the production build with a public URL that differs from the local one (`qa-seo`, 550+ checks): titles, descriptions, canonicals, Open Graph/Twitter cards, headings, alt text, JSON-LD, robots.txt, sitemap, icons and manifest — no localhost URL leaks into any of them
+* runtime configuration of one build (`qa-runtime-config`): the Content-Security-Policy names exactly the configured storage bucket, and the Cloudflare challenge origin only when both Turnstile keys are set
 * hydration under other time zones — Asia/Karachi and America/Los_Angeles (`qa-timezone`)
-* an emptied database: every public and admin page renders cleanly (`qa-empty`), and `db:clear-demo` leaves no demo records, history or document numbering behind
+* an emptied database: every public and admin page renders cleanly (`qa-empty`), and `db:clear-demo` leaves only configuration behind — no accounts, records, history, notifications, emails, jobs about removed records, questionnaire answers, automation run history, sign-in links or document numbering
 * admin / editor / client authorisation boundaries, including cross-client access attempts (IDOR)
 
-Keyboard-only use and screen-reader announcements were reviewed structurally (labels, landmarks, roles, focus rings) but not with real assistive technology.
+Keyboard-only behaviour is checked automatically; it has not been tested with real screen readers.
 
 Not verified end to end, and worth a smoke test in your own environment:
 
-* **Docker image** — the `Dockerfile` / `docker-compose.yml` are written and the compose file validates, but no container runtime was available to build it.
-* **Stripe live mode, real S3/R2 buckets, Resend/Postmark/SendGrid, Google OAuth, Turnstile, ClamAV** — implemented behind provider interfaces; only the demo/console/local providers were exercised against a running app.
+* **Docker image** — the `Dockerfile` / `docker-compose.yml` are written and `docker compose config` validates the compose file, but no container daemon was available, so the image was never built or run.
+* **Stripe live mode, real S3/R2 buckets, Resend/Postmark/SendGrid, Google OAuth, Cloudflare Turnstile, ClamAV** — implemented behind provider interfaces with timeouts, strict response checks and signature verification; only the demo/console/local providers, and stand-ins for Cloudflare's script, were exercised against a running app. No live account was contacted.
 * **MP4 playback in automated tests** — the headless Chromium used for testing has no H.264 decoder, so the review player was exercised with WebM. Real browsers play MP4 normally.
 
 Design decisions and limits:

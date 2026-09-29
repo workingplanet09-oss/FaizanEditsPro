@@ -30,6 +30,9 @@ export class StripePaymentProvider implements PaymentProvider {
       method: "POST",
       headers: { authorization: `Bearer ${env.payments.secretKey}`, "content-type": "application/x-www-form-urlencoded" },
       body,
+      signal: AbortSignal.timeout(15_000),
+    }).catch(() => {
+      throw new AppError("BAD_REQUEST", "The payment provider didn't respond. Please try again in a moment.");
     });
     const json: any = await res.json().catch(() => ({}));
     if (!res.ok) throw new AppError("BAD_REQUEST", `Payment provider error: ${json?.error?.message ?? res.status}`);
@@ -40,15 +43,18 @@ export class StripePaymentProvider implements PaymentProvider {
     const secret = env.payments.webhookSecret;
     const sig = headers.get("stripe-signature");
     if (!secret || !sig) return null;
-    const parts = Object.fromEntries(sig.split(",").map((p) => p.split("=") as [string, string]));
-    const t = parts.t;
-    const v1 = parts.v1;
-    if (!t || !v1) return null;
-    if (Math.abs(Date.now() / 1000 - Number(t)) > 600) return null; // replay window
-    const expected = createHmac("sha256", secret).update(`${t}.${rawBody}`).digest("hex");
-    const a = Buffer.from(expected);
-    const b = Buffer.from(v1);
-    if (a.length !== b.length || !timingSafeEqual(a, b)) return null;
+    // The header can carry several v1 signatures while a signing secret is being rotated; any one that verifies is enough.
+    const pairs = sig.split(",").map((p) => [p.slice(0, p.indexOf("=")).trim(), p.slice(p.indexOf("=") + 1).trim()] as const);
+    const t = pairs.find(([k]) => k === "t")?.[1];
+    const candidates = pairs.filter(([k]) => k === "v1").map(([, v]) => v);
+    if (!t || !candidates.length) return null;
+    if (!Number.isFinite(Number(t)) || Math.abs(Date.now() / 1000 - Number(t)) > 600) return null; // replay window
+    const expected = Buffer.from(createHmac("sha256", secret).update(`${t}.${rawBody}`).digest("hex"));
+    const valid = candidates.some((v1) => {
+      const b = Buffer.from(v1);
+      return b.length === expected.length && timingSafeEqual(expected, b);
+    });
+    if (!valid) return null;
 
     const event = JSON.parse(rawBody);
     if (event.type === "checkout.session.completed") {

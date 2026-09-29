@@ -14,7 +14,7 @@ import { env } from "@/server/env";
 
 export async function generateMetadata() {
   const site = await getSiteContext();
-  return pageMeta({ title: `${site.business.name} — Professional video editing for creators and brands`, description: site.seo.defaultDescription, path: "/", image: site.seo.ogImage || undefined });
+  return pageMeta({ title: `${site.business.name} — Professional video editing for creators and brands`, description: site.seo.defaultDescription, path: "/", image: site.seo.ogImage || undefined, absoluteTitle: true });
 }
 
 const PORTAL_FEATURES = [

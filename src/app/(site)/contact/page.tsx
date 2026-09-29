@@ -4,6 +4,7 @@ import { PageHero, Section } from "@/components/site/section";
 import { ContactForm } from "@/components/site/contact-form";
 import { getSiteContext } from "@/server/services/public";
 import { pageMeta } from "@/lib/seo";
+import { env } from "@/server/env";
 
 export const metadata = pageMeta({ title: "Contact", description: "Get in touch about a project, a partnership, or working together.", path: "/contact" });
 
@@ -18,7 +19,7 @@ export default async function ContactPage({ searchParams }: { searchParams: Prom
       <Section>
         <div className="grid grid-cols-1 gap-12 lg:grid-cols-[1.3fr_0.7fr]">
           <div className="rounded-[var(--radius-card)] border border-line bg-surface p-6 shadow-soft sm:p-9">
-            <ContactForm defaultReason={reason && valid.includes(reason.toUpperCase()) ? reason.toUpperCase() : "GENERAL"} />
+            <ContactForm defaultReason={reason && valid.includes(reason.toUpperCase()) ? reason.toUpperCase() : "GENERAL"} turnstileSiteKey={env.turnstileSecret ? env.turnstileSiteKey : undefined} />
           </div>
           <aside className="space-y-5">
             <div className="rounded-[var(--radius-card)] border border-line bg-surface p-6">

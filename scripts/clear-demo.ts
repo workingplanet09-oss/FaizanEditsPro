@@ -45,6 +45,12 @@ async function main() {
   // History written by demo people that carries no isDemo flag of its own (internal notes, comments, time entries…).
   // Found from the schema itself, so new tables that reference users are covered automatically.
   const counts: Record<string, number> = {};
+  // Standalone tasks (tasks on a project go with the project). Their author link is "set null", so without this they would survive
+  // as anonymous to-dos still naming demo clients.
+  if (demoUserIds.length) {
+    const tasks = await db.task.deleteMany({ where: { createdById: { in: demoUserIds } } });
+    if (tasks.count) counts["Task"] = tasks.count;
+  }
   if (demoUserIds.length) {
     const refs = await db.$queryRawUnsafe<{ tbl: string; col: string }[]>(
       `SELECT c.conrelid::regclass::text AS tbl, a.attname AS col FROM pg_constraint c JOIN pg_attribute a ON a.attrelid = c.conrelid AND a.attnum = ANY (c.conkey) WHERE c.confrelid = 'users'::regclass AND c.contype = 'f' AND c.confdeltype IN ('a', 'r')`,
@@ -100,6 +106,55 @@ async function main() {
   if (notes + byAuthor) counts["notifications about removed records"] = notes + byAuthor;
   const staleJobs = await db.$executeRawUnsafe(`DELETE FROM jobs WHERE ${mentions("payload::text")} OR payload::text LIKE '%' || $2 || '%'`, [...removedIds, ...emailLogIds], DEMO_DOMAIN);
   if (staleJobs) counts["jobs about removed records"] = staleJobs;
+
+  // Records that only point at the removed ones by id (no foreign keys): questionnaire answers and drafts, testimonial links,
+  // sign-in links for removed accounts, and automation run history (which the Automations page counts per automation).
+  // Rows whose target is already gone are removed too, so running this again also finishes a system cleared by an older version.
+  const sweep = async (label: string, sql: string, ...params: unknown[]) => {
+    const n = await db.$executeRawUnsafe(sql, ...params);
+    if (n) counts[label] = (counts[label] ?? 0) + n;
+  };
+  const left = async (table: string) => Number((await db.$queryRawUnsafe<{ n: bigint }[]>(`SELECT count(*) AS n FROM ${table}`))[0].n);
+  const [leadsLeft, projectsLeft, invoicesLeft] = [await left("leads"), await left("projects"), await left("invoices")];
+  // Every task made in the app records its author and tasks made by automations sit on a project, so a project-less task with no
+  // author can only be left over from a removed account (an older version of this script anonymised them instead of removing them).
+  await sweep("standalone tasks", `DELETE FROM tasks WHERE "projectId" IS NULL AND "createdById" IS NULL`);
+  await sweep(
+    "onboarding answers",
+    `DELETE FROM onboarding_responses r WHERE r."subjectId" = ANY ($1::text[])
+       OR (r."subjectType" = 'LEAD' AND NOT EXISTS (SELECT 1 FROM leads x WHERE x.id = r."subjectId"))
+       OR (r."subjectType" = 'PROJECT' AND NOT EXISTS (SELECT 1 FROM projects x WHERE x.id = r."subjectId"))`,
+    [...leadIds, ...projectIds],
+  );
+  // A submitted anonymous inquiry draft only duplicates what the lead now holds; with no lead left it belongs to nothing.
+  await sweep(
+    "onboarding drafts",
+    `DELETE FROM onboarding_drafts d WHERE d."userId" = ANY ($1::text[]) OR d."subjectId" = ANY ($2::text[])
+       OR (d."subjectType" = 'LEAD' AND NOT EXISTS (SELECT 1 FROM leads x WHERE x.id = d."subjectId"))
+       OR (d."subjectType" = 'PROJECT' AND NOT EXISTS (SELECT 1 FROM projects x WHERE x.id = d."subjectId"))
+       OR (d."subjectType" IS NULL AND d."submittedAt" IS NOT NULL AND $3::boolean)`,
+    demoUserIds, [...leadIds, ...projectIds], leadsLeft === 0,
+  );
+  await sweep(
+    "testimonial links",
+    `DELETE FROM testimonial_requests t WHERE t."projectId" = ANY ($1::text[]) OR t."clientId" = ANY ($2::text[])
+       OR (t."projectId" IS NOT NULL AND NOT EXISTS (SELECT 1 FROM projects x WHERE x.id = t."projectId"))`,
+    projectIds, clientIds,
+  );
+  await sweep(
+    "sign-in links",
+    `DELETE FROM auth_tokens a WHERE a."userId" = ANY ($1::text[]) OR a.email LIKE '%' || $2 OR a.email = ANY ($3::text[])
+       OR (a."userId" IS NOT NULL AND NOT EXISTS (SELECT 1 FROM users u WHERE u.id = a."userId"))`,
+    demoUserIds, DEMO_DOMAIN, demoUsers.map((u) => u.email),
+  );
+  // Runs record a project, lead or invoice id. With none of those left, no run can be about anything that still exists.
+  await sweep(
+    "automation runs",
+    `DELETE FROM automation_runs r WHERE r."entityId" = ANY ($1::text[])
+       OR (r."entityId" IS NOT NULL AND NOT EXISTS (SELECT 1 FROM projects x WHERE x.id = r."entityId") AND NOT EXISTS (SELECT 1 FROM leads x WHERE x.id = r."entityId") AND NOT EXISTS (SELECT 1 FROM invoices x WHERE x.id = r."entityId"))
+       OR ($2::boolean)`,
+    [...projectIds, ...leadIds, ...invoiceIds], leadsLeft + projectsLeft + invoicesLeft === 0,
+  );
 
   // Numbering starts again at the beginning once no real document of that kind is left.
   for (const [key, table] of [["invoice", "invoices"], ["quote", "quotes"], ["contract", "contracts"], ["project", "projects"], ["lead-%", "leads"]] as const) {

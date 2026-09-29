@@ -9,8 +9,9 @@ let pass = 0, fail = 0;
 const ok = (name, cond, extra = "") => { cond ? pass++ : fail++; console.log(`${cond ? "  ✓" : "  ✗"} ${name}${cond ? "" : ` ${extra}`}`); };
 
 /** Runs an action and waits for the mutation it triggers to finish (instead of guessing with sleeps). */
-async function mutate(page, action, method) {
-  const done = page.waitForResponse((r) => r.request().method() !== "GET" && r.url().includes("/api/") && (!method || r.request().method() === method), { timeout: 20000 }).catch(() => null);
+async function mutate(page, action, method, urlPart) {
+  // urlPart narrows the wait to one endpoint — needed when other requests (an upload finishing, say) can complete while the action is still waiting to run
+  const done = page.waitForResponse((r) => r.request().method() !== "GET" && r.url().includes("/api/") && (!method || r.request().method() === method) && (!urlPart || r.url().includes(urlPart)), { timeout: 60000 }).catch(() => null);
   await action();
   const r = await done;
   await page.waitForTimeout(300);
@@ -47,8 +48,7 @@ async function as(who) {
   ok("payment dialog opens", await dlg.isVisible());
   await dlg.getByLabel(/Amount/).fill("300");
   await dlg.getByLabel(/Method/).fill("Bank transfer");
-  await dlg.getByRole("button", { name: /Record|Save|Add/ }).last().click();
-  await page.waitForTimeout(1200);
+  await mutate(page, () => dlg.getByRole("button", { name: /Record|Save|Add/ }).last().click());
   await page.reload({ waitUntil: "networkidle" });
   ok("invoice is now paid", await page.locator("main").getByText(/^Paid$/).first().isVisible().catch(() => false));
   ok("no console errors", errors.length === 0, errors.join(" | "));
@@ -131,8 +131,8 @@ async function as(who) {
   await adm.page.waitForURL(/\/admin\/contracts\/(?!new)[a-z0-9]+$/);
   const sendBtn = adm.page.getByRole("button", { name: "Send for signature" });
   if (await sendBtn.isVisible().catch(() => false)) {
-    await sendBtn.click();
-    await adm.page.waitForTimeout(1500);
+    await mutate(adm.page, () => sendBtn.click());
+    await adm.page.reload({ waitUntil: "networkidle" });
     ok("admin sent the contract", (await adm.page.locator("main").innerText()).includes("Awaiting signature"));
   } else console.log("  · contract already sent/signed on an earlier run (reseed to replay from scratch)");
   await adm.ctx.close();
@@ -148,8 +148,7 @@ async function as(who) {
   await page.getByLabel("Type your signature").fill("Robert Hale");
   await page.getByText("I have read and agree").click();
   ok("sign button enables when the form is complete", await signBtn.isEnabled());
-  await signBtn.click();
-  await page.waitForTimeout(2000);
+  await mutate(page, () => signBtn.click());
   await page.reload({ waitUntil: "networkidle" });
   ok("contract now shows as signed", await page.locator("main").getByText(/Signed/).first().isVisible().catch(() => false));
   ok("no console errors", errors.length === 0, errors.join(" | "));
@@ -171,11 +170,14 @@ async function as(who) {
   const projectUrl = page.url();
   await page.goto(`${projectUrl}?tab=videos`, { waitUntil: "networkidle" });
   const before = await page.locator("main").getByText(/^V\d+$/).count();
+  // the upload is finished when the app has confirmed it (signed PUT, then POST …/complete) — not when some text happens to appear
+  const uploadDone = page.waitForResponse((r) => r.request().method() === "POST" && /\/api\/assets\/[^/]+\/complete$/.test(new URL(r.url()).pathname), { timeout: 60000 });
   await page.locator('input[type="file"]').first().setInputFiles("public/demo/podcast-clip.mp4");
-  await page.getByText(/Uploaded|100%|ready/i).first().waitFor({ timeout: 30000 }).catch(() => {});
+  const uploaded = await uploadDone;
+  ok("the upload is confirmed by the server", uploaded.ok(), `HTTP ${uploaded.status()}`);
   await page.getByLabel("What changed?").fill("Re-balanced guest audio and tightened the intro");
-  await page.getByRole("button", { name: "Create version" }).click();
-  await page.waitForTimeout(2500);
+  const created = await mutate(page, () => page.getByRole("button", { name: "Create version" }).click(), "POST", "/versions");
+  ok("the version request succeeded", !!created && created.ok(), created ? `HTTP ${created.status()}` : "no response");
   await page.reload({ waitUntil: "networkidle" });
   const after = await page.locator("main").getByText(/^V\d+$/).count();
   ok("a new version appears in the list", after > before, `before=${before} after=${after}`);

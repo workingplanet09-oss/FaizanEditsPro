@@ -6,6 +6,7 @@ import { Button } from "@/components/ui/button";
 import { Field, Input, Select, Textarea } from "@/components/ui/form";
 import { Icon } from "@/components/ui/icon";
 import { captureAttribution } from "@/lib/attribution";
+import { TurnstileWidget } from "@/components/ui/turnstile";
 
 const REASONS = [
   { value: "GENERAL", label: "General inquiry" },
@@ -15,9 +16,11 @@ const REASONS = [
   { value: "CAREER", label: "Career / application" },
 ];
 
-export function ContactForm({ defaultReason = "GENERAL" }: { defaultReason?: string }) {
+export function ContactForm({ defaultReason = "GENERAL", turnstileSiteKey }: { defaultReason?: string; turnstileSiteKey?: string }) {
   const [v, setV] = useState({ name: "", email: "", phone: "", company: "", reason: defaultReason, message: "" });
   const [hp, setHp] = useState("");
+  const [captcha, setCaptcha] = useState("");
+  const [captchaKey, setCaptchaKey] = useState(0);
   const [state, setState] = useState<"idle" | "sending" | "done">("idle");
   const [error, setError] = useState<string | null>(null);
   const [fields, setFields] = useState<Record<string, string>>({});
@@ -41,15 +44,21 @@ export function ContactForm({ defaultReason = "GENERAL" }: { defaultReason?: str
       noValidate
       onSubmit={async (e) => {
         e.preventDefault();
+        if (turnstileSiteKey && !captcha) {
+          setError("Please complete the spam check before sending.");
+          return;
+        }
         setState("sending");
         setError(null);
         setFields({});
         try {
           const a = captureAttribution();
-          await api("/api/contact", { body: { ...v, phone: v.phone || undefined, company: v.company || undefined, hp, t: started.current, source: a.referrer || undefined, utm: Object.fromEntries(Object.entries(a.utm).filter(([, x]) => x)) } });
+          await api("/api/contact", { body: { ...v, phone: v.phone || undefined, company: v.company || undefined, hp, t: started.current, turnstile: captcha || undefined, source: a.referrer || undefined, utm: Object.fromEntries(Object.entries(a.utm).filter(([, x]) => x)) } });
           setState("done");
         } catch (err) {
           setState("idle");
+          setCaptcha("");
+          setCaptchaKey((k) => k + 1);
           if (err instanceof ApiError) {
             setError(err.message);
             setFields(err.fields ?? {});
@@ -70,6 +79,7 @@ export function ContactForm({ defaultReason = "GENERAL" }: { defaultReason?: str
       <div aria-hidden className="absolute -left-[9999px] h-0 w-0 overflow-hidden">
         <label>Leave this empty<input tabIndex={-1} autoComplete="off" value={hp} onChange={(e) => setHp(e.target.value)} /></label>
       </div>
+      {turnstileSiteKey ? <TurnstileWidget siteKey={turnstileSiteKey} onToken={setCaptcha} resetKey={captchaKey} className="min-h-[65px]" /> : null}
       {error ? <p role="alert" className="flex items-center gap-2 rounded-xl bg-danger-soft px-4 py-3 text-sm font-medium text-danger"><Icon name="alert" size={16} />{error}</p> : null}
       <Button type="submit" size="lg" loading={state === "sending"} iconRight="send">Send message</Button>
     </form>

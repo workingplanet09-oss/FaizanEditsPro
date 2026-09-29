@@ -167,6 +167,7 @@ export async function startCheckout(actor: Actor, invoiceId: string) {
   if (!inv) throw notFound("Invoice");
   assertOrgAction(actor, inv.organizationId, "billing");
   if (["PAID", "CANCELLED", "DRAFT"].includes(inv.status)) throw new AppError("CONFLICT", inv.status === "PAID" ? "This invoice is already paid." : "This invoice can't be paid right now.");
+  if (!onlinePaymentsAvailable()) throw new AppError("NOT_CONFIGURED", "Online payment isn't set up. Please message us to arrange payment.");
   const due = inv.total - inv.amountPaid;
   const provider = getPaymentProvider();
   return provider.createCheckout({
@@ -205,18 +206,36 @@ export async function recordPayment(who: Who, input: RecordPaymentInput) {
   if (["CANCELLED", "DRAFT"].includes(inv.status)) throw new AppError("CONFLICT", "This invoice isn't payable.");
 
   const existing = await db.payment.findUnique({ where: { provider_transactionId: { provider: input.provider, transactionId: input.transactionId } } });
-  if (existing) return { payment: existing, invoice: inv, duplicate: true };
+  if (existing) {
+    if (existing.invoiceId !== inv.id) throw new AppError("CONFLICT", "That payment reference was already used for a different invoice.");
+    return { payment: existing, invoice: inv, duplicate: true };
+  }
 
   const now = new Date();
-  const { payment, invoice } = await db.$transaction(async (tx) => {
-    const payment = await tx.payment.create({
-      data: { workspaceId: inv.workspaceId, invoiceId: inv.id, clientId: inv.clientId, organizationId: inv.organizationId, amount: input.amount, currency: inv.currency, provider: input.provider, transactionId: input.transactionId, method: input.method, status: "SUCCEEDED", paidAt: now, metadata: input.metadata, isDemo: inv.isDemo },
+  let recorded: { payment: Awaited<ReturnType<typeof db.payment.create>>; invoice: Awaited<ReturnType<typeof db.invoice.update>> };
+  try {
+    recorded = await db.$transaction(async (tx) => {
+      // Atomic increment: concurrent payments on the same invoice serialise on the row lock instead of overwriting each other,
+      // and the balance is re-checked against the freshly updated row (a failure here rolls the increment back).
+      const bumped = await tx.invoice.update({ where: { id: inv.id }, data: { amountPaid: { increment: input.amount } } });
+      if (["CANCELLED", "DRAFT"].includes(bumped.status)) throw new AppError("CONFLICT", "This invoice isn't payable.");
+      if (bumped.amountPaid > bumped.total) throw badRequest(`That's more than the outstanding balance (${formatMoney(bumped.total - (bumped.amountPaid - input.amount), inv.currency)}).`);
+      const payment = await tx.payment.create({
+        data: { workspaceId: inv.workspaceId, invoiceId: inv.id, clientId: inv.clientId, organizationId: inv.organizationId, amount: input.amount, currency: inv.currency, provider: input.provider, transactionId: input.transactionId, method: input.method, status: "SUCCEEDED", paidAt: now, metadata: input.metadata, isDemo: inv.isDemo },
+      });
+      const full = bumped.amountPaid >= bumped.total;
+      const invoice = await tx.invoice.update({ where: { id: inv.id }, data: { status: full ? "PAID" : "PARTIALLY_PAID", paidAt: full ? now : null, paymentMethod: input.method ?? input.provider } });
+      return { payment, invoice };
     });
-    const paid = inv.amountPaid + input.amount;
-    const full = paid >= inv.total;
-    const invoice = await tx.invoice.update({ where: { id: inv.id }, data: { amountPaid: paid, status: full ? "PAID" : "PARTIALLY_PAID", paidAt: full ? now : null, paymentMethod: input.method ?? input.provider } });
-    return { payment, invoice };
-  });
+  } catch (e) {
+    // Two deliveries of the same provider event raced: the loser's transaction (including its increment) rolled back.
+    if ((e as { code?: string })?.code === "P2002") {
+      const again = await db.payment.findUnique({ where: { provider_transactionId: { provider: input.provider, transactionId: input.transactionId } } });
+      if (again) return { payment: again, invoice: (await db.invoice.findUnique({ where: { id: inv.id } })) ?? inv, duplicate: true };
+    }
+    throw e;
+  }
+  const { payment, invoice } = recorded;
 
   const ws = inv.workspaceId;
   await audit(who, { workspaceId: ws, action: "payment.received", entityType: "payment", entityId: payment.id, message: `${formatMoney(input.amount, inv.currency)} received for Invoice #${inv.number} via ${input.provider}`, metadata: { invoiceId: inv.id, transactionId: input.transactionId } });
@@ -246,9 +265,17 @@ async function qualifyReferral(clientId: string, workspaceId: string) {
   await db.referral.updateMany({ where: { referredClientId: clientId, status: "PENDING" }, data: { status: "QUALIFIED", reward: wf.referralReward } });
 }
 
-/** Demo-mode checkout: no card is charged, but the full payment pipeline (invoice, project activation, emails) runs for real. */
+/** True when a client can pay online: Stripe with a key, or the demo checkout while DEMO_MODE is on. */
+export function onlinePaymentsAvailable(): boolean {
+  return env.payments.provider === "stripe" ? !!env.payments.secretKey : env.demoMode;
+}
+
+/**
+ * Demo-mode checkout: no card is charged, but the full payment pipeline (invoice, project activation, emails) runs for real.
+ * It marks an invoice paid without any money moving, so it must be impossible outside DEMO_MODE (PAYMENT_PROVIDER defaults to "demo").
+ */
 export async function demoPay(actor: Actor, invoiceId: string) {
-  if (env.payments.provider !== "demo") throw new AppError("FORBIDDEN", "Demo payments are disabled.");
+  if (env.payments.provider !== "demo" || !env.demoMode) throw new AppError("FORBIDDEN", "Demo payments are disabled.");
   const inv = await db.invoice.findFirst({ where: { AND: [{ id: invoiceId }, invoiceScope(actor)] } });
   if (!inv) throw notFound("Invoice");
   assertOrgAction(actor, inv.organizationId, "billing");
@@ -260,14 +287,33 @@ export async function recordManualPayment(actor: Actor, invoiceId: string, input
   assertCan(actor, "payments:write");
   const inv = await db.invoice.findFirst({ where: { AND: [{ id: invoiceId }, invoiceScope(actor)] } });
   if (!inv) throw notFound("Invoice");
-  return recordPayment(actor, { invoiceId, amount: input.amount, currency: inv.currency, provider: "manual", transactionId: input.reference?.trim() || `manual_${randomToken(9)}`, method: input.method });
+  // The reference is typed by a person (e.g. a bank transfer id) and one transfer can settle several invoices, so it only
+  // de-duplicates a double-submit for the SAME invoice — never a payment against a different one.
+  const ref = input.reference?.trim();
+  return recordPayment(actor, { invoiceId, amount: input.amount, currency: inv.currency, provider: "manual", transactionId: ref ? `manual_${invoiceId}_${ref}` : `manual_${randomToken(9)}`, method: input.method, metadata: ref ? { reference: ref } : undefined });
 }
 
 export async function handlePaymentWebhook(event: WebhookEvent) {
   if (event.type === "payment.succeeded") {
     const inv = await db.invoice.findUnique({ where: { id: event.invoiceId } });
     if (!inv) return { ignored: true };
-    return recordPayment({ system: true, label: "Payment provider" }, { invoiceId: inv.id, amount: Math.min(event.amount, inv.total - inv.amountPaid), currency: event.currency, provider: getPaymentProvider().name, transactionId: event.transactionId, method: event.method });
+    const who = { system: true, label: "Payment provider" } as const;
+    const provider = getPaymentProvider().name;
+    const remaining = inv.total - inv.amountPaid;
+    // The provider already took this money. If the invoice can't absorb all of it (settled offline in the meantime, or paid twice),
+    // acknowledge the event (so it isn't retried for days) and put it in front of a human to refund.
+    if (event.amount > remaining) {
+      const known = await db.payment.findUnique({ where: { provider_transactionId: { provider, transactionId: event.transactionId } } });
+      if (!known) {
+        const excess = event.amount - Math.max(remaining, 0);
+        await audit(who, { workspaceId: inv.workspaceId, action: "payment.needs_review", entityType: "invoice", entityId: inv.id, message: `${formatMoney(event.amount, inv.currency)} was taken by ${provider} for Invoice #${inv.number}, but only ${formatMoney(Math.max(remaining, 0), inv.currency)} was outstanding — ${formatMoney(excess, inv.currency)} may need refunding`, metadata: { transactionId: event.transactionId } });
+        const finance = await db.user.findMany({ where: { workspaceId: inv.workspaceId, isStaff: true, roles: { some: { role: { key: { in: ["super_admin", "admin", "finance"] } } } } }, select: { id: true } });
+        const { notify } = await import("./notifications");
+        await notify({ workspaceId: inv.workspaceId, userIds: finance.map((u) => u.id), category: "PAYMENT", type: "payment.needs_review", title: `Payment needs review — Invoice ${inv.number}`, message: `${formatMoney(excess, inv.currency)} more than the outstanding balance was received via ${provider}.`, link: `/admin/invoices/${inv.id}`, email: false });
+      }
+      if (remaining <= 0) return { ignored: true, reason: "already settled" };
+    }
+    return recordPayment(who, { invoiceId: inv.id, amount: Math.min(event.amount, remaining), currency: event.currency, provider, transactionId: event.transactionId, method: event.method });
   }
   const inv = await db.invoice.findUnique({ where: { id: event.invoiceId } });
   if (inv) {

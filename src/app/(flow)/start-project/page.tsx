@@ -7,8 +7,9 @@ import { inquiryPrefill } from "@/server/services/leads";
 import { homeForRoles } from "@/lib/permissions";
 import { SERVICE_TO_LOOKING_FOR } from "@/lib/site-defaults";
 import { pageMeta } from "@/lib/seo";
+import { env } from "@/server/env";
 
-export const metadata = pageMeta({ title: "Start a project", description: "Tell us about your video — it takes a few minutes and every answer is saved as you go.", path: "/start-project", noindex: true });
+export const metadata = pageMeta({ title: "Start a project", description: "Tell us about your video — it takes a few minutes and every answer is saved as you go.", path: "/start-project" });
 
 type SP = Promise<Record<string, string | string[] | undefined>>;
 const one = (v: string | string[] | undefined) => (Array.isArray(v) ? v[0] : v);
@@ -34,6 +35,7 @@ export default async function StartProjectPage({ searchParams }: { searchParams:
       skipContact={prefill.skipContact}
       previousProjects={prefill.previousProjects}
       portalHref={actor ? homeForRoles(actor.roleKeys, actor.permissions) : "/"}
+      turnstileSiteKey={env.turnstileSecret ? env.turnstileSiteKey : undefined}
     />
   );
 }

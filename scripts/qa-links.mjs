@@ -26,6 +26,9 @@ for (const email of USERS) {
     const area = (p) => p.split("/")[1];
     const problems = [];
     if (r.status() >= 400) problems.push(`HTTP ${r.status()}`);
+    // belt and braces: the app's own error screens by content, in case a streamed page ever answers 200
+    const shown = await page.locator("main").innerText().catch(() => "");
+    if (/We couldn.t find that page|You don.t have access to this|Something went wrong on our side/.test(shown)) problems.push("shows an error screen");
     if (area(finalPath) !== area(link)) problems.push(`redirected to ${finalPath}`);
     if (problems.length) { bad++; console.log(`✗ ${email.split("@")[0].padEnd(7)} ${link}  →  ${problems.join(", ")}`); }
   }

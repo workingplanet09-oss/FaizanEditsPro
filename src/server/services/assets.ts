@@ -6,6 +6,7 @@ import { assertCan, assertOrgAction, can, type Actor } from "../auth/actor";
 import { assetScope, projectWhere } from "../auth/access";
 import { randomToken } from "../auth/crypto";
 import { getStorage } from "../storage";
+import { contentProblem, sniffContent } from "../storage/sniff";
 import { emit } from "../events/bus";
 import { enqueueJob } from "../jobs/queue";
 import { rateLimit } from "../security/ratelimit";
@@ -48,7 +49,7 @@ const EXT_ALLOW = /\.(prproj|aep|aepx|drp|fcpxml|fcpbundle|mogrt|psd|ai|indd|srt
 const LEAD_ALLOWED = /\.(pdf|docx?|png|jpe?g|webp|gif|heic|zip|mp4|mov|m4v|webm|mkv|avi|mp3|wav|m4a|aac|flac|txt)$/i;
 
 export function safeFilename(name: string): string {
-  const base = name.replace(/[\\/]/g, "_").replace(/[^\w.\- ]+/g, "_").replace(/\s+/g, "_").replace(/_+/g, "_").replace(/^\.+/, "");
+  const base = name.replace(/[\\/]/g, "_").replace(/[^\w.\- ]+/g, "_").replace(/\s+/g, "_").replace(/_+/g, "_").replace(/\.{2,}/g, ".").replace(/^\.+/, "");
   return (base || "file").slice(-120);
 }
 
@@ -208,6 +209,15 @@ export async function completeUpload(actor: Actor | null, assetId: string, input
     await getStorage().remove(asset.storageKey).catch(() => {});
     await db.asset.update({ where: { id: asset.id }, data: { status: "FAILED" } });
     throw new AppError("BAD_REQUEST", "The uploaded file was incomplete. Please try again.");
+  }
+
+  // The declared type and extension come from the uploader. Look at the actual bytes: programs and web pages are refused.
+  const problem = contentProblem(sniffContent(await getStorage().readHead(asset.storageKey, 512)), asset.mimeType, asset.filename);
+  if (problem) {
+    await getStorage().remove(asset.storageKey).catch(() => {});
+    await db.asset.update({ where: { id: asset.id }, data: { status: "FAILED", scanStatus: "rejected" } });
+    await audit(actor ?? { system: true, label: "Upload check" }, { workspaceId: asset.workspaceId, action: "asset.rejected", entityType: "asset", entityId: asset.id, message: `${asset.displayName} was rejected: ${problem}` });
+    throw new AppError("UNSUPPORTED", `We couldn't accept ${asset.displayName}. ${problem}`);
   }
 
   // version detection: Interview_Final.mp4 / _V2 / _V3 are one file family
@@ -481,18 +491,29 @@ export async function storageUsage(actor: Actor, organizationId: string) {
 
 // ───────────────────────────── post-processing (background job) ─────────────────────────────
 
+/** Largest file sent to the malware scanner in one request. */
+const MAX_SCAN_BYTES = 200 * 1024 * 1024;
+
 export async function postProcessAsset(assetId: string) {
   const a = await db.asset.findUnique({ where: { id: assetId } });
   if (!a || a.status === "DELETED") return;
   let status: AssetStatus = "READY";
   let scanStatus = "skipped";
   if (env.scan.provider === "clamav-http" && env.scan.url) {
-    const body = await getStorage().read(a.storageKey, 200 * 1024 * 1024);
-    const res = await fetch(env.scan.url, { method: "POST", headers: { "content-type": "application/octet-stream" }, body: new Uint8Array(body) });
-    const json = (await res.json().catch(() => ({}))) as { infected?: boolean };
-    if (!res.ok) throw new Error(`Scanner returned ${res.status}`);
-    scanStatus = json.infected ? "infected" : "clean";
-    if (json.infected) status = "QUARANTINED";
+    const size = Number(a.sizeBytes);
+    if (size > MAX_SCAN_BYTES) {
+      // Video masters are routinely far larger than a scanner can be sent in one request. They are released unscanned, and the record says so.
+      scanStatus = "skipped_large";
+    } else {
+      const body = await getStorage().read(a.storageKey, MAX_SCAN_BYTES);
+      const res = await fetch(env.scan.url, { method: "POST", headers: { "content-type": "application/octet-stream" }, body: new Uint8Array(body), signal: AbortSignal.timeout(120_000) });
+      const json = (await res.json().catch(() => ({}))) as { infected?: unknown };
+      if (!res.ok) throw new Error(`Scanner returned ${res.status}`);
+      // Anything other than an explicit true/false is treated as a failure (the job retries), never as "clean".
+      if (typeof json.infected !== "boolean") throw new Error("Scanner returned an unreadable answer");
+      scanStatus = json.infected ? "infected" : "clean";
+      if (json.infected) status = "QUARANTINED";
+    }
   }
   await db.asset.update({ where: { id: assetId }, data: { status, scanStatus } });
   if (status === "QUARANTINED") {

@@ -10,6 +10,7 @@ export type ErrorCode =
   | "PAYMENT_REQUIRED"
   | "GATED"
   | "UNSUPPORTED"
+  | "TOO_LARGE"
   | "NOT_CONFIGURED"
   | "INTERNAL";
 
@@ -25,6 +26,7 @@ const STATUS: Record<ErrorCode, number> = {
   PAYMENT_REQUIRED: 402,
   GATED: 423,
   UNSUPPORTED: 415,
+  TOO_LARGE: 413,
   NOT_CONFIGURED: 501,
   INTERNAL: 500,
 };

@@ -251,9 +251,9 @@ export async function runAutomationAction(job: { automationId: string; actionId:
         break;
       }
     }
-    await db.automationRun.create({ data: { automationId: action.automationId, event: job.event, entityId: job.payload.projectId ?? job.payload.leadId ?? null, status: "ok" } });
+    await db.automationRun.create({ data: { automationId: action.automationId, event: job.event, entityId: job.payload.projectId ?? job.payload.leadId ?? job.payload.invoiceId ?? null, status: "ok" } });
   } catch (e: any) {
-    await db.automationRun.create({ data: { automationId: action.automationId, event: job.event, entityId: job.payload.projectId ?? null, status: "error", error: String(e?.message ?? e).slice(0, 400) } });
+    await db.automationRun.create({ data: { automationId: action.automationId, event: job.event, entityId: job.payload.projectId ?? job.payload.leadId ?? job.payload.invoiceId ?? null, status: "error", error: String(e?.message ?? e).slice(0, 400) } });
     throw e;
   }
 }

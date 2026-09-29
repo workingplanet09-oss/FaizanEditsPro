@@ -59,8 +59,18 @@ export class S3StorageProvider implements StorageProvider {
 
   async read(key: string, maxBytes = 50 * 1024 * 1024) {
     const r = await this.client.send(new GetObjectCommand({ Bucket: this.bucket, Key: key }));
+    // Refuse before consuming the body: a multi-gigabyte object must never be pulled into memory just to be rejected.
+    if (Number(r.ContentLength ?? 0) > maxBytes) {
+      (r.Body as { destroy?: () => void } | undefined)?.destroy?.();
+      throw new Error("Object too large to read into memory");
+    }
     const bytes = await r.Body!.transformToByteArray();
     if (bytes.length > maxBytes) throw new Error("Object too large to read into memory");
     return Buffer.from(bytes);
+  }
+
+  async readHead(key: string, bytes = 512) {
+    const r = await this.client.send(new GetObjectCommand({ Bucket: this.bucket, Key: key, Range: `bytes=0-${bytes - 1}` }));
+    return Buffer.from(await r.Body!.transformToByteArray());
   }
 }

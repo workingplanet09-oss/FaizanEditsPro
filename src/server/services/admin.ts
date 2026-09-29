@@ -28,7 +28,8 @@ export async function listEmails(actor: Actor, query: PageInput & { q?: string; 
     ...(query.q ? { OR: [{ toEmail: { contains: query.q, mode: "insensitive" } }, { subject: { contains: query.q, mode: "insensitive" } }] } : {}),
   };
   const [rows, total] = await Promise.all([db.emailLog.findMany({ where, orderBy: { createdAt: "desc" }, skip, take }), db.emailLog.count({ where })]);
-  return paged(rows.map((r) => ({ ...r, metadata: undefined })), total, page, pageSize);
+  // Bodies are never returned: magic-link, invite and reset emails contain live sign-in tokens.
+  return paged(rows.map(({ body: _body, metadata: _metadata, ...r }) => r), total, page, pageSize);
 }
 
 export async function jobStats(actor: Actor) {

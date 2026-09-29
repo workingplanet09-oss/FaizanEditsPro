@@ -8,7 +8,7 @@ import { runSweeps } from "@/server/jobs/sweeps";
  * Drives background work for serverless / external cron setups: `POST /api/cron/run` with
  * `Authorization: Bearer $CRON_SECRET`. Runs due jobs; `?sweep=1` also runs housekeeping immediately.
  */
-export const POST = publicRoute({ csrf: false }, async ({ req }) => {
+export const POST = publicRoute({ csrf: false, rateLimit: { name: "cron", limit: 30, windowSec: 60 } }, async ({ req }) => {
   const given = (req.headers.get("authorization") ?? "").replace(/^Bearer\s+/i, "");
   if (!env.cronSecret || !safeEqual(given, env.cronSecret)) throw new AppError("UNAUTHENTICATED", "Invalid cron secret.");
   const sweep = new URL(req.url).searchParams.get("sweep") === "1" ? await runSweeps() : (await ensureSweepScheduled(), null);

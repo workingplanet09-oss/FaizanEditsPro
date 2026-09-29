@@ -41,6 +41,9 @@ type RouteContext = { params: Promise<Record<string, string>> };
 
 const MUTATING = new Set(["POST", "PUT", "PATCH", "DELETE"]);
 
+/** Largest JSON body any handler accepts (the biggest legitimate one is a drawn signature, ~200 KB). Files never pass through here — they go straight to storage. */
+const MAX_JSON_BYTES = 1_000_000;
+
 export function json(data: unknown, init?: number | ResponseInit): NextResponse {
   const body = JSON.stringify({ ok: true, data }, (_k, v) => (typeof v === "bigint" ? Number(v) : v));
   const responseInit = typeof init === "number" ? { status: init } : init;
@@ -119,10 +122,15 @@ async function execute<B, Q>(
       const query = await parse(opts.query, Object.fromEntries(req.nextUrl.searchParams));
       let body: unknown = undefined;
       if (opts.body) {
+        const declared = Number(req.headers.get("content-length") ?? 0);
+        if (declared > MAX_JSON_BYTES) throw new AppError("TOO_LARGE", "That request is too large.");
         let raw: unknown;
         try {
-          raw = await req.json();
-        } catch {
+          const text = await req.text();
+          if (text.length > MAX_JSON_BYTES) throw new AppError("TOO_LARGE", "That request is too large.");
+          raw = JSON.parse(text);
+        } catch (e) {
+          if (e instanceof AppError) throw e;
           throw new AppError("BAD_REQUEST", "Request body must be valid JSON.");
         }
         body = await parse(opts.body, raw);

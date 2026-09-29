@@ -55,4 +55,15 @@ export class LocalStorageProvider implements StorageProvider {
     if (st.size > maxBytes) throw new Error("Object too large to read into memory");
     return fs.readFile(p);
   }
+
+  async readHead(key: string, bytes = 512) {
+    const fh = await fs.open(localPath(key), "r");
+    try {
+      const buf = Buffer.alloc(bytes);
+      const { bytesRead } = await fh.read(buf, 0, bytes, 0);
+      return buf.subarray(0, bytesRead);
+    } finally {
+      await fh.close();
+    }
+  }
 }

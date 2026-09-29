@@ -1,7 +1,7 @@
 import Link from "next/link";
 import { requirePageActor } from "@/server/auth/actor";
 import { guard, first, type SearchParams } from "@/server/page";
-import { getInvoice } from "@/server/services/invoices";
+import { getInvoice, onlinePaymentsAvailable } from "@/server/services/invoices";
 import { getSetting } from "@/server/services/settings";
 import { env } from "@/server/env";
 import { Card, PageHeader } from "@/components/ui/primitives";
@@ -21,7 +21,8 @@ export default async function InvoicePage({ params, searchParams }: { params: Pr
   const sp = await searchParams;
   const actor = await requirePageActor("client", `/dashboard/invoices/${id}`);
   const inv = await guard(() => getInvoice(actor, id, { markViewed: true }));
-  const business = await getSetting(actor.workspaceId, "business");
+  const [business, invoiceSettings] = await Promise.all([getSetting(actor.workspaceId, "business"), getSetting(actor.workspaceId, "invoice")]);
+  const online = onlinePaymentsAvailable();
   const due = inv.total - inv.amountPaid;
   const payable = ["SENT", "VIEWED", "PARTIALLY_PAID", "OVERDUE"].includes(inv.status);
   const canPay = actor.orgs.some((o) => o.organizationId === inv.organizationId && orgRoleCan(o.role, "billing"));
@@ -59,7 +60,19 @@ export default async function InvoicePage({ params, searchParams }: { params: Pr
               <div className="text-xs font-bold uppercase tracking-wider text-subtle">Amount due</div>
               <div className="mt-1 text-3xl font-extrabold tracking-tight tabular-nums">{formatMoney(due, inv.currency)}</div>
               {inv.status === "OVERDUE" ? <p className="mt-1 text-sm font-semibold text-danger">Overdue since {inv.dueDate ? formatDate(inv.dueDate) : ""}</p> : null}
-              <div className="mt-5">{canPay ? <PayPanel id={inv.id} due={due} currency={inv.currency} demoCheckout={first(sp.checkout) === "demo" && env.payments.provider === "demo"} /> : <p className="text-sm text-muted">Only account owners and billing contacts can pay invoices.</p>}</div>
+              <div className="mt-5">
+                {!canPay ? (
+                  <p className="text-sm text-muted">Only account owners and billing contacts can pay invoices.</p>
+                ) : online ? (
+                  <PayPanel id={inv.id} due={due} currency={inv.currency} demoCheckout={first(sp.checkout) === "demo" && env.payments.provider === "demo" && env.demoMode} />
+                ) : (
+                  <div className="rounded-xl border border-line bg-surface-2/50 p-4 text-sm">
+                    <h3 className="font-extrabold">Pay by bank transfer or another method</h3>
+                    <p className="mt-1 whitespace-pre-line text-muted">{invoiceSettings.paymentInstructions?.trim() || `Online card payment isn't switched on yet. Message us and we'll send payment details, quoting invoice ${inv.number}.`}</p>
+                    <p className="mt-2 text-xs text-subtle">We mark the invoice as paid as soon as the payment arrives.</p>
+                  </div>
+                )}
+              </div>
               <p className="mt-4 flex items-start gap-2 text-xs text-subtle"><Icon name="lock" size={13} className="mt-0.5 shrink-0" />Payments are processed securely. We never see or store your card details.</p>
             </Card>
           ) : inv.status === "PAID" ? (

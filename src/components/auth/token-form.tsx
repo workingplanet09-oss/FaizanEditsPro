@@ -5,7 +5,7 @@ import { api } from "@/lib/api-client";
 import { useAction } from "@/lib/use-action";
 import { Button } from "@/components/ui/button";
 import { Field, Input } from "@/components/ui/form";
-import { Notice } from "./auth-card";
+import { Notice, safeNext } from "./auth-card";
 
 /**
  * Landing for emailed links. Magic/verify links require an explicit click so mail scanners that pre-fetch
@@ -19,7 +19,7 @@ export function TokenForm({ type, token }: { type: "magic" | "verify" | "invite"
   const mismatch = needsPassword && confirm.length > 0 && confirm !== password;
   const go = useAction(async () => api<{ redirect: string }>("/api/auth/token", { body: { type, token, password: needsPassword ? password : undefined, name: type === "invite" && name ? name : undefined } }), {
     refresh: false,
-    onSuccess: (r) => (window.location.href = r.redirect),
+    onSuccess: (r) => (window.location.href = safeNext(r.redirect, "/dashboard")),
   });
   const label = { magic: "Sign me in", verify: "Confirm my email", invite: "Set password & continue", reset: "Save new password" }[type];
   return (

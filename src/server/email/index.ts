@@ -51,6 +51,9 @@ export async function queueEmail(input: QueueEmailInput) {
   return log;
 }
 
+/** Sign-in, invite and reset links carry a bearer token. Once delivered, the stored copy no longer needs it. */
+export const scrubTokens = (body: string) => body.replace(/([?&]token=)[A-Za-z0-9_-]{16,}/g, "$1[removed]");
+
 /** Job handler: actually delivers a queued email through the configured provider. */
 export async function deliverEmail(emailLogId: string) {
   const log = await db.emailLog.findUnique({ where: { id: emailLogId } });
@@ -65,7 +68,9 @@ export async function deliverEmail(emailLogId: string) {
       html: renderEmailHtml(log.body, brand),
       text: renderEmailText(log.body),
     });
-    await db.emailLog.update({ where: { id: log.id }, data: { status: "SENT", provider: res.provider, providerMessageId: res.id, sentAt: new Date(), error: null } });
+    // The `console` provider has no real inbox — the log IS the inbox in demo/dev — so it keeps the full body.
+    const body = res.provider === "console" ? undefined : scrubTokens(log.body);
+    await db.emailLog.update({ where: { id: log.id }, data: { status: "SENT", provider: res.provider, providerMessageId: res.id, sentAt: new Date(), error: null, ...(body !== undefined ? { body } : {}) } });
   } catch (e: any) {
     await db.emailLog.update({ where: { id: log.id }, data: { status: "FAILED", error: String(e?.message ?? e).slice(0, 500) } });
     throw e; // let the queue retry with backoff

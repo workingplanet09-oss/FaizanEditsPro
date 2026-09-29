@@ -25,4 +25,6 @@ export interface StorageProvider {
   remove(key: string): Promise<void>;
   put(key: string, body: Buffer, contentType: string): Promise<void>;
   read(key: string, maxBytes?: number): Promise<Buffer>;
+  /** The first `bytes` bytes of an object (for content sniffing) without reading the rest. */
+  readHead(key: string, bytes?: number): Promise<Buffer>;
 }

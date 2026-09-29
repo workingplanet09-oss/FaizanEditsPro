@@ -32,6 +32,8 @@ export const env = {
   appUrl: (e.APP_URL || "http://localhost:3000").replace(/\/$/, ""),
   demoMode: bool(e.DEMO_MODE, !isProd),
   cronSecret: e.CRON_SECRET || "",
+  /** How many reverse proxies sit in front of the app (each appends to X-Forwarded-For). Used to pick the real client IP for rate limiting. */
+  trustedProxyHops: Math.max(0, Math.min(5, Number(e.TRUSTED_PROXY_HOPS ?? 1) || 0)),
   jobsInline: bool(e.JOBS_INLINE, true),
 
   storage: {
@@ -57,6 +59,8 @@ export const env = {
   },
   google: { clientId: e.GOOGLE_CLIENT_ID || "", clientSecret: e.GOOGLE_CLIENT_SECRET || "" },
   turnstileSecret: e.TURNSTILE_SECRET_KEY || "",
+  /** Public site key, read on the server per request and handed to the forms (so it never depends on build-time env). */
+  turnstileSiteKey: e.TURNSTILE_SITE_KEY || e.NEXT_PUBLIC_TURNSTILE_SITE_KEY || "",
   scan: { provider: (e.SCAN_PROVIDER || "none") as "none" | "clamav-http", url: e.CLAMAV_URL || "" },
   calendar: { provider: e.CALENDAR_PROVIDER || "internal", meetingUrlTemplate: e.MEETING_URL_TEMPLATE || "" },
 } as const;
@@ -68,7 +72,7 @@ export function integrationStatus() {
     payments: { provider: env.payments.provider, configured: env.payments.provider === "demo" || !!env.payments.secretKey },
     email: { provider: env.email.provider, configured: env.email.provider === "console" || !!env.email.apiKey },
     google: { configured: !!(env.google.clientId && env.google.clientSecret) },
-    turnstile: { configured: !!env.turnstileSecret },
+    turnstile: { configured: !!(env.turnstileSecret && env.turnstileSiteKey), partial: !!env.turnstileSecret !== !!env.turnstileSiteKey },
     scan: { provider: env.scan.provider, configured: env.scan.provider === "none" || !!env.scan.url },
     calendar: { provider: env.calendar.provider, configured: true },
     demoMode: env.demoMode,

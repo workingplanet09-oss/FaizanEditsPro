@@ -10,6 +10,7 @@ import { Progress } from "@/components/ui/primitives";
 import { visibleQuestions, visibleSections, validateAnswer, type Answers, type FormDef, type SectionDef } from "@/lib/conditions";
 import { Uploader } from "@/components/portal/uploader";
 import { QuestionField } from "./question-field";
+import { TurnstileWidget } from "@/components/ui/turnstile";
 
 export interface WizardProps<R> {
   form: FormDef;
@@ -23,7 +24,9 @@ export interface WizardProps<R> {
   /** inquiry only: restore a saved draft */
   restoreDraft?: (token: string) => Promise<{ data: Answers; step: number } | null>;
   storageKey?: string;
-  submit: (answers: Answers, ctx: { token: string; hp: string; startedAt: number }) => Promise<R>;
+  submit: (answers: Answers, ctx: { token: string; hp: string; startedAt: number; turnstile?: string }) => Promise<R>;
+  /** Cloudflare Turnstile site key; when set, the review step shows the challenge and submission needs its token. */
+  turnstileSiteKey?: string;
   renderDone: (result: R, answers: Answers) => React.ReactNode;
   exitHref: string;
   uploads: { purpose: "lead_reference" | "asset"; projectId?: string; folderKey?: string };
@@ -57,6 +60,8 @@ export function FormWizard<R>(p: WizardProps<R>) {
   const [submitError, setSubmitError] = useState<string | null>(null);
   const [result, setResult] = useState<R | null>(null);
   const [hp, setHp] = useState("");
+  const [captcha, setCaptcha] = useState("");
+  const [captchaKey, setCaptchaKey] = useState(0);
   const startedAt = useRef(Date.now());
   const heading = useRef<HTMLHeadingElement>(null);
   const dirty = useRef(false);
@@ -183,10 +188,14 @@ export function FormWizard<R>(p: WizardProps<R>) {
         return go(s.key);
       }
     }
+    if (p.turnstileSiteKey && !captcha) {
+      setSubmitError("Please complete the spam check before sending.");
+      return;
+    }
     setSubmitting(true);
     setSubmitError(null);
     try {
-      const r = await p.submit(answers, { token, hp, startedAt: startedAt.current });
+      const r = await p.submit(answers, { token, hp, startedAt: startedAt.current, turnstile: captcha || undefined });
       try {
         if (p.storageKey) localStorage.removeItem(p.storageKey);
       } catch {
@@ -195,6 +204,9 @@ export function FormWizard<R>(p: WizardProps<R>) {
       setResult(r);
       window.scrollTo({ top: 0 });
     } catch (e) {
+      // a Turnstile token is single-use, so a failed attempt needs a fresh challenge
+      setCaptcha("");
+      setCaptchaKey((k) => k + 1);
       if (e instanceof ApiError) {
         setSubmitError(e.message);
         if (e.fields && Object.keys(e.fields).length) {
@@ -296,6 +308,7 @@ export function FormWizard<R>(p: WizardProps<R>) {
               );
             })}
             {mode === "inquiry" ? <p className="text-xs text-subtle">By submitting you agree to our <Link className="underline" href="/privacy" target="_blank">Privacy Policy</Link>. We'll only use your details to respond to this request.</p> : null}
+            {p.turnstileSiteKey ? <TurnstileWidget siteKey={p.turnstileSiteKey} onToken={setCaptcha} resetKey={captchaKey} className="min-h-[65px]" /> : null}
             <div aria-hidden className="absolute -left-[9999px] h-0 w-0 overflow-hidden"><label>Leave empty<input tabIndex={-1} autoComplete="off" value={hp} onChange={(e) => setHp(e.target.value)} /></label></div>
           </div>
         ) : section ? (

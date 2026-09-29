@@ -14,6 +14,7 @@ import { homeForRoles } from "@/lib/permissions";
 import { slugify } from "@/lib/slug";
 import type { Actor } from "../auth/actor";
 import { createClientRecord } from "./clients";
+import { safeRedirectPath } from "@/lib/safe-redirect";
 
 const MIN_PASSWORD = 10;
 export const DEMO_ACCOUNTS = {
@@ -65,6 +66,17 @@ export async function linkClientsForUser(user: Pick<User, "id" | "email" | "name
 async function clientRoleId() {
   const r = await db.role.findUniqueOrThrow({ where: { key: "client" } });
   return r.id;
+}
+
+/**
+ * Anyone can register a password account for any email address before it has been verified. If the real owner later proves they
+ * hold that address by another route (Google, a magic link), the account's password and sessions belong to whoever registered it,
+ * not to them — so both are dropped. The owner can set a new password from the reset page.
+ */
+async function reclaimUnverified(user: { id: string; emailVerifiedAt: Date | null; passwordHash: string | null }) {
+  if (user.emailVerifiedAt) return;
+  if (user.passwordHash) await db.user.update({ where: { id: user.id }, data: { passwordHash: null } });
+  await destroyAllSessions(user.id);
 }
 
 async function markVerified(userId: string) {
@@ -219,13 +231,14 @@ export async function verifyMagicLink(token: string, meta: { ip?: string; ua?: s
   const row = await consumeToken(token, "MAGIC_LINK");
   const user = await db.user.findUnique({ where: { id: row.userId! } });
   if (!user || user.status === "SUSPENDED") throw new AppError("UNAUTHENTICATED", "Account unavailable.");
+  await reclaimUnverified(user);
   await markVerified(user.id);
   await linkClientsForUser(user);
   // Magic link proves email ownership; 2FA users still complete their second factor.
   const s = await createSession(user.id, { ...meta, twoFactorPending: user.twoFactorEnabled });
   await audit(null, { workspaceId: user.workspaceId, action: "auth.magic_link", entityType: "user", entityId: user.id, message: `${user.name} signed in with a magic link` });
   const next = (row.meta as { next?: string | null } | null)?.next;
-  return { session: s, requires2fa: user.twoFactorEnabled, redirect: next && next.startsWith("/") && !next.startsWith("//") ? next : await landingPathFor(user.id) };
+  return { session: s, requires2fa: user.twoFactorEnabled, redirect: safeRedirectPath(next, await landingPathFor(user.id)) };
 }
 
 // ───────────────────────────── password reset / invite ─────────────────────────────
@@ -368,12 +381,18 @@ export async function handleGoogleCallback(code: string, meta: { ip?: string; ua
     method: "POST",
     headers: { "content-type": "application/x-www-form-urlencoded" },
     body: new URLSearchParams({ code, client_id: env.google.clientId, client_secret: env.google.clientSecret, redirect_uri: `${env.appUrl}/api/auth/google/callback`, grant_type: "authorization_code" }),
+    signal: AbortSignal.timeout(10_000),
+  }).catch(() => {
+    throw new AppError("UNAUTHENTICATED", "Google sign-in failed. Please try again.");
   });
   const tok: any = await tokenRes.json().catch(() => ({}));
   if (!tokenRes.ok || !tok.access_token) throw new AppError("UNAUTHENTICATED", "Google sign-in failed. Please try again.");
-  const infoRes = await fetch("https://openidconnect.googleapis.com/v1/userinfo", { headers: { authorization: `Bearer ${tok.access_token}` } });
+  const infoRes = await fetch("https://openidconnect.googleapis.com/v1/userinfo", { headers: { authorization: `Bearer ${tok.access_token}` }, signal: AbortSignal.timeout(10_000) }).catch(() => {
+    throw new AppError("UNAUTHENTICATED", "Google sign-in failed. Please try again.");
+  });
   const info: any = await infoRes.json().catch(() => ({}));
-  if (!info.sub || !info.email || info.email_verified === false) throw new AppError("UNAUTHENTICATED", "Your Google account email isn't verified.");
+  // Linking by email is only safe when Google vouches for the address; a missing flag is not a yes.
+  if (!info.sub || !info.email || info.email_verified !== true) throw new AppError("UNAUTHENTICATED", "Your Google account email isn't verified.");
   const email = normEmail(info.email);
   const ws = await getWorkspaceId();
 
@@ -387,6 +406,7 @@ export async function handleGoogleCallback(code: string, meta: { ip?: string; ua
     if (!pending) await createClientRecord({ workspaceId: ws, name: user.name, email, companyName: user.name, status: "PROSPECT", source: "google_signup", userId: user.id });
   }
   if (user.status === "SUSPENDED") throw new AppError("UNAUTHENTICATED", "Account unavailable.");
+  await reclaimUnverified(user);
   if (!linked) await db.oAuthAccount.create({ data: { userId: user.id, provider: "google", providerAccountId: info.sub } });
   await markVerified(user.id);
   await linkClientsForUser(user);

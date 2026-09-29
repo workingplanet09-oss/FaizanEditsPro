@@ -1,4 +1,5 @@
 import { cn } from "@/lib/cn";
+import { safeRedirectPath } from "@/lib/safe-redirect";
 
 /** Centered card used by every sign-in / account screen. */
 export function AuthCard({ title, description, children, footer, className }: { title: string; description?: React.ReactNode; children: React.ReactNode; footer?: React.ReactNode; className?: string }) {
@@ -24,5 +25,5 @@ export function Notice({ tone = "info", children }: { tone?: "info" | "success" 
 
 /** Only same-site relative paths are honoured for post-login redirects (no open redirects). */
 export function safeNext(next: string | undefined | null, fallback: string) {
-  return next && next.startsWith("/") && !next.startsWith("//") && !next.startsWith("/\\") ? next : fallback;
+  return safeRedirectPath(next, fallback);
 }
