@@ -4,6 +4,7 @@ import type { Actor } from "../auth/actor";
 import { queueEmail, absoluteUrl } from "../email";
 import { AppError } from "../errors";
 import { pageArgs, paged } from "./common";
+import { homeForRoles, localizeLink } from "@/lib/permissions";
 
 export interface NotifyInput {
   workspaceId: string;
@@ -30,7 +31,10 @@ export async function notify(input: NotifyInput): Promise<number> {
   const ids = [...new Set(input.userIds)].filter((id) => !(input.exclude ?? []).includes(id));
   if (ids.length === 0) return 0;
   const [users, prefs] = await Promise.all([
-    db.user.findMany({ where: { id: { in: ids }, status: { not: "SUSPENDED" } }, select: { id: true, email: true, name: true, isDemo: true } }),
+    db.user.findMany({
+      where: { id: { in: ids }, status: { not: "SUSPENDED" } },
+      select: { id: true, email: true, name: true, isDemo: true, isStaff: true, roles: { select: { role: { select: { key: true, permissions: { select: { permission: { select: { key: true } } } } } } } } },
+    }),
     db.notificationPreference.findMany({ where: { userId: { in: ids }, category: input.category } }),
   ]);
   const prefBy = new Map(prefs.map((p) => [p.userId, p]));
@@ -40,6 +44,9 @@ export async function notify(input: NotifyInput): Promise<number> {
   let count = 0;
   for (const u of users) {
     const p = prefBy.get(u.id);
+    // the link is written for one audience; point it at the portal this recipient actually uses
+    const home = u.isStaff ? homeForRoles(u.roles.map((r) => r.role.key), new Set(u.roles.flatMap((r) => r.role.permissions.map((rp) => rp.permission.key)))) : "/dashboard";
+    const link = localizeLink(input.link, home);
     if (wantInApp && (p?.inApp ?? true)) {
       await db.notification.create({
         data: {
@@ -49,7 +56,7 @@ export async function notify(input: NotifyInput): Promise<number> {
           type: input.type,
           title: input.title,
           message: input.message,
-          link: input.link,
+          link,
           isDemo: u.isDemo,
         },
       });
@@ -66,11 +73,11 @@ export async function notify(input: NotifyInput): Promise<number> {
           client_name: u.name,
           title: input.title,
           message: input.message ?? "",
-          action_url: input.link ? absoluteUrl(input.link) : "",
+          action_url: link ? absoluteUrl(link) : "",
           ...(input.emailVars ?? {}),
         },
         subject: input.title,
-        body: `${input.message ?? input.title}\n\n[[Open in portal|${input.link ? absoluteUrl(input.link) : absoluteUrl("/dashboard")}]]`,
+        body: `${input.message ?? input.title}\n\n[[Open in portal|${link ? absoluteUrl(link) : absoluteUrl(home)}]]`,
       });
       count++;
     }

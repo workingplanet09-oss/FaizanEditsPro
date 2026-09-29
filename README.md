@@ -110,6 +110,7 @@ To confirm a cleared system is genuinely empty, create an admin and run `node sc
 | `npm run test:e2e` | 32-step business workflow + security checks against a running app |
 | `npm run test:ui` | Browser flows (invoice, contract signing, form builder, automations, version upload) |
 | `node scripts/qa-layout.mjs [--dark]` | Overflow / label / heading / console-error sweep at phone, tablet and desktop widths |
+| `node scripts/qa-links.mjs` | Signs in as each demo user and opens every link in their real notifications; fails on 404s or links that bounce them to another portal |
 | `node scripts/qa-empty.mjs <admin-email> <password>` | On a cleared database: every public and admin page renders without errors or broken values (`NaN`, `undefined`) |
 | `TZ_ID=Asia/Karachi node scripts/qa-timezone.mjs` | Loads the portals in a browser set to another time zone and fails on any hydration mismatch |
 | `node scripts/qa-axe.mjs [--dark]` | WCAG 2.1 A/AA audit with axe-core (contrast, ARIA, names, landmarks) on the main public, client, admin and editor pages |

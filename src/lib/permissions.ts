@@ -142,6 +142,28 @@ export function homeForRoles(roleKeys: string[], perms: Set<string> | string[]):
   return "/dashboard";
 }
 
+/** Sections that exist in each area, so a link written for one audience can be pointed at another. */
+const AREA_SECTIONS: Record<string, string[] | "*"> = {
+  "/admin": "*",
+  "/editor": ["projects", "tasks", "revisions", "files", "account"],
+  "/dashboard": ["projects", "quotes", "contracts", "invoices", "retainers", "files", "messages", "settings"],
+};
+
+/**
+ * Notification and email links are written once, usually for one audience (`/admin/projects/…`). This re-targets such a link
+ * at the area the recipient actually lives in (`/dashboard/projects/…` for a client, `/editor/projects/…` for an editor),
+ * and sends them to their home page when the section doesn't exist there (finance, CRM, settings…) instead of to a dead end.
+ */
+export function localizeLink(link: string | undefined | null, home: string): string | undefined {
+  if (!link) return undefined;
+  const m = link.match(/^(\/(?:admin|editor|dashboard))(?:\/([^/?#]*))?(.*)$/);
+  if (!m || m[1] === home) return link;
+  const allowed = AREA_SECTIONS[home];
+  const section = m[2] ?? "";
+  if (allowed === "*" || (section && allowed?.includes(section))) return `${home}/${section}${m[3]}`;
+  return home;
+}
+
 /** Organization-level (client company) permissions — separate from staff RBAC. */
 export type OrgAction = "view" | "upload" | "message" | "manage_projects" | "approve" | "billing" | "manage_members";
 export const ORG_ROLE_ACTIONS: Record<string, OrgAction[]> = {

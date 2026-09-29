@@ -464,7 +464,7 @@ export async function submitContact(input: { name: string; email: string; phone?
   await queueEmail({ workspaceId: ws, toEmail: row.email, templateKey: "contact_received", vars: { client_name: row.name } });
   const admins = await db.user.findMany({ where: { workspaceId: ws, isStaff: true, roles: { some: { role: { key: { in: ["super_admin", "admin", "support"] } } } } }, select: { id: true } });
   const { notify } = await import("./notifications");
-  await notify({ workspaceId: ws, userIds: admins.map((a) => a.id), category: "SYSTEM", type: "contact.received", title: `New ${input.reason.toLowerCase()} message from ${row.name}`, message: row.message.slice(0, 140), link: "/admin/leads?tab=contact", email: false });
+  await notify({ workspaceId: ws, userIds: admins.map((a) => a.id), category: "SYSTEM", type: "contact.received", title: `New ${input.reason.toLowerCase()} message from ${row.name}`, message: row.message.slice(0, 140), link: "/admin/submissions", email: false });
   return { id: row.id };
 }
 

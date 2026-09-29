@@ -37,6 +37,9 @@ async function main() {
   const quoteIds = await ids(`SELECT id FROM quotes WHERE "isDemo" OR "clientId" = ANY ($1::text[]) OR "projectId" = ANY ($2::text[])`, clientIds, projectIds);
   const contractIds = await ids(`SELECT id FROM contracts WHERE "isDemo" OR "clientId" = ANY ($1::text[]) OR "projectId" = ANY ($2::text[])`, clientIds, projectIds);
   const paymentIds = await ids(`SELECT id FROM payments WHERE "isDemo" OR "invoiceId" = ANY ($1::text[])`, invoiceIds);
+  const testimonialAuthors = (await db.testimonial.findMany({ where: { isDemo: true }, select: { name: true } })).map((t) => t.name);
+  // email.send jobs point at their email_logs row, which is removed below
+  const emailLogIds = await ids(`SELECT id FROM email_logs WHERE "toEmail" LIKE '%' || $1 OR "toEmail" = ANY ($2::text[])`, DEMO_DOMAIN, demoUsers.map((u) => u.email));
   const audited: Record<string, string[]> = { client: clientIds, lead: leadIds, organization: orgIds, project: projectIds, invoice: invoiceIds, quote: quoteIds, contract: contractIds, payment: paymentIds, user: demoUserIds };
 
   // History written by demo people that carries no isDemo flag of its own (internal notes, comments, time entries…).
@@ -86,6 +89,18 @@ async function main() {
   );
   if (history) counts["history rows"] = history;
 
+  // Notifications in real people's inboxes and queued/finished jobs that point at removed records (their links carry the ids).
+  const removedIds = [...clientIds, ...leadIds, ...projectIds, ...invoiceIds, ...quoteIds, ...contractIds, ...paymentIds];
+  const mentions = (col: string) => `EXISTS (SELECT 1 FROM unnest($1::text[]) AS x(id) WHERE ${col} LIKE '%' || x.id || '%')`;
+  const notes = await db.$executeRawUnsafe(`DELETE FROM notifications WHERE ${mentions("link")}`, removedIds);
+  // "New testimonial from …" links to the CMS list rather than a record id, so match those by author name
+  const byAuthor = testimonialAuthors.length
+    ? await db.$executeRawUnsafe(`DELETE FROM notifications WHERE type = 'testimonial.submitted' AND EXISTS (SELECT 1 FROM unnest($1::text[]) AS x(n) WHERE title LIKE '%' || x.n || '%')`, testimonialAuthors)
+    : 0;
+  if (notes + byAuthor) counts["notifications about removed records"] = notes + byAuthor;
+  const staleJobs = await db.$executeRawUnsafe(`DELETE FROM jobs WHERE ${mentions("payload::text")} OR payload::text LIKE '%' || $2 || '%'`, [...removedIds, ...emailLogIds], DEMO_DOMAIN);
+  if (staleJobs) counts["jobs about removed records"] = staleJobs;
+
   // Numbering starts again at the beginning once no real document of that kind is left.
   for (const [key, table] of [["invoice", "invoices"], ["quote", "quotes"], ["contract", "contracts"], ["project", "projects"], ["lead-%", "leads"]] as const) {
     const [{ n }] = await db.$queryRawUnsafe<{ n: bigint }[]>(`SELECT count(*) AS n FROM ${table}`);
@@ -94,11 +109,10 @@ async function main() {
 
   // 4) emails and jobs generated for demo addresses (including the addresses of the removed demo users)
   const emails = await db.emailLog.deleteMany({ where: { OR: [{ toEmail: { endsWith: DEMO_DOMAIN } }, { toEmail: { in: demoUsers.map((u) => u.email) } }] } });
-  const jobs = await db.job.deleteMany({ where: { status: { in: ["PENDING", "FAILED"] }, payload: { path: [], string_contains: DEMO_DOMAIN } } }).catch(() => ({ count: 0 }));
   await db.auditLog.deleteMany({ where: { message: { contains: DEMO_DOMAIN } } }).catch(() => {});
 
   const removed = Object.entries(counts).filter(([, n]) => n > 0);
-  console.log(`\nDemo data removed ✔  (${removed.map(([k, n]) => `${k}: ${n}`).join(", ") || "nothing to remove"}; ${emails.count} demo emails, ${jobs.count} queued jobs, ${assets.length} stored files)\n`);
+  console.log(`\nDemo data removed ✔  (${removed.map(([k, n]) => `${k}: ${n}`).join(", ") || "nothing to remove"}; ${emails.count} demo emails, ${assets.length} stored files)\n`);
 }
 
 main()

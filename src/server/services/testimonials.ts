@@ -58,7 +58,7 @@ export async function submitTestimonial(actor: Actor, projectId: string, input: 
   });
   await db.testimonialRequest.updateMany({ where: { projectId }, data: { completedAt: new Date() } });
   const admins = await db.user.findMany({ where: { workspaceId: actor.workspaceId, isStaff: true, roles: { some: { role: { key: { in: ["super_admin", "admin"] } } } } }, select: { id: true } });
-  await notify({ workspaceId: actor.workspaceId, userIds: admins.map((a) => a.id), category: "PROJECT", type: "testimonial.submitted", title: `New ${input.rating}★ testimonial from ${input.name}`, message: input.quote.slice(0, 120), link: "/admin/website/testimonials", email: false });
+  await notify({ workspaceId: actor.workspaceId, userIds: admins.map((a) => a.id), category: "PROJECT", type: "testimonial.submitted", title: `New ${input.rating}★ testimonial from ${input.name}`, message: input.quote.slice(0, 120), link: "/admin/content?r=testimonials", email: false });
   return { id: t.id };
 }
 
