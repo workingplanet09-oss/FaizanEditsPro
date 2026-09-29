@@ -108,6 +108,8 @@ Real data is never touched — only rows flagged `isDemo`, plus history written 
 | `npm run test:e2e` | 32-step business workflow + security checks against a running app |
 | `npm run test:ui` | Browser flows (invoice, contract signing, form builder, automations, version upload) |
 | `node scripts/qa-layout.mjs [--dark]` | Overflow / label / heading / console-error sweep at phone, tablet and desktop widths |
+| `TZ_ID=Asia/Karachi node scripts/qa-timezone.mjs` | Loads the portals in a browser set to another time zone and fails on any hydration mismatch |
+| `node scripts/qa-axe.mjs [--dark]` | WCAG 2.1 A/AA audit with axe-core (contrast, ARIA, names, landmarks) on the main public, client, admin and editor pages |
 
 `db:reset` (`prisma migrate reset --force`) **destroys all data** — development only.
 
@@ -289,7 +291,9 @@ DISABLE_RATE_LIMIT=true npm run dev
 npm run db:seed:demo           # UI suite expects demo data
 npm run test:e2e               # API/business workflow + security (158 checks)
 npm run test:ui                # browser flows
-node scripts/qa-layout.mjs     # responsive/a11y sweep (add --dark for dark mode)
+node scripts/qa-layout.mjs     # responsive/structure sweep (add --dark for dark mode)
+node scripts/qa-axe.mjs        # WCAG 2.1 AA audit with axe-core (add --dark for dark mode)
+TZ_ID=Asia/Karachi node scripts/qa-timezone.mjs   # server/browser time-zone hydration check
 ```
 
 `test:e2e` walks the full 32-step lifecycle (inquiry → quote → contract → payment → onboarding → files → editing → revision → approval → delivery → testimonial) and then attacks it: cross-client access (IDOR) on projects, quotes, invoices, contracts, files, video streams, comments and messages; RBAC; CSRF; illegal status transitions; payment gating. Records it creates are flagged as demo data so `db:clear-demo` removes them.
@@ -315,4 +319,5 @@ Design decisions and limits:
 * Uploads are single-request signed PUTs; multipart upload for files above 5 GB is not implemented.
 * Google Cloud Storage is supported through its S3-interoperability endpoint.
 * The default rate limiter and in-process cache are per instance (see Security notes).
+* Dates and times are formatted in **UTC** (times of day are labelled "UTC") so server-rendered and browser-rendered text always agree. Greetings use the visitor's own clock (via a `fe_tz` cookie); booking slots are shown in the visitor's zone. Per-user time-zone display for every timestamp is not implemented.
 * `workspaceId` is present on every table for multi-tenancy, but the app currently serves a single workspace and does not include tenant provisioning or per-tenant domains.

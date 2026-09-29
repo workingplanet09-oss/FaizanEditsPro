@@ -17,9 +17,12 @@ export function formatTimecode(ms: number, withMs = false): string {
   return withMs ? `${base}.${String(Math.floor(ms % 1000)).padStart(3, "0")}` : base;
 }
 
-const dateFmt = new Intl.DateTimeFormat("en-US", { month: "short", day: "numeric", year: "numeric" });
-const dateShortFmt = new Intl.DateTimeFormat("en-US", { month: "short", day: "numeric" });
-const dateTimeFmt = new Intl.DateTimeFormat("en-US", { month: "short", day: "numeric", hour: "numeric", minute: "2-digit" });
+// Every date/time is formatted in UTC. The server and the browser can be in different time zones; formatting with
+// the runtime's local zone made the same instant read "Oct 4" on one side and "Oct 5" on the other (a hydration mismatch).
+// Times of day carry an explicit "UTC" so nobody has to guess. Use <LocalTime> where a visitor's own zone matters.
+const dateFmt = new Intl.DateTimeFormat("en-US", { month: "short", day: "numeric", year: "numeric", timeZone: "UTC" });
+const dateShortFmt = new Intl.DateTimeFormat("en-US", { month: "short", day: "numeric", timeZone: "UTC" });
+const dateTimeFmt = new Intl.DateTimeFormat("en-US", { month: "short", day: "numeric", hour: "numeric", minute: "2-digit", timeZone: "UTC" });
 
 const toDate = (d: Date | string | number | null | undefined) => (d === null || d === undefined || d === "" ? null : new Date(d));
 
@@ -31,9 +34,10 @@ export function formatDateShort(d: Date | string | number | null | undefined): s
   const x = toDate(d);
   return x && !isNaN(x.getTime()) ? dateShortFmt.format(x) : "—";
 }
+/** "Oct 5, 3:00 PM UTC" */
 export function formatDateTime(d: Date | string | number | null | undefined): string {
   const x = toDate(d);
-  return x && !isNaN(x.getTime()) ? dateTimeFmt.format(x) : "—";
+  return x && !isNaN(x.getTime()) ? `${dateTimeFmt.format(x)} UTC` : "—";
 }
 
 export function timeAgo(d: Date | string | number | null | undefined, now = Date.now()): string {
@@ -53,8 +57,8 @@ export function timeAgo(d: Date | string | number | null | undefined, now = Date
 export function daysUntil(d: Date | string | null | undefined, now = new Date()): number | null {
   const x = toDate(d);
   if (!x) return null;
-  const a = new Date(x.getFullYear(), x.getMonth(), x.getDate()).getTime();
-  const b = new Date(now.getFullYear(), now.getMonth(), now.getDate()).getTime();
+  const a = Date.UTC(x.getUTCFullYear(), x.getUTCMonth(), x.getUTCDate());
+  const b = Date.UTC(now.getUTCFullYear(), now.getUTCMonth(), now.getUTCDate());
   return Math.round((a - b) / 86400000);
 }
 
@@ -74,9 +78,10 @@ export function initials(name: string | null | undefined): string {
   return ((parts[0]?.[0] ?? "") + (parts.length > 1 ? parts[parts.length - 1][0] : "")).toUpperCase() || "?";
 }
 
-export function greeting(now = new Date()): string {
-  const h = now.getHours();
-  return h < 5 ? "Good evening" : h < 12 ? "Good morning" : h < 18 ? "Good afternoon" : "Good evening";
+/** Time-of-day greeting for a local hour (0–23). Without an hour (unknown time zone) it stays neutral rather than guessing. */
+export function greeting(hour?: number): string {
+  if (hour === undefined) return "Welcome back";
+  return hour < 5 ? "Good evening" : hour < 12 ? "Good morning" : hour < 18 ? "Good afternoon" : "Good evening";
 }
 
 export function pluralize(n: number, one: string, many = `${one}s`): string {

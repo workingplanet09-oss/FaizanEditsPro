@@ -32,7 +32,9 @@ export function BookingForm({ types }: { types: MeetingType[] }) {
   const [fields, setFields] = useState<Record<string, string>>({});
   const [result, setResult] = useState<{ startsAt: string; meetingUrl: string | null; typeLabel: string } | null>(null);
   const started = useRef(Date.now());
-  const tz = useMemo(() => Intl.DateTimeFormat().resolvedOptions().timeZone, []);
+  // The browser's zone is only known after mount; reading it during render would differ from the server-rendered HTML.
+  const [tz, setTz] = useState("");
+  useEffect(() => setTz(Intl.DateTimeFormat().resolvedOptions().timeZone), []);
 
   const load = useCallback(async (t: string) => {
     setSlots(null);
@@ -87,7 +89,7 @@ export function BookingForm({ types }: { types: MeetingType[] }) {
         setError(null);
         setFields({});
         try {
-          const r = await api<{ startsAt: string; meetingUrl: string | null; typeLabel: string }>("/api/booking", { body: { type, startsAt: slot, ...v, phone: v.phone || undefined, company: v.company || undefined, notes: v.notes || undefined, timezone: tz, t: started.current } });
+          const r = await api<{ startsAt: string; meetingUrl: string | null; typeLabel: string }>("/api/booking", { body: { type, startsAt: slot, ...v, phone: v.phone || undefined, company: v.company || undefined, notes: v.notes || undefined, timezone: tz || "UTC", t: started.current } });
           setResult(r);
           setState("done");
         } catch (err) {
@@ -115,7 +117,7 @@ export function BookingForm({ types }: { types: MeetingType[] }) {
 
       <fieldset>
         <legend className="mb-1 text-sm font-bold">2 · Pick a time</legend>
-        <p className="mb-3 text-xs text-subtle">Times shown in your timezone ({tz}).</p>
+        <p className="mb-3 text-xs text-subtle" suppressHydrationWarning>Times shown in your timezone{tz ? ` (${tz})` : ""}.</p>
         {!slots ? (
           <div role="status" className="grid grid-cols-3 gap-2 sm:grid-cols-6">{Array.from({ length: 6 }).map((_, i) => <div key={i} className="skeleton h-12" />)}</div>
         ) : days.length === 0 ? (

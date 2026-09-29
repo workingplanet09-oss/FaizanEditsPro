@@ -41,7 +41,7 @@ export default async function BlogPage({ searchParams }: { searchParams: Promise
                     </div>
                     <div className="flex flex-1 flex-col p-6">
                       <div className="eyebrow">{p.category?.name ?? "Article"}</div>
-                      <h2 className="mt-2 text-lg font-extrabold leading-snug group-hover:text-accent">{p.title}</h2>
+                      <h2 className="mt-2 text-lg font-extrabold leading-snug group-hover:text-accent-text">{p.title}</h2>
                       {p.excerpt ? <p className="mt-2 line-clamp-3 text-sm text-muted">{p.excerpt}</p> : null}
                       <div className="mt-auto pt-4 text-xs text-subtle">{formatDate(p.publishedAt)}{p.authorName ? ` · ${p.authorName}` : ""}</div>
                     </div>

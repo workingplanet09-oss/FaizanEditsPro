@@ -53,7 +53,7 @@ export function AutomationManager({ automations, events, templates, canManage }:
                 {automations.filter((a) => a.event === g).map((a) => (
                   <li key={a.id} className="flex flex-wrap items-center gap-x-4 gap-y-2 px-5 py-3.5">
                     <div className="min-w-0 flex-1 basis-64">
-                      <button type="button" onClick={() => setEditing(a)} className="text-left text-sm font-bold hover:text-accent hover:underline">{a.name}</button>
+                      <button type="button" onClick={() => setEditing(a)} className="text-left text-sm font-bold hover:text-accent-text hover:underline">{a.name}</button>
                       {a.description ? <p className="mt-0.5 text-xs text-muted">{a.description}</p> : null}
                       <div className="mt-1.5 flex flex-wrap gap-1.5">{a.actions.map((x) => <Badge key={x.id} tone="neutral" dot={false} icon={ACTION_TYPES.find((t) => t[0] === x.type)?.[2] ?? "zap"}>{ACTION_TYPES.find((t) => t[0] === x.type)?.[1] ?? x.type}{x.delayMinutes ? ` · after ${fmtDelay(x.delayMinutes)}` : ""}</Badge>)}</div>
                     </div>

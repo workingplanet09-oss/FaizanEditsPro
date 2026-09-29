@@ -67,7 +67,7 @@ export default async function InvoicePage({ params, searchParams }: { params: Pr
           ) : (
             <Card className="p-5 text-sm text-muted">This invoice is {inv.status.toLowerCase()}.</Card>
           )}
-          <Card className="p-5 text-sm"><h3 className="font-extrabold">Question about this invoice?</h3><p className="mt-1 text-muted">Message us and we'll sort it out quickly.</p><Link href="/dashboard/messages" className="mt-2 inline-block font-semibold text-accent hover:underline">Message billing →</Link></Card>
+          <Card className="p-5 text-sm"><h3 className="font-extrabold">Question about this invoice?</h3><p className="mt-1 text-muted">Message us and we'll sort it out quickly.</p><Link href="/dashboard/messages" className="mt-2 inline-block font-semibold text-accent-text hover:underline">Message billing →</Link></Card>
         </aside>
       </div>
     </>

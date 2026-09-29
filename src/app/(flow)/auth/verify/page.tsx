@@ -16,8 +16,8 @@ export default async function VerifyPage({ searchParams }: { searchParams: Promi
   const { type, token } = await searchParams;
   if (!token || !type || !(type in COPY)) {
     return (
-      <AuthCard title="This link isn't valid" description="It may be incomplete or already used. Request a fresh one and try again." footer={<Link href="/login" className="font-bold text-fg hover:text-accent">Go to sign in</Link>}>
-        <Link href="/forgot-password" className="text-sm font-semibold text-accent hover:underline">Reset my password</Link>
+      <AuthCard title="This link isn't valid" description="It may be incomplete or already used. Request a fresh one and try again." footer={<Link href="/login" className="font-bold text-fg hover:text-accent-text">Go to sign in</Link>}>
+        <Link href="/forgot-password" className="text-sm font-semibold text-accent-text hover:underline">Reset my password</Link>
       </AuthCard>
     );
   }

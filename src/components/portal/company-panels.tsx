@@ -9,6 +9,7 @@ import { Field, Input, Select, Textarea } from "@/components/ui/form";
 import { Modal, ConfirmModal } from "@/components/ui/modal";
 import { Avatar, Badge, Card, CardHeader } from "@/components/ui/primitives";
 import { timeAgo } from "@/lib/format";
+import { Ago } from "@/components/ui/time";
 
 export function CompanyForm({ clientId, initial, canEdit }: { clientId: string; initial: Record<string, string>; canEdit: boolean }) {
   const toast = useToast();
@@ -51,7 +52,7 @@ export function MembersManager({ organizationId, members, canManage, meId }: { o
         {members.map((m) => (
           <li key={m.id} className="flex flex-wrap items-center gap-3 py-3.5">
             <Avatar name={m.user.name} size={36} />
-            <div className="min-w-0 flex-1 basis-48"><div className="truncate text-sm font-bold">{m.user.name}{m.user.id === meId ? <span className="ml-2 text-xs font-medium text-subtle">(you)</span> : null}</div><div className="truncate text-xs text-muted">{m.user.email}{m.user.lastLoginAt ? ` · seen ${timeAgo(m.user.lastLoginAt)}` : ""}</div></div>
+            <div className="min-w-0 flex-1 basis-48"><div className="truncate text-sm font-bold">{m.user.name}{m.user.id === meId ? <span className="ml-2 text-xs font-medium text-subtle">(you)</span> : null}</div><div className="truncate text-xs text-muted">{m.user.email}{m.user.lastLoginAt ? <Ago value={m.user.lastLoginAt} prefix=" · seen " /> : null}</div></div>
             {m.user.status === "INVITED" ? <Badge tone="warning">Invited</Badge> : null}
             {canManage ? (
               <select aria-label={`Role of ${m.user.name}`} value={m.role} onChange={(e) => void change.run(m.id, e.target.value)} className="h-9 rounded-lg border border-line-strong bg-surface px-2.5 text-sm font-medium">{ROLES.map(([k, l]) => <option key={k} value={k}>{l.split(" — ")[0]}</option>)}</select>

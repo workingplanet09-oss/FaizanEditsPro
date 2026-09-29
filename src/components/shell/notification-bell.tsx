@@ -6,6 +6,7 @@ import { api } from "@/lib/api-client";
 import { timeAgo } from "@/lib/format";
 import { cn } from "@/lib/cn";
 import { Icon } from "@/components/ui/icon";
+import { Ago } from "@/components/ui/time";
 
 interface N {
   id: string;
@@ -148,7 +149,7 @@ export function NotificationBell({ initialUnread = 0 }: { initialUnread?: number
                       <span className="min-w-0 flex-1">
                         <span className={cn("block text-sm leading-snug", !n.readAt ? "font-bold" : "font-medium")}>{n.title}</span>
                         {n.message ? <span className="mt-0.5 block truncate text-xs text-muted">{n.message}</span> : null}
-                        <span className="mt-1 block text-[11px] text-subtle">{timeAgo(n.createdAt)}</span>
+                        <Ago value={n.createdAt} className="mt-1 block text-[11px] text-subtle" />
                       </span>
                       {!n.readAt ? <span aria-label="Unread" className="mt-2 h-2 w-2 shrink-0 rounded-full bg-accent" /> : null}
                     </button>

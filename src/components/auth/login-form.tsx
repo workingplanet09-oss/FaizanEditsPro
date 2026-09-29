@@ -29,7 +29,7 @@ export function LoginForm({ next, google, demo }: { next?: string; google: boole
         <span className="mx-auto flex h-14 w-14 items-center justify-center rounded-full bg-success-soft text-success"><Icon name="mail" size={24} /></span>
         <h2 className="mt-4 text-lg font-extrabold">Check your inbox</h2>
         <p className="mt-2 text-sm text-muted">If an account exists for <b className="text-fg">{email}</b>, a sign-in link is on its way. It expires in 15 minutes.</p>
-        <button type="button" onClick={() => setSent(false)} className="mt-5 text-sm font-semibold text-accent hover:underline">Use a different email</button>
+        <button type="button" onClick={() => setSent(false)} className="mt-5 text-sm font-semibold text-accent-text hover:underline">Use a different email</button>
       </div>
     );
   }

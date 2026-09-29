@@ -28,7 +28,7 @@ export default async function SubmissionsPage({ searchParams }: { searchParams: 
               <Card className="p-5">
                 <div className="flex flex-wrap items-start justify-between gap-3">
                   <div>
-                    <div className="flex flex-wrap items-center gap-2"><b>{s.name}</b><a className="text-sm text-accent hover:underline" href={`mailto:${s.email}`}>{s.email}</a>{s.phone ? <span className="text-sm text-muted">{s.phone}</span> : null}<Badge tone="neutral" dot={false} icon={false}>{s.reason.toLowerCase().replace(/_/g, " ")}</Badge>{s.handled ? <Badge tone="success">Handled</Badge> : <Badge tone="warning">New</Badge>}</div>
+                    <div className="flex flex-wrap items-center gap-2"><b>{s.name}</b><a className="text-sm text-accent-text hover:underline" href={`mailto:${s.email}`}>{s.email}</a>{s.phone ? <span className="text-sm text-muted">{s.phone}</span> : null}<Badge tone="neutral" dot={false} icon={false}>{s.reason.toLowerCase().replace(/_/g, " ")}</Badge>{s.handled ? <Badge tone="success">Handled</Badge> : <Badge tone="warning">New</Badge>}</div>
                     {s.company ? <div className="text-xs text-muted">{s.company}</div> : null}
                   </div>
                   <span className="text-xs text-subtle" title={formatDateTime(s.createdAt)}>{timeAgo(s.createdAt)}</span>

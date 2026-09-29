@@ -115,7 +115,7 @@ function Week({ date, byDay, today }: { date: Date; byDay: Map<string, CalEvent[
         const list = byDay.get(ymd(d)) ?? [];
         return (
           <section key={ymd(d)} className={cn("rounded-2xl border bg-surface p-3", sameDay(d, today) ? "border-accent" : "border-line")} aria-label={d.toDateString()}>
-            <h3 className="mb-2 flex items-baseline justify-between text-xs font-bold uppercase tracking-wider text-subtle"><span>{d.toLocaleDateString(undefined, { weekday: "short" })}</span><span className={cn("text-base font-extrabold normal-case tracking-normal", sameDay(d, today) ? "text-accent" : "text-fg")}>{d.getDate()}</span></h3>
+            <h3 className="mb-2 flex items-baseline justify-between text-xs font-bold uppercase tracking-wider text-subtle"><span>{d.toLocaleDateString(undefined, { weekday: "short" })}</span><span className={cn("text-base font-extrabold normal-case tracking-normal", sameDay(d, today) ? "text-accent-text" : "text-fg")}>{d.getDate()}</span></h3>
             <div className="space-y-1.5">{list.length ? list.map((e) => <EventChip key={e.id} e={e} />) : <p className="py-3 text-center text-xs text-subtle">—</p>}</div>
           </section>
         );

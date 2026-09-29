@@ -9,6 +9,7 @@ import { Button } from "@/components/ui/button";
 import { Icon } from "@/components/ui/icon";
 import { Card, CardHeader } from "@/components/ui/primitives";
 import { timeAgo } from "@/lib/format";
+import { Ago } from "@/components/ui/time";
 
 export interface NoteRow { id: string; body: string; pinned: boolean; createdAt: string | Date; author: { id: string; name: string }; mine: boolean }
 
@@ -36,7 +37,7 @@ export function NotesPanel({ entityType, entityId, notes, canWrite }: { entityTy
               <li key={n.id} className={cn("rounded-xl border p-3.5", n.pinned ? "border-warning/40 bg-warning-soft/40" : "border-line bg-surface-2/40")}>
                 <p className="whitespace-pre-wrap break-words text-sm">{n.body}</p>
                 <div className="mt-2 flex items-center justify-between text-xs text-subtle">
-                  <span>{n.author.name} · {timeAgo(n.createdAt)}{n.pinned ? " · pinned" : ""}</span>
+                  <span>{n.author.name} · <Ago value={n.createdAt} />{n.pinned ? " · pinned" : ""}</span>
                   {canWrite ? (
                     <span className="flex gap-1">
                       <button type="button" className="rounded p-1 hover:bg-surface-2 hover:text-fg" aria-label={n.pinned ? "Unpin note" : "Pin note"} onClick={() => void pin.run(n.id, !n.pinned)}><Icon name="star" size={13} className={n.pinned ? "fill-current" : ""} /></button>

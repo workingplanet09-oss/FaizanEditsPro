@@ -33,7 +33,7 @@ export function TimerWidget({ running, base }: { running: { id: string; startedA
   const elapsed = Math.max(0, Math.floor((now - new Date(running.startedAt).getTime()) / 1000));
   return (
     <Card className="flex flex-wrap items-center gap-3 border-accent/40 p-4">
-      <span className="relative flex h-10 w-10 items-center justify-center rounded-full bg-accent-soft text-accent"><Icon name="clock" size={18} /><span className="absolute right-0 top-0 h-2.5 w-2.5 animate-pulse rounded-full bg-accent" /></span>
+      <span className="relative flex h-10 w-10 items-center justify-center rounded-full bg-accent-soft text-accent-text"><Icon name="clock" size={18} /><span className="absolute right-0 top-0 h-2.5 w-2.5 animate-pulse rounded-full bg-accent" /></span>
       <div className="min-w-0 flex-1">
         <div className="text-lg font-extrabold tabular-nums leading-none" role="timer" aria-label="Elapsed time">{clock(elapsed)}</div>
         <Link href={`${base}/projects/${running.project.id}?tab=time`} className="mt-1 block truncate text-xs text-muted hover:text-fg hover:underline">{running.project.code} · {running.project.name}{running.note ? ` — ${running.note}` : ""}</Link>

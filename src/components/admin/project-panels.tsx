@@ -14,6 +14,7 @@ import { Badge, Card, CardHeader } from "@/components/ui/primitives";
 import { PROJECT_STATUSES, STATUS_META, PRIORITY_META, type ProjectStatusKey } from "@/lib/statuses";
 import { timeAgo } from "@/lib/format";
 import { Uploader, type UploadedAsset } from "@/components/portal/uploader";
+import { Ago } from "@/components/ui/time";
 
 // ───────────────────────── status control ─────────────────────────
 
@@ -44,7 +45,7 @@ export function StatusControl({ projectId, status, allowedNext, canOverride, his
             <summary className="cursor-pointer text-xs font-bold text-muted hover:text-fg">Status history ({history.length})</summary>
             <ol className="mt-3 space-y-2 border-l border-line pl-4">
               {[...history].reverse().map((h) => (
-                <li key={h.id} className="text-xs"><b>{h.from ? `${STATUS_META[h.from as ProjectStatusKey]?.label ?? h.from} → ` : ""}{STATUS_META[h.to as ProjectStatusKey]?.label ?? h.to}</b>{h.override ? <span className="ml-1.5 rounded bg-danger-soft px-1 py-0.5 text-[10px] font-bold uppercase text-danger">override</span> : null}<span className="text-subtle"> · {h.by} · {timeAgo(h.at)}</span>{h.comment ? <span className="block text-muted">{h.comment}</span> : null}</li>
+                <li key={h.id} className="text-xs"><b>{h.from ? `${STATUS_META[h.from as ProjectStatusKey]?.label ?? h.from} → ` : ""}{STATUS_META[h.to as ProjectStatusKey]?.label ?? h.to}</b>{h.override ? <span className="ml-1.5 rounded bg-danger-soft px-1 py-0.5 text-[10px] font-bold uppercase text-danger">override</span> : null}<span className="text-subtle"> · {h.by} · <Ago value={h.at} /></span>{h.comment ? <span className="block text-muted">{h.comment}</span> : null}</li>
               ))}
             </ol>
           </details>

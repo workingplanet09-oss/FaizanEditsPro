@@ -68,7 +68,7 @@ export function FeedbackForm({ projectId, defaults }: { projectId: string; defau
         {() => (
           <div className="flex gap-1" role="radiogroup" aria-label="Rating">
             {[1, 2, 3, 4, 5].map((n) => (
-              <button key={n} type="button" role="radio" aria-checked={rating === n} aria-label={`${n} star${n > 1 ? "s" : ""}`} onClick={() => setRating(n)} className="rounded-lg p-1 text-accent transition hover:scale-110">
+              <button key={n} type="button" role="radio" aria-checked={rating === n} aria-label={`${n} star${n > 1 ? "s" : ""}`} onClick={() => setRating(n)} className="rounded-lg p-1 text-accent-text transition hover:scale-110">
                 <Icon name="star" size={30} className={cn(rating >= n ? "fill-current" : "opacity-30")} />
               </button>
             ))}

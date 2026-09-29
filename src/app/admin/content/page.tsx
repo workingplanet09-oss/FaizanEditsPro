@@ -38,7 +38,7 @@ export default async function ContentPage({ searchParams }: { searchParams: Sear
         <nav aria-label="Content types" className="thin-scroll -mx-4 flex gap-1 overflow-x-auto px-4 lg:mx-0 lg:block lg:space-y-0.5 lg:overflow-visible lg:px-0">
           {Object.values(RESOURCES).map((r) => (
             <Link key={r.key} href={`/admin/content?r=${r.key}`} aria-current={r.key === key ? "page" : undefined} className={cn("flex shrink-0 items-center gap-2.5 whitespace-nowrap rounded-xl px-3 py-2 text-sm font-semibold transition", r.key === key ? "bg-fg text-bg" : "text-muted hover:bg-surface-2 hover:text-fg")}>
-              <Icon name={ICON[r.key] ?? "news"} size={16} className={r.key === key ? "text-accent" : "text-subtle"} />{r.label}
+              <Icon name={ICON[r.key] ?? "news"} size={16} className={r.key === key ? "text-accent-text" : "text-subtle"} />{r.label}
             </Link>
           ))}
         </nav>

@@ -277,7 +277,7 @@ export function FormWizard<R>(p: WizardProps<R>) {
                 <section key={s.key} className="rounded-2xl border border-line bg-surface p-5">
                   <div className="mb-3 flex items-center justify-between">
                     <h2 className="text-sm font-extrabold">{qs.length === 1 && qs[0].text === s.title ? "" : s.title}</h2>
-                    <button type="button" onClick={() => go(s.key)} className="text-xs font-bold text-accent hover:underline">Edit</button>
+                    <button type="button" onClick={() => go(s.key)} className="text-xs font-bold text-accent-text hover:underline">Edit</button>
                   </div>
                   <dl className="space-y-2.5">
                     {qs.map((q) => {

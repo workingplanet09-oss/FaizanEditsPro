@@ -79,7 +79,7 @@ export function CmsManager({ resource, items, total, relations, currencyDefault 
                   <span className="flex flex-col"><button type="button" aria-label="Move up" disabled={i === 0} onClick={() => swap(i, -1)} className="rounded p-0.5 text-subtle hover:text-fg disabled:opacity-25"><Icon name="chevron-up" size={14} /></button><button type="button" aria-label="Move down" disabled={i === shown.length - 1} onClick={() => swap(i, 1)} className="rounded p-0.5 text-subtle hover:text-fg disabled:opacity-25"><Icon name="chevron-down" size={14} /></button></span>
                 ) : null}
                 <div className="min-w-0 flex-1 basis-56">
-                  <button type="button" onClick={() => setEditing(r)} className="block max-w-full truncate text-left text-sm font-bold hover:text-accent hover:underline">{String(r[resource.titleField] ?? "Untitled")}</button>
+                  <button type="button" onClick={() => setEditing(r)} className="block max-w-full truncate text-left text-sm font-bold hover:text-accent-text hover:underline">{String(r[resource.titleField] ?? "Untitled")}</button>
                   {resource.subtitleField && r[resource.subtitleField] ? <div className="truncate text-xs text-muted">{String(r[resource.subtitleField]).slice(0, 120)}</div> : null}
                 </div>
                 {r.isDemo ? <Badge tone="warning" dot={false} icon={false}>Sample</Badge> : null}

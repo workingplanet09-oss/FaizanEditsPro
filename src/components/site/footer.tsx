@@ -16,7 +16,7 @@ export function SiteFooter({ site }: { site: SiteContext }) {
           <Logo name={business.name} logoUrl={business.logoUrl} />
           <p className="mt-4 max-w-sm text-sm leading-relaxed text-muted">{footer.description}</p>
           {business.email ? (
-            <a href={`mailto:${business.email}`} className="mt-5 inline-flex items-center gap-2 text-sm font-semibold hover:text-accent">
+            <a href={`mailto:${business.email}`} className="mt-5 inline-flex items-center gap-2 text-sm font-semibold hover:text-accent-text">
               <Icon name="mail" size={16} />
               {business.email}
             </a>
@@ -24,7 +24,7 @@ export function SiteFooter({ site }: { site: SiteContext }) {
           {socials.length ? (
             <div className="mt-5 flex gap-2">
               {socials.map(([k, v]) => (
-                <a key={k} href={v} target="_blank" rel="noopener noreferrer" aria-label={k} className="flex h-9 w-9 items-center justify-center rounded-xl border border-line text-muted transition hover:border-accent hover:text-accent">
+                <a key={k} href={v} target="_blank" rel="noopener noreferrer" aria-label={k} className="flex h-9 w-9 items-center justify-center rounded-xl border border-line text-muted transition hover:border-accent hover:text-accent-text">
                   <Icon name={SOCIAL_ICON[k] ?? "globe"} size={16} />
                 </a>
               ))}

@@ -65,7 +65,7 @@ export default async function LeadPage({ params }: { params: Promise<{ id: strin
               {lead.attachments.length ? (
                 <div>
                   <h3 className="mb-2 text-xs font-bold uppercase tracking-wider text-subtle">Reference files</h3>
-                  <ul className="divide-y divide-line rounded-xl border border-line">{lead.attachments.map((a) => <li key={a.id} className="flex items-center gap-3 px-4 py-2.5 text-sm"><Icon name="file" size={16} className="text-muted" /><span className="flex-1 truncate font-medium">{a.displayName}</span><span className="text-xs text-subtle">{formatBytes(a.sizeBytes)}</span><a className="text-xs font-bold text-accent hover:underline" href={`/api/assets/${a.id}?download=1`} target="_blank" rel="noreferrer">Open</a></li>)}</ul>
+                  <ul className="divide-y divide-line rounded-xl border border-line">{lead.attachments.map((a) => <li key={a.id} className="flex items-center gap-3 px-4 py-2.5 text-sm"><Icon name="file" size={16} className="text-muted" /><span className="flex-1 truncate font-medium">{a.displayName}</span><span className="text-xs text-subtle">{formatBytes(a.sizeBytes)}</span><a className="text-xs font-bold text-accent-text hover:underline" href={`/api/assets/${a.id}?download=1`} target="_blank" rel="noreferrer">Open</a></li>)}</ul>
                 </div>
               ) : null}
             </div>
@@ -101,7 +101,7 @@ export default async function LeadPage({ params }: { params: Promise<{ id: strin
               <Meta label="Industry">{lead.industry}</Meta>
               <Meta label="Source">{lead.source?.label}</Meta>
               <Meta label="Service page">{lead.serviceSlug}</Meta>
-              <Meta label="Website" className="col-span-2">{lead.website ? <a className="text-accent hover:underline" href={lead.website} target="_blank" rel="noreferrer">{lead.website}</a> : null}</Meta>
+              <Meta label="Website" className="col-span-2">{lead.website ? <a className="text-accent-text hover:underline" href={lead.website} target="_blank" rel="noreferrer">{lead.website}</a> : null}</Meta>
               {lead.utmSource || lead.utmCampaign ? <Meta label="UTM" className="col-span-2">{[lead.utmSource, lead.utmMedium, lead.utmCampaign].filter(Boolean).join(" / ")}</Meta> : null}
               {lead.referrer ? <Meta label="Referrer" className="col-span-2"><span className="break-all">{lead.referrer}</span></Meta> : null}
               {lead.referralCode ? <Meta label="Referral code">{lead.referralCode}</Meta> : null}

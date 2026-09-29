@@ -61,7 +61,7 @@ export default async function PricingPage() {
             ["globe", "Your currency", "Quotes and invoices can be issued in USD, EUR, GBP, AED, PKR, CAD, AUD and more."],
           ].map(([icon, t, b]) => (
             <div key={t} className="rounded-[var(--radius-card)] border border-line bg-surface p-6">
-              <Icon name={icon} size={22} className="text-accent" />
+              <Icon name={icon} size={22} className="text-accent-text" />
               <h3 className="mt-3 font-extrabold">{t}</h3>
               <p className="mt-2 text-sm leading-relaxed text-muted">{b}</p>
             </div>

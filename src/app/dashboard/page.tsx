@@ -4,9 +4,10 @@ import { Card, CardHeader, EmptyState, PageHeader, Stat } from "@/components/ui/
 import { ButtonLink } from "@/components/ui/button";
 import { Icon } from "@/components/ui/icon";
 import { ActivityFeed, AttentionList, ProgressRow, ProjectCard } from "@/components/portal/common";
-import { formatBytes, formatDate, greeting } from "@/lib/format";
+import { formatBytes, formatDate } from "@/lib/format";
 import { pageMeta } from "@/lib/seo";
 import { requirePageActor } from "@/server/auth/actor";
+import { viewerGreeting } from "@/server/page";
 
 export const metadata = pageMeta({ title: "Dashboard", path: "/dashboard", noindex: true });
 
@@ -14,6 +15,7 @@ export default async function ClientDashboard() {
   const actor = await requirePageActor("client", "/dashboard");
   const home = await clientHome(actor);
   const first = actor.name.split(" ")[0];
+  const hello = await viewerGreeting();
   const open = home.projects.filter((p) => !["DELIVERED"].includes(p.status));
   const delivered = home.projects.filter((p) => p.status === "DELIVERED");
   const inReview = home.projects.filter((p) => ["CLIENT_REVIEW", "FINAL_REVIEW"].includes(p.status)).length;
@@ -21,7 +23,7 @@ export default async function ClientDashboard() {
   if (!home.hasProjects) {
     return (
       <>
-        <PageHeader title={`${greeting()}, ${first}`} description="Welcome to your client portal. This is where you'll follow your project from quote to final delivery." />
+        <PageHeader title={`${hello}, ${first}`} description="Welcome to your client portal. This is where you'll follow your project from quote to final delivery." />
         <div className="grid grid-cols-1 gap-6 lg:grid-cols-[1fr_22rem]">
           <Card className="p-2">
             <EmptyState
@@ -40,7 +42,7 @@ export default async function ClientDashboard() {
   return (
     <>
       <PageHeader
-        title={`${greeting()}, ${first}`}
+        title={`${hello}, ${first}`}
         description={home.attention.length ? `You have ${home.attention.length} thing${home.attention.length === 1 ? "" : "s"} that need${home.attention.length === 1 ? "s" : ""} your attention.` : "You're all caught up — we'll let you know the moment something needs you."}
         actions={<ButtonLink href="/start-project" icon="plus" variant="dark">New project</ButtonLink>}
       />
@@ -70,7 +72,7 @@ export default async function ClientDashboard() {
         <section aria-labelledby="proj">
           <div className="mb-3 flex items-center justify-between">
             <h2 id="proj" className="text-lg font-extrabold tracking-tight">Your projects</h2>
-            <Link href="/dashboard/projects" className="text-sm font-semibold text-accent hover:underline">View all</Link>
+            <Link href="/dashboard/projects" className="text-sm font-semibold text-accent-text hover:underline">View all</Link>
           </div>
           <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
             {open.slice(0, 6).map((p) => <ProjectCard key={p.id} p={p} />)}
@@ -86,7 +88,7 @@ export default async function ClientDashboard() {
                 {r.included.videos ? <ProgressRow label="Videos" used={r.used.videos} total={r.included.videos} /> : null}
                 {r.included.shorts ? <ProgressRow label="Short-form" used={r.used.shorts} total={r.included.shorts} /> : null}
                 {r.included.hours ? <ProgressRow label="Hours" used={r.used.hours} total={r.included.hours} /> : null}
-                <Link href="/dashboard/retainers" className="text-sm font-semibold text-accent hover:underline">Manage retainer →</Link>
+                <Link href="/dashboard/retainers" className="text-sm font-semibold text-accent-text hover:underline">Manage retainer →</Link>
               </div>
             </Card>
           ))}
@@ -119,7 +121,7 @@ function ChecklistCard({ checklist }: { checklist: NonNullable<Awaited<ReturnTyp
               {i.done || !i.href ? (
                 <div className="flex items-center gap-2.5 py-1 text-sm"><span className={i.done ? "text-success" : "text-subtle"}><Icon name={i.done ? "check-circle" : "clock"} size={16} /></span><span className={i.done ? "text-muted line-through decoration-line-strong" : ""}>{i.label}</span></div>
               ) : (
-                <Link href={i.href} className="group flex items-center gap-2.5 rounded-lg py-1 text-sm hover:text-accent"><span className="text-subtle"><Icon name="clock" size={16} /></span><span className="flex-1 font-medium">{i.label}</span><Icon name="chevron-right" size={14} className="text-subtle group-hover:text-accent" /></Link>
+                <Link href={i.href} className="group flex items-center gap-2.5 rounded-lg py-1 text-sm hover:text-accent-text"><span className="text-subtle"><Icon name="clock" size={16} /></span><span className="flex-1 font-medium">{i.label}</span><Icon name="chevron-right" size={14} className="text-subtle group-hover:text-accent-text" /></Link>
               )}
             </li>
           ))}

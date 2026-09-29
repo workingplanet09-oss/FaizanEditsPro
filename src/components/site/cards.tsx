@@ -128,7 +128,7 @@ export function PlanCard({ p }: { p: PlanData }) {
       <ul className="mt-6 space-y-3 border-t border-line pt-6 text-sm">
         {unique.map((i) => (
           <li key={i.label} className="flex gap-3">
-            <Icon name="check-circle" size={17} className="mt-px shrink-0 text-accent" />
+            <Icon name="check-circle" size={17} className="mt-px shrink-0 text-accent-text" />
             <span>{i.label}</span>
           </li>
         ))}
@@ -145,7 +145,7 @@ export function PlanCard({ p }: { p: PlanData }) {
 export function TestimonialCard({ t }: { t: { name: string; role: string | null; company: string | null; quote: string; rating: number; imageUrl: string | null } }) {
   return (
     <figure className="flex h-full flex-col rounded-[var(--radius-card)] border border-line bg-surface p-7 shadow-soft">
-      <div className="flex gap-0.5 text-accent" aria-label={`${t.rating} out of 5 stars`}>
+      <div className="flex gap-0.5 text-accent-text" role="img" aria-label={`${t.rating} out of 5 stars`}>
         {Array.from({ length: 5 }).map((_, i) => (
           <Icon key={i} name="star" size={16} className={i < t.rating ? "fill-current" : "opacity-25"} />
         ))}

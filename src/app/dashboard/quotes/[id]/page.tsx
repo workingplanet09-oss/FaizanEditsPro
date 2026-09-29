@@ -44,7 +44,7 @@ export default async function QuotePage({ params }: { params: Promise<{ id: stri
           ) : (
             <Card className="p-5 text-sm text-muted">{expired || q.status === "EXPIRED" ? "This quote has expired. Message us and we'll refresh it." : q.status === "REJECTED" ? "You declined this quote." : "This quote is not open for action."}<ButtonLink href="/dashboard/messages" variant="outline" className="mt-3" icon="message">Message us</ButtonLink></Card>
           )}
-          <Card className="p-5 text-sm"><h3 className="font-extrabold">Questions?</h3><p className="mt-1 text-muted">Ask your project manager anything about scope, timing or price.</p><Link href={q.project ? `/dashboard/projects/${q.project.id}?tab=messages` : "/dashboard/messages"} className="mt-2 inline-block font-semibold text-accent hover:underline">Send a message →</Link></Card>
+          <Card className="p-5 text-sm"><h3 className="font-extrabold">Questions?</h3><p className="mt-1 text-muted">Ask your project manager anything about scope, timing or price.</p><Link href={q.project ? `/dashboard/projects/${q.project.id}?tab=messages` : "/dashboard/messages"} className="mt-2 inline-block font-semibold text-accent-text hover:underline">Send a message →</Link></Card>
         </aside>
       </div>
     </>

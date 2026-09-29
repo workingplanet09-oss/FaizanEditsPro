@@ -70,7 +70,7 @@ export default async function CaseStudyPage({ params }: { params: Promise<{ slug
             {c.clientFeedback ? (
               <Reveal>
                 <figure className="rounded-[var(--radius-card)] border border-line bg-surface p-8">
-                  <Icon name="quote" size={28} className="text-accent" />
+                  <Icon name="quote" size={28} className="text-accent-text" />
                   <blockquote className="mt-3 text-xl font-semibold leading-snug">“{c.clientFeedback}”</blockquote>
                   {c.feedbackAuthor ? <figcaption className="mt-4 text-sm text-muted">— {c.feedbackAuthor}</figcaption> : null}
                 </figure>
@@ -97,7 +97,7 @@ export default async function CaseStudyPage({ params }: { params: Promise<{ slug
                 <h2 className="font-extrabold">Deliverables</h2>
                 <ul className="mt-4 space-y-2.5 text-sm">
                   {c.deliverables.map((d) => (
-                    <li key={d} className="flex gap-2.5"><Icon name="check" size={16} className="mt-0.5 shrink-0 text-accent" /> {d}</li>
+                    <li key={d} className="flex gap-2.5"><Icon name="check" size={16} className="mt-0.5 shrink-0 text-accent-text" /> {d}</li>
                   ))}
                 </ul>
                 {c.timeline ? <p className="mt-5 border-t border-line pt-4 text-sm text-muted"><span className="font-bold text-fg">Timeline · </span>{c.timeline}</p> : null}

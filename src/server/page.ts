@@ -1,5 +1,7 @@
+import { cookies } from "next/headers";
 import { forbidden as nextForbidden, notFound as nextNotFound, redirect } from "next/navigation";
 import { AppError } from "./errors";
+import { greeting } from "@/lib/format";
 
 /**
  * Runs a service call from a Server Component and maps expected failures onto Next's own pages:
@@ -24,3 +26,15 @@ export const num = (v: string | string[] | undefined, d = 1) => {
   const n = Number(first(v));
   return Number.isFinite(n) && n > 0 ? Math.floor(n) : d;
 };
+
+/** Greeting for the viewer's local time of day. The browser stores its time zone in the `fe_tz` cookie (see the inline script in the root layout). */
+export async function viewerGreeting(): Promise<string> {
+  const tz = (await cookies()).get("fe_tz")?.value;
+  if (!tz) return greeting();
+  try {
+    const hour = Number(new Intl.DateTimeFormat("en-US", { hour: "numeric", hourCycle: "h23", timeZone: decodeURIComponent(tz) }).format(new Date()));
+    return greeting(Number.isFinite(hour) ? hour : undefined);
+  } catch {
+    return greeting(); // unknown/invalid zone name
+  }
+}

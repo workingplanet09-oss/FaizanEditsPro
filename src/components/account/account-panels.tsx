@@ -10,6 +10,7 @@ import { Field, Input, Switch } from "@/components/ui/form";
 import { Icon } from "@/components/ui/icon";
 import { Card, CardHeader } from "@/components/ui/primitives";
 import { formatDateTime, timeAgo } from "@/lib/format";
+import { Ago } from "@/components/ui/time";
 
 export function ProfileForm({ name, email, phone, timezone }: { name: string; email: string; phone: string; timezone: string }) {
   const toast = useToast();
@@ -138,7 +139,7 @@ export function SecurityPanel({ twoFactorEnabled, sessions }: { twoFactorEnabled
           {sessions.map((s) => (
             <li key={s.id} className="flex flex-wrap items-center gap-3 py-3.5">
               <Icon name={/mobile|iphone|android/i.test(s.userAgent ?? "") ? "smartphone" : "monitor"} size={20} className="text-muted" />
-              <div className="min-w-0 flex-1 basis-56"><div className="truncate text-sm font-semibold">{(s.userAgent ?? "Unknown device").replace(/\(.*?\)/g, "").slice(0, 60) || "Browser"}{s.current ? <span className="ml-2 rounded bg-success-soft px-1.5 py-0.5 text-[10px] font-bold uppercase text-success">This device</span> : null}</div><div className="text-xs text-subtle" title={formatDateTime(s.lastUsedAt)}>{s.ip ?? "Unknown IP"} · active {timeAgo(s.lastUsedAt)}</div></div>
+              <div className="min-w-0 flex-1 basis-56"><div className="truncate text-sm font-semibold">{(s.userAgent ?? "Unknown device").replace(/\(.*?\)/g, "").slice(0, 60) || "Browser"}{s.current ? <span className="ml-2 rounded bg-success-soft px-1.5 py-0.5 text-[10px] font-bold uppercase text-success">This device</span> : null}</div><div className="text-xs text-subtle" title={formatDateTime(s.lastUsedAt)}>{s.ip ?? "Unknown IP"} · <Ago value={s.lastUsedAt} prefix="active " /></div></div>
               {!s.current ? <Button size="sm" variant="outline" loading={revoke.pending} onClick={() => void revoke.run(s.id)}>Sign out</Button> : null}
             </li>
           ))}

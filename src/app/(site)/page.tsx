@@ -60,7 +60,7 @@ export default async function HomePage() {
             <Reveal delay={60}>
               <h1 className="display text-[clamp(2.5rem,5vw,4.7rem)]">
                 {headline.map((line, i) => (
-                  <span key={i} className={i === 1 ? "block text-accent" : "block"}>
+                  <span key={i} className={i === 1 ? "block text-accent-text" : "block"}>
                     {line}
                   </span>
                 ))}
@@ -81,7 +81,7 @@ export default async function HomePage() {
               <ul className="mt-10 flex flex-wrap gap-x-6 gap-y-2 text-sm text-muted">
                 {hero.trustPoints.map((t) => (
                   <li key={t} className="flex items-center gap-2">
-                    <Icon name="check-circle" size={16} className="text-accent" />
+                    <Icon name="check-circle" size={16} className="text-accent-text" />
                     {t}
                   </li>
                 ))}
@@ -114,7 +114,7 @@ export default async function HomePage() {
                   ["lock", "Private, signed file delivery"],
                 ].map(([icon, label]) => (
                   <li key={label} className="flex items-center gap-3 font-semibold text-muted">
-                    <Icon name={icon} size={18} className="text-accent" />
+                    <Icon name={icon} size={18} className="text-accent-text" />
                     {label}
                   </li>
                 ))}
@@ -177,7 +177,7 @@ export default async function HomePage() {
           ) : null}
         </ol>
         <div className="mt-8">
-          <Link href="/process" className="inline-flex items-center gap-2 text-sm font-bold text-accent hover:underline">
+          <Link href="/process" className="inline-flex items-center gap-2 text-sm font-bold text-accent-text hover:underline">
             See the full process <Icon name="arrow" size={15} />
           </Link>
         </div>
@@ -228,7 +228,7 @@ export default async function HomePage() {
               ["calendar", "Monthly retainer", "A monthly allowance with priority scheduling and usage tracking."],
             ].map(([icon, t, b]) => (
               <div key={t} className="rounded-[var(--radius-card)] border border-line bg-surface p-6">
-                <Icon name={icon === "one-time" ? "film" : icon === "repeat" ? "repeat" : "calendar"} size={22} className="text-accent" />
+                <Icon name={icon === "one-time" ? "film" : icon === "repeat" ? "repeat" : "calendar"} size={22} className="text-accent-text" />
                 <h3 className="mt-4 font-extrabold">{t}</h3>
                 <p className="mt-2 text-sm text-muted">{b}</p>
               </div>
@@ -248,7 +248,7 @@ export default async function HomePage() {
           <SectionHeading eyebrow="FAQ" title="Questions, answered." description="Can't find yours? Ask us anything — we reply within one business day." className="mb-0" />
           <div>
             <FaqList items={faqs.slice(0, 7)} />
-            <Link href="/faq" className="mt-5 inline-flex items-center gap-2 text-sm font-bold text-accent hover:underline">
+            <Link href="/faq" className="mt-5 inline-flex items-center gap-2 text-sm font-bold text-accent-text hover:underline">
               Read all FAQs <Icon name="arrow" size={15} />
             </Link>
           </div>

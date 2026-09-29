@@ -30,13 +30,13 @@ export default async function CaseStudiesPage() {
                         <Icon name="book" size={40} className="text-subtle" />
                       </div>
                     )}
-                    {c.isDemo ? <span className="absolute right-3 top-3 rounded-full bg-warning px-2 py-0.5 text-[10px] font-extrabold uppercase text-black">Demo</span> : null}
+                    {c.isDemo ? <span className="absolute right-3 top-3 rounded-full bg-warning px-2 py-0.5 text-[10px] font-extrabold uppercase text-warning-fg">Demo</span> : null}
                   </div>
                   <div className="p-6">
                     <div className="eyebrow">{[c.clientName, c.industry].filter(Boolean).join(" · ")}</div>
                     <h2 className="mt-2 text-xl font-extrabold leading-snug">{c.title}</h2>
                     <p className="mt-2 text-sm text-muted">{excerpt(c.summary ?? c.problem, 160)}</p>
-                    <span className="mt-4 inline-flex items-center gap-1.5 text-sm font-bold group-hover:text-accent">Read the case study <Icon name="arrow" size={14} /></span>
+                    <span className="mt-4 inline-flex items-center gap-1.5 text-sm font-bold group-hover:text-accent-text">Read the case study <Icon name="arrow" size={14} /></span>
                   </div>
                 </Link>
               </Reveal>

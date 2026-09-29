@@ -109,7 +109,7 @@ export async function ProjectWorkspace({ actor, id, sp, base }: { actor: Actor; 
             </Card> : null}
             <Card>
               <CardHeader title="Client contact" />
-              <div className="px-5 pb-5 text-sm"><div className="font-bold">{p.client.name}</div><a className="text-accent hover:underline" href={`mailto:${p.client.email}`}>{p.client.email}</a>{p.client.phone ? <div className="text-muted">{p.client.phone}</div> : null}</div>
+              <div className="px-5 pb-5 text-sm"><div className="font-bold">{p.client.name}</div><a className="text-accent-text hover:underline" href={`mailto:${p.client.email}`}>{p.client.email}</a>{p.client.phone ? <div className="text-muted">{p.client.phone}</div> : null}</div>
             </Card>
           </aside>
         </div>
@@ -195,7 +195,7 @@ async function RevisionsTab({ actor, projectId, base }: { actor: Actor; projectI
     <div className="grid grid-cols-1 gap-6 lg:grid-cols-2">
       <Card>
         <CardHeader title="Revision rounds" description="Feedback batches sent by the client." />
-        {revs.length ? <ul className="divide-y divide-line">{revs.map((r) => <li key={r.id} className="flex flex-wrap items-center gap-3 px-5 py-3.5"><div className="min-w-0 flex-1"><div className="text-sm font-bold">Round {r.roundNumber} · {r.versionLabel}</div><div className="truncate text-xs text-muted">{r.description || "Timestamped notes"} · {r.commentCount ?? 0} note(s) · {timeAgo(r.createdAt)}</div></div><PriorityBadge value={r.priority} /><RevisionBadge value={r.status} /><RevisionRow id={r.id} status={r.status} canManage={canManage} /><Link className="text-xs font-bold text-accent hover:underline" href={`${base}/projects/${projectId}/review/${r.versionId}`}>Open</Link></li>)}</ul> : <EmptyState icon="refresh" title="No revision requests" description="When the client requests changes, each round appears here." />}
+        {revs.length ? <ul className="divide-y divide-line">{revs.map((r) => <li key={r.id} className="flex flex-wrap items-center gap-3 px-5 py-3.5"><div className="min-w-0 flex-1"><div className="text-sm font-bold">Round {r.roundNumber} · {r.versionLabel}</div><div className="truncate text-xs text-muted">{r.description || "Timestamped notes"} · {r.commentCount ?? 0} note(s) · {timeAgo(r.createdAt)}</div></div><PriorityBadge value={r.priority} /><RevisionBadge value={r.status} /><RevisionRow id={r.id} status={r.status} canManage={canManage} /><Link className="text-xs font-bold text-accent-text hover:underline" href={`${base}/projects/${projectId}/review/${r.versionId}`}>Open</Link></li>)}</ul> : <EmptyState icon="refresh" title="No revision requests" description="When the client requests changes, each round appears here." />}
       </Card>
       <Card>
         <CardHeader title="Change requests" description="Scope changes after production started." />

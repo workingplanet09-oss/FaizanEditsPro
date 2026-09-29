@@ -55,14 +55,14 @@ export default async function ClientPage({ params, searchParams }: { params: Pro
               <CardHeader title="Company" />
               <dl className="grid grid-cols-1 gap-4 px-5 pb-5 sm:grid-cols-3">
                 <Meta label="Industry">{c.industry}</Meta><Meta label="Country">{c.country}</Meta><Meta label="Time zone">{c.timezone}</Meta>
-                <Meta label="Website">{c.website ? <a className="text-accent hover:underline" href={c.website} target="_blank" rel="noreferrer">{c.website}</a> : null}</Meta>
+                <Meta label="Website">{c.website ? <a className="text-accent-text hover:underline" href={c.website} target="_blank" rel="noreferrer">{c.website}</a> : null}</Meta>
                 <Meta label="Source">{c.source}</Meta><Meta label="Client since">{formatDate(c.createdAt)}</Meta>
                 <Meta label="Portal user">{c.user ? `${c.user.name} · ${c.user.status.toLowerCase()}${c.user.lastLoginAt ? `, last seen ${formatDateShort(c.user.lastLoginAt)}` : ""}` : "Not invited yet"}</Meta>
                 <Meta label="Referral code">{c.referralCode}</Meta><Meta label="Account manager">{c.manager?.name}</Meta>
                 <Meta label="Billing email">{c.organization.billingEmail}</Meta><Meta label="Last project">{life.lastProject ? <Link className="hover:underline" href={`/admin/projects/${life.lastProject.id}`}>{life.lastProject.name}</Link> : null}</Meta>
               </dl>
             </Card>
-            {life.currentRetainer ? <Card className="p-5"><div className="flex items-center gap-3"><Icon name="repeat" size={18} /><div className="flex-1"><div className="font-bold">{life.currentRetainer.name}</div><div className="text-xs text-muted">{formatMoney(life.currentRetainer.monthlyPrice, life.currentRetainer.currency)} / month · renews {formatDate(life.currentRetainer.renewalDate)}</div></div><Link className="text-sm font-semibold text-accent hover:underline" href="/admin/retainers">Manage</Link></div></Card> : null}
+            {life.currentRetainer ? <Card className="p-5"><div className="flex items-center gap-3"><Icon name="repeat" size={18} /><div className="flex-1"><div className="font-bold">{life.currentRetainer.name}</div><div className="text-xs text-muted">{formatMoney(life.currentRetainer.monthlyPrice, life.currentRetainer.currency)} / month · renews {formatDate(life.currentRetainer.renewalDate)}</div></div><Link className="text-sm font-semibold text-accent-text hover:underline" href="/admin/retainers">Manage</Link></div></Card> : null}
           </div>
           <aside className="space-y-6">
             <Checklist clientId={id} actor={actor} />

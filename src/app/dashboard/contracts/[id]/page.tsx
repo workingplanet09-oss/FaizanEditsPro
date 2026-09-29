@@ -59,7 +59,7 @@ export default async function ContractPage({ params }: { params: Promise<{ id: s
           <Card className="p-5 text-sm">
             <h3 className="font-extrabold">Need a change?</h3>
             <p className="mt-1 text-muted">If something in the agreement doesn't look right, message us before signing and we'll update it.</p>
-            <Link href={`/dashboard/projects/${c.project.id}?tab=messages`} className="mt-2 inline-block font-semibold text-accent hover:underline">Message the team →</Link>
+            <Link href={`/dashboard/projects/${c.project.id}?tab=messages`} className="mt-2 inline-block font-semibold text-accent-text hover:underline">Message the team →</Link>
           </Card>
         </aside>
       </div>

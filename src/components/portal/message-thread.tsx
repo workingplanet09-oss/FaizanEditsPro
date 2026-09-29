@@ -89,7 +89,7 @@ export function MessageThread({
                     <div className={cn("mb-1 flex items-baseline gap-2 text-xs", m.mine && "flex-row-reverse")}>
                       <span className="font-bold">{m.mine ? "You" : m.sender.name}</span>
                       {m.sender.isStaff && !m.mine ? <span className="rounded bg-accent-soft px-1.5 py-0.5 text-[10px] font-bold uppercase tracking-wide">Studio</span> : null}
-                      <time className="text-subtle" dateTime={new Date(m.createdAt).toISOString()} title={formatDateTime(m.createdAt)}>{timeAgo(m.createdAt)}</time>
+                      <time suppressHydrationWarning className="text-subtle" dateTime={new Date(m.createdAt).toISOString()} title={formatDateTime(m.createdAt)}>{timeAgo(m.createdAt)}</time>
                     </div>
                   )}
                   <div className={cn("inline-block whitespace-pre-wrap break-words rounded-2xl px-4 py-2.5 text-left text-sm leading-relaxed", m.mine ? "rounded-tr-md bg-fg text-bg" : "rounded-tl-md bg-surface-2")}>{m.body}</div>

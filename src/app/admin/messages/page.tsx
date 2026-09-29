@@ -43,7 +43,7 @@ export default async function MessagesAdmin({ searchParams }: { searchParams: Se
           </Card>
           {current ? (
             <div>
-              <h2 className="mb-3 flex flex-wrap items-baseline gap-2 text-base font-extrabold">{current.title}<span className="text-sm font-medium text-muted">{current.client}</span>{current.projectId ? <Link className="text-sm font-semibold text-accent hover:underline" href={`/admin/projects/${current.projectId}`}>Open project →</Link> : null}</h2>
+              <h2 className="mb-3 flex flex-wrap items-baseline gap-2 text-base font-extrabold">{current.title}<span className="text-sm font-medium text-muted">{current.client}</span>{current.projectId ? <Link className="text-sm font-semibold text-accent-text hover:underline" href={`/admin/projects/${current.projectId}`}>Open project →</Link> : null}</h2>
               <MessageThread key={current.key} projectId={current.projectId} clientId={current.projectId ? undefined : current.clientId} initial={items as unknown as Msg[]} staff placeholder="Reply to the client…" />
             </div>
           ) : null}

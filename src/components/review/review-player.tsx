@@ -15,6 +15,7 @@ import { Checkbox, Field, Textarea } from "@/components/ui/form";
 import { useToast } from "@/components/ui/toast";
 import { REVISION_STATUS_META, STATUS_META, type ProjectStatusKey } from "@/lib/statuses";
 import type { CommentDTO, VersionDTO } from "@/server/services/reviews";
+import { Ago } from "@/components/ui/time";
 
 export interface ReviewPerms {
   canComment: boolean;
@@ -315,7 +316,7 @@ export function ReviewPlayer({ base, staff, me, project, versions, current, comm
           <div className="mt-1 flex flex-wrap items-center gap-2">
             <h1 className="text-xl font-extrabold tracking-tight sm:text-2xl">{current.label}{current.isFinal ? " · Final" : ""}</h1>
             <Badge tone={vStatus.tone}>{vStatus.label}</Badge>
-            <span className="text-xs text-subtle">{project.code} · uploaded {timeAgo(current.releasedAt ?? current.createdAt)}{current.createdBy ? ` by ${current.createdBy}` : ""}</span>
+            <span className="text-xs text-subtle">{project.code} · <Ago value={current.releasedAt ?? current.createdAt} prefix="uploaded " />{current.createdBy ? ` by ${current.createdBy}` : ""}</span>
           </div>
         </div>
         <div className="flex flex-wrap items-center gap-2">
@@ -560,7 +561,7 @@ export function ReviewPlayer({ base, staff, me, project, versions, current, comm
                     <div className="flex items-start gap-2.5">
                       <button type="button" onClick={() => seek(c.timecodeMs)} className="mt-0.5 shrink-0 rounded-lg bg-fg px-2 py-1 font-mono text-xs font-bold text-bg hover:bg-accent hover:text-accent-fg" aria-label={`Jump to ${c.timecode}`}>{c.timecode}</button>
                       <div className="min-w-0 flex-1">
-                        <div className="flex flex-wrap items-center gap-x-2 text-xs"><b>{mine ? "You" : c.author}</b>{c.isStaff ? <span className="rounded bg-accent-soft px-1 py-0.5 text-[10px] font-bold uppercase">Studio</span> : null}<span className="text-subtle">{timeAgo(c.createdAt)}</span></div>
+                        <div className="flex flex-wrap items-center gap-x-2 text-xs"><b>{mine ? "You" : c.author}</b>{c.isStaff ? <span className="rounded bg-accent-soft px-1 py-0.5 text-[10px] font-bold uppercase">Studio</span> : null}<Ago value={c.createdAt} className="text-subtle" /></div>
                         <p className="mt-1 whitespace-pre-wrap break-words text-sm leading-snug">{c.comment}</p>
                       </div>
                       <Badge tone={st.tone} dot={false} icon={false} className="shrink-0">{st.label}</Badge>
@@ -569,7 +570,7 @@ export function ReviewPlayer({ base, staff, me, project, versions, current, comm
                     {replies.length ? (
                       <ul className="mt-3 space-y-2 border-l-2 border-line pl-3">
                         {replies.map((r) => (
-                          <li key={r.id} className="text-sm"><div className="text-xs"><b>{r.authorId === me.id ? "You" : r.author}</b>{r.isStaff ? <span className="ml-1.5 rounded bg-accent-soft px-1 py-0.5 text-[10px] font-bold uppercase">Studio</span> : null}<span className="ml-2 text-subtle">{timeAgo(r.createdAt)}</span></div><p className="mt-0.5 whitespace-pre-wrap break-words">{r.comment}</p></li>
+                          <li key={r.id} className="text-sm"><div className="text-xs"><b>{r.authorId === me.id ? "You" : r.author}</b>{r.isStaff ? <span className="ml-1.5 rounded bg-accent-soft px-1 py-0.5 text-[10px] font-bold uppercase">Studio</span> : null}<Ago value={r.createdAt} className="ml-2 text-subtle" /></div><p className="mt-0.5 whitespace-pre-wrap break-words">{r.comment}</p></li>
                         ))}
                       </ul>
                     ) : null}

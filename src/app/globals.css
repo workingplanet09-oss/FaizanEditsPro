@@ -12,13 +12,17 @@
   --line: #e3e1d8;
   --line-strong: #cfccc0;
   --fg: #0e0e10;
-  --muted: #5b5b63;
-  --subtle: #8a8a92;
+  --muted: #4f4f57;
+  --subtle: #6a6a72;
   --accent: #ff5b2e;
   --accent-fg: #0b0b0c;
-  --success: #15803d;
-  --warning: #b45309;
-  --danger: #c2261f;
+  /* the accent, adjusted per theme so accent-coloured TEXT meets WCAG AA (set from the configured accent in the root layout) */
+  --accent-text: #b84221;
+  --warning-fg: #ffffff;
+  /* status colours are tuned so their text on the matching soft tint stays ≥ 4.5:1 */
+  --success: #166534;
+  --warning: #92400e;
+  --danger: #b42318;
   --info: #1d4ed8;
   --shadow-color: 24 24 27;
   color-scheme: light;
@@ -32,7 +36,9 @@
   --line-strong: #37373f;
   --fg: #f4f3ef;
   --muted: #a1a1aa;
-  --subtle: #71717a;
+  --subtle: #8b8b94;
+  --accent-text: var(--accent);
+  --warning-fg: #1a1204;
   --success: #4ade80;
   --warning: #fbbf24;
   --danger: #f87171;
@@ -49,7 +55,9 @@
   --line-strong: #37373f;
   --fg: #f4f3ef;
   --muted: #a1a1aa;
-  --subtle: #71717a;
+  --subtle: #8b8b94;
+  --accent-text: var(--accent);
+  --warning-fg: #1a1204;
   --success: #4ade80;
   --warning: #fbbf24;
   --danger: #f87171;
@@ -73,6 +81,8 @@
   --color-subtle: var(--subtle);
   --color-accent: var(--accent);
   --color-accent-fg: var(--accent-fg);
+  --color-accent-text: var(--accent-text);
+  --color-warning-fg: var(--warning-fg);
   --color-accent-soft: color-mix(in srgb, var(--accent) 14%, transparent);
   --color-success: var(--success);
   --color-success-soft: color-mix(in srgb, var(--success) 14%, transparent);

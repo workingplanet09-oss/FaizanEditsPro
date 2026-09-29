@@ -3,11 +3,11 @@ import { requirePageActor } from "@/server/auth/actor";
 import { editorHome } from "@/server/services/analytics";
 import { myTimer } from "@/server/services/time";
 import { can } from "@/server/auth/actor";
-import { guard } from "@/server/page";
+import { guard, viewerGreeting } from "@/server/page";
 import { Card, CardHeader, EmptyState, PageHeader, Stat } from "@/components/ui/primitives";
 import { StatusBadge, PriorityBadge } from "@/components/portal/common";
 import { TimerWidget } from "@/components/admin/timer-widget";
-import { greeting, relativeDeadline, timeAgo } from "@/lib/format";
+import { relativeDeadline, timeAgo } from "@/lib/format";
 import { PRIORITY_META } from "@/lib/statuses";
 import { cn } from "@/lib/cn";
 import { pageMeta } from "@/lib/seo";
@@ -20,9 +20,10 @@ export default async function EditorHome() {
   const now = new Date();
   const overdueTasks = h.tasksToday.filter((t) => t.dueDate && new Date(t.dueDate) < now).length;
   const first = actor.name.split(" ")[0];
+  const hello = await viewerGreeting();
   return (
     <>
-      <PageHeader title={`${greeting()}, ${first}`} description="What's on your plate today." />
+      <PageHeader title={`${hello}, ${first}`} description="What's on your plate today." />
 
       <div className="mb-6 grid grid-cols-1 gap-3 sm:grid-cols-2 xl:grid-cols-4">
         <Stat label="Active projects" value={h.projects.length} icon="film" href="/editor/projects" />
@@ -36,7 +37,7 @@ export default async function EditorHome() {
       <div className="grid grid-cols-1 gap-6 lg:grid-cols-[1.3fr_1fr]">
         <div className="space-y-6">
           <Card>
-            <CardHeader title="Today's tasks" description="Due today, overdue or in progress." action={<Link href="/editor/tasks" className="text-sm font-semibold text-accent hover:underline">All tasks</Link>} />
+            <CardHeader title="Today's tasks" description="Due today, overdue or in progress." action={<Link href="/editor/tasks" className="text-sm font-semibold text-accent-text hover:underline">All tasks</Link>} />
             {h.tasksToday.length ? (
               <ul className="divide-y divide-line">
                 {h.tasksToday.map((t) => {
@@ -58,7 +59,7 @@ export default async function EditorHome() {
           </Card>
 
           <Card>
-            <CardHeader title="My projects" description="Everything currently assigned to you." action={<Link href="/editor/projects" className="text-sm font-semibold text-accent hover:underline">View all</Link>} />
+            <CardHeader title="My projects" description="Everything currently assigned to you." action={<Link href="/editor/projects" className="text-sm font-semibold text-accent-text hover:underline">View all</Link>} />
             {h.projects.length ? (
               <ul className="divide-y divide-line">
                 {h.projects.map((p) => (
@@ -78,7 +79,7 @@ export default async function EditorHome() {
 
         <div className="space-y-6">
           <Card>
-            <CardHeader title="Revision requests" description="Feedback waiting for a new version." action={<Link href="/editor/revisions" className="text-sm font-semibold text-accent hover:underline">Board</Link>} />
+            <CardHeader title="Revision requests" description="Feedback waiting for a new version." action={<Link href="/editor/revisions" className="text-sm font-semibold text-accent-text hover:underline">Board</Link>} />
             {h.revisions.length ? (
               <ul className="divide-y divide-line">
                 {h.revisions.map((r) => (

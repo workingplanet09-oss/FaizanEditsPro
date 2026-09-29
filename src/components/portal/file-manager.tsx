@@ -175,7 +175,7 @@ export function FileManager({
               <Thumb file={f} />
               <div className="min-w-0 flex-1 basis-56">
                 <div className="flex items-center gap-2">
-                  <button type="button" onClick={() => void openAsset(f.id, /^(video|audio|image)\/|application\/pdf/.test(f.mimeType) ? "inline" : "download").catch((e) => toast.error("Can't open file", e.message))} className="truncate text-left text-sm font-bold hover:text-accent hover:underline">{f.displayName}</button>
+                  <button type="button" onClick={() => void openAsset(f.id, /^(video|audio|image)\/|application\/pdf/.test(f.mimeType) ? "inline" : "download").catch((e) => toast.error("Can't open file", e.message))} className="truncate text-left text-sm font-bold hover:text-accent-text hover:underline">{f.displayName}</button>
                   {f.version > 1 ? <Badge tone="info" dot={false} icon={false}>v{f.version}</Badge> : null}
                   {f.isDeliverable ? <Badge tone={f.visibleToClient ? "success" : "warning"} icon={f.visibleToClient ? "check" : "lock"}>{f.visibleToClient ? "Deliverable" : "Deliverable (unpublished)"}</Badge> : null}
                   {f.status !== "READY" ? <Badge tone={f.status === "QUARANTINED" ? "danger" : "warning"}>{f.status.toLowerCase()}</Badge> : null}

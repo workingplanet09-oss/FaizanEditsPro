@@ -1,5 +1,6 @@
 import Link from "next/link";
 import { requirePageActor, can } from "@/server/auth/actor";
+import { viewerGreeting } from "@/server/page";
 import { adminHome, analyticsReport } from "@/server/services/analytics";
 import { Card, CardHeader, EmptyState, PageHeader, Stat } from "@/components/ui/primitives";
 import { ButtonLink } from "@/components/ui/button";
@@ -7,7 +8,7 @@ import { Icon } from "@/components/ui/icon";
 import { ActivityFeed, InvoiceBadge } from "@/components/portal/common";
 import { MoneyMap } from "@/components/portal/money-map";
 import { BarChart, ChartCard } from "@/components/charts/charts";
-import { greeting, formatDateShort, timeAgo } from "@/lib/format";
+import { formatDateShort, timeAgo } from "@/lib/format";
 import { formatMoney } from "@/lib/money";
 import { cn } from "@/lib/cn";
 import { pageMeta } from "@/lib/seo";
@@ -19,12 +20,13 @@ export default async function AdminHome() {
   const h = await adminHome(actor);
   const report = can(actor, "analytics:read") ? await analyticsReport(actor).catch(() => null) : null;
   const first = actor.name.split(" ")[0];
+  const hello = await viewerGreeting();
   const revenue = report?.revenueByMonth.slice(-6).map((m) => ({ label: m.month, value: m.value })) ?? [];
   const total = h.pipeline.reduce((s, p) => s + p.count, 0);
   return (
     <>
       <PageHeader
-        title={`${greeting()}, ${first}`}
+        title={`${hello}, ${first}`}
         description="Everything that needs you today, in one place."
         actions={
           <>
@@ -64,7 +66,7 @@ export default async function AdminHome() {
         <div className="space-y-6">
           {h.perms.projects ? (
             <Card>
-              <CardHeader title="Project pipeline" description={`${total} project${total === 1 ? "" : "s"} across all stages`} action={<Link href="/admin/projects?view=board" className="text-sm font-semibold text-accent hover:underline">Open board</Link>} />
+              <CardHeader title="Project pipeline" description={`${total} project${total === 1 ? "" : "s"} across all stages`} action={<Link href="/admin/projects?view=board" className="text-sm font-semibold text-accent-text hover:underline">Open board</Link>} />
               <div className="grid grid-cols-2 gap-3 px-5 pb-5 sm:grid-cols-3 lg:grid-cols-6">
                 {h.pipeline.map((p) => (
                   <Link key={p.key} href={`/admin/projects?stage=${p.key}`} className="group rounded-xl border border-line p-3.5 transition hover:border-line-strong hover:bg-surface-2/50">
@@ -80,7 +82,7 @@ export default async function AdminHome() {
           <div className="grid grid-cols-1 gap-6 lg:grid-cols-2">
             {h.perms.projects ? (
               <Card>
-                <CardHeader title="Upcoming deadlines" action={<Link href="/admin/calendar" className="text-sm font-semibold text-accent hover:underline">Calendar</Link>} />
+                <CardHeader title="Upcoming deadlines" action={<Link href="/admin/calendar" className="text-sm font-semibold text-accent-text hover:underline">Calendar</Link>} />
                 {h.deadlines.length ? (
                   <ul className="divide-y divide-line">
                     {h.deadlines.map((d) => (
@@ -97,7 +99,7 @@ export default async function AdminHome() {
             ) : null}
             {h.perms.invoices ? (
               <Card>
-                <CardHeader title="Outstanding invoices" action={<Link href="/admin/invoices" className="text-sm font-semibold text-accent hover:underline">All invoices</Link>} />
+                <CardHeader title="Outstanding invoices" action={<Link href="/admin/invoices" className="text-sm font-semibold text-accent-text hover:underline">All invoices</Link>} />
                 {h.unpaid.length ? (
                   <ul className="divide-y divide-line">
                     {h.unpaid.map((i) => (
@@ -124,7 +126,7 @@ export default async function AdminHome() {
         <aside className="space-y-6">
           {actor.permissions.has("messages:read") ? (
             <Card>
-              <CardHeader title="Unread messages" action={<Link href="/admin/messages" className="text-sm font-semibold text-accent hover:underline">Inbox</Link>} />
+              <CardHeader title="Unread messages" action={<Link href="/admin/messages" className="text-sm font-semibold text-accent-text hover:underline">Inbox</Link>} />
               {h.unreadMessages.length ? (
                 <ul className="divide-y divide-line">
                   {h.unreadMessages.map((m) => (

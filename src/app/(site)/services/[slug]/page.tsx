@@ -81,7 +81,7 @@ export default async function ServicePage({ params }: { params: Promise<{ slug: 
             <ul className="mt-4 grid grid-cols-1 gap-3 sm:grid-cols-2">
               {s.included.map((i) => (
                 <li key={i} className="flex gap-3 text-sm">
-                  <Icon name="check-circle" size={18} className="mt-px shrink-0 text-accent" />
+                  <Icon name="check-circle" size={18} className="mt-px shrink-0 text-accent-text" />
                   {i}
                 </li>
               ))}
@@ -128,7 +128,7 @@ export default async function ServicePage({ params }: { params: Promise<{ slug: 
               <ul className="mt-4 space-y-3 text-sm">
                 {s.deliverables.map((d) => (
                   <li key={d} className="flex gap-3">
-                    <Icon name="film" size={16} className="mt-0.5 shrink-0 text-accent" /> {d}
+                    <Icon name="film" size={16} className="mt-0.5 shrink-0 text-accent-text" /> {d}
                   </li>
                 ))}
               </ul>
@@ -138,7 +138,7 @@ export default async function ServicePage({ params }: { params: Promise<{ slug: 
               <ul className="mt-4 space-y-3 text-sm">
                 {s.exampleDeliverables.map((d) => (
                   <li key={d} className="flex gap-3">
-                    <Icon name="package" size={16} className="mt-0.5 shrink-0 text-accent" /> {d}
+                    <Icon name="package" size={16} className="mt-0.5 shrink-0 text-accent-text" /> {d}
                   </li>
                 ))}
               </ul>

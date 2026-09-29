@@ -35,7 +35,7 @@ export default async function AboutPage() {
               <div key={m.name} className="rounded-[var(--radius-card)] border border-line bg-surface p-6 text-center">
                 <Avatar name={m.name} src={m.imageUrl} size={72} className="mx-auto" />
                 <h3 className="mt-4 font-extrabold">{m.name}</h3>
-                <p className="text-sm text-accent">{m.role}</p>
+                <p className="text-sm text-accent-text">{m.role}</p>
                 {m.bio ? <p className="mt-3 text-sm text-muted">{m.bio}</p> : null}
               </div>
             ))}

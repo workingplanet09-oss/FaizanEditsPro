@@ -179,15 +179,17 @@ async function as(who) {
   await page.reload({ waitUntil: "networkidle" });
   const after = await page.locator("main").getByText(/^V\d+$/).count();
   ok("a new version appears in the list", after > before, `before=${before} after=${after}`);
+  const labels = (await page.locator("main").innerText()).match(/\bV(\d+)\b/g) ?? [];
+  var newest = Math.max(0, ...labels.map((l) => Number(l.slice(1))));
   ok("no console errors", errors.length === 0, errors.join(" | "));
   await ctx.close();
 
   const c = await as("mia@demo.faizaneditspro.test");
   await c.page.goto(`${base}/dashboard/projects`, { waitUntil: "networkidle" });
   await c.page.locator('a[href^="/dashboard/projects/"]', { hasText: "Episode 42" }).first().click();
+  await c.page.waitForURL(/\/dashboard\/projects\/[a-z0-9]{10,}/);
   await c.page.waitForLoadState("networkidle");
-  await c.page.goto(`${c.page.url().split("?")[0]}?tab=videos`, { waitUntil: "networkidle" });
-  ok("client sees the released version", (await c.page.locator("main").innerText()).includes("Re-balanced guest audio") || (await c.page.locator("main").getByText(/V3|V2/).count()) > 0);
+  ok(`client is asked to review the new version (V${newest})`, (await c.page.locator("main").innerText()).includes(`Review V${newest}`));
   await c.ctx.close();
 }
 

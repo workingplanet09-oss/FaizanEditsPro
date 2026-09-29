@@ -22,13 +22,13 @@ export default async function ContactPage({ searchParams }: { searchParams: Prom
           </div>
           <aside className="space-y-5">
             <div className="rounded-[var(--radius-card)] border border-line bg-surface p-6">
-              <Icon name="clock" size={20} className="text-accent" />
+              <Icon name="clock" size={20} className="text-accent-text" />
               <h2 className="mt-3 font-extrabold">Response time</h2>
               <p className="mt-1 text-sm text-muted">{site.contactInfo.responseTime}</p>
             </div>
             {site.booking.enabled ? (
               <div className="rounded-[var(--radius-card)] border border-line bg-surface p-6">
-                <Icon name="calendar" size={20} className="text-accent" />
+                <Icon name="calendar" size={20} className="text-accent-text" />
                 <h2 className="mt-3 font-extrabold">Prefer to talk?</h2>
                 <p className="mt-1 text-sm text-muted">Book a free discovery call and pick a time that suits you.</p>
                 <ButtonLink href="/book" variant="outline" size="sm" className="mt-4">Book a call</ButtonLink>

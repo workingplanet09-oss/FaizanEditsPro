@@ -168,7 +168,7 @@ export function Uploader(props: UploaderProps) {
         <input ref={input} type="file" className="sr-only" multiple={multiple} accept={props.accept} onChange={(e) => e.target.files?.length && (void add(e.target.files), (e.target.value = ""))} aria-label={props.title ?? "Choose files to upload"} />
         <span className="mx-auto flex h-11 w-11 items-center justify-center rounded-xl bg-surface shadow-soft"><Icon name="upload" size={20} /></span>
         <p className="mt-3 text-sm font-bold">{props.title ?? "Drag & drop files here"}</p>
-        <p className="mt-1 text-xs text-muted">{props.hint ?? "or"} <button type="button" onClick={() => input.current?.click()} className="font-bold text-fg underline underline-offset-2 hover:text-accent">browse your computer</button></p>
+        <p className="mt-1 text-xs text-muted">{props.hint ?? "or"} <button type="button" onClick={() => input.current?.click()} className="font-bold text-fg underline underline-offset-2 hover:text-accent-text">browse your computer</button></p>
       </div>
 
       {items.length ? (

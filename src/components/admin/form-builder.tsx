@@ -70,7 +70,7 @@ export function FormBuilder({ form, forms, categories, activeSection }: { form: 
                     <li key={q.id} className={cn("flex flex-wrap items-start gap-x-3 gap-y-2 px-5 py-3.5", q.active === false && "opacity-60")}>
                       <span className="flex flex-col pt-0.5"><button type="button" aria-label="Move up" disabled={i === 0} onClick={() => swap(i, -1)} className="rounded p-0.5 text-subtle hover:text-fg disabled:opacity-25"><Icon name="chevron-up" size={14} /></button><button type="button" aria-label="Move down" disabled={i === section.questions.length - 1} onClick={() => swap(i, 1)} className="rounded p-0.5 text-subtle hover:text-fg disabled:opacity-25"><Icon name="chevron-down" size={14} /></button></span>
                       <div className="min-w-0 flex-1 basis-64">
-                        <button type="button" onClick={() => setEditing(q)} className="text-left text-sm font-bold hover:text-accent hover:underline">{q.text}</button>
+                        <button type="button" onClick={() => setEditing(q)} className="text-left text-sm font-bold hover:text-accent-text hover:underline">{q.text}</button>
                         <div className="mt-1 flex flex-wrap items-center gap-1.5 text-[11px]">
                           <Badge tone="neutral" dot={false} icon={false}>{q.type.toLowerCase().replace("_", " ")}</Badge>
                           {q.required ? <Badge tone="danger" dot={false} icon={false}>required</Badge> : null}

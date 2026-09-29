@@ -52,6 +52,7 @@
     "@types/react": "^19.3.0",
     "@types/react-dom": "^19.3.0",
     "@types/sanitize-html": "^2.16.1",
+    "axe-core": "^4.13.0",
     "dotenv": "^18.0.4",
     "playwright-core": "^1.63.0",
     "postcss": "^8.5.28",

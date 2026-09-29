@@ -13,7 +13,7 @@ export default async function RegisterPage({ searchParams }: { searchParams: Pro
   const actor = await getActor();
   if (actor) redirect(homeForRoles(actor.roleKeys, actor.permissions));
   return (
-    <AuthCard title="Create your account" description="Track projects, review drafts and approve videos — all in one place." footer={<>Already have an account? <Link href="/login" className="font-bold text-fg hover:text-accent">Sign in</Link></>}>
+    <AuthCard title="Create your account" description="Track projects, review drafts and approve videos — all in one place." footer={<>Already have an account? <Link href="/login" className="font-bold text-fg hover:text-accent-text">Sign in</Link></>}>
       <RegisterForm referralCode={ref} />
     </AuthCard>
   );

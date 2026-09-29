@@ -29,7 +29,7 @@ export function NavList({ groups, badges = {}, onNavigate }: { groups: NavGroup[
                     aria-current={active ? "page" : undefined}
                     className={cn("group flex items-center gap-3 rounded-xl px-3 py-2 text-[13.5px] font-semibold transition-colors", active ? "bg-fg text-bg" : "text-muted hover:bg-surface-2 hover:text-fg")}
                   >
-                    <Icon name={i.icon} size={17} className={cn(active ? "text-accent" : "text-subtle group-hover:text-fg")} />
+                    <Icon name={i.icon} size={17} className={cn(active ? "text-accent-text" : "text-subtle group-hover:text-fg")} />
                     <span className="flex-1 truncate">{i.label}</span>
                     {badge ? <span className="rounded-full bg-accent px-1.5 py-0.5 text-[10px] font-extrabold leading-none text-accent-fg">{badge > 99 ? "99+" : badge}</span> : null}
                   </Link>
@@ -90,7 +90,7 @@ export function BottomNav({ items, badges = {} }: { items: { label: string; href
             <li key={i.href}>
               <Link href={i.href} aria-current={active ? "page" : undefined} className={cn("relative flex flex-col items-center gap-1 py-2.5 text-[11px] font-semibold", active ? "text-fg" : "text-subtle")}>
                 <span className="relative">
-                  <Icon name={i.icon} size={20} className={active ? "text-accent" : undefined} />
+                  <Icon name={i.icon} size={20} className={active ? "text-accent-text" : undefined} />
                   {badges[i.href] ? <span className="absolute -right-2 -top-1 flex h-4 min-w-4 items-center justify-center rounded-full bg-accent px-1 text-[9px] font-extrabold text-accent-fg">{badges[i.href]}</span> : null}
                 </span>
                 {i.label}

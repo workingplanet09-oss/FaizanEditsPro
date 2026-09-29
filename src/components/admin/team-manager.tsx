@@ -10,6 +10,7 @@ import { Modal } from "@/components/ui/modal";
 import { Avatar, Badge, Card, CardHeader } from "@/components/ui/primitives";
 import { toMinor, fromMinor } from "@/lib/money";
 import { timeAgo } from "@/lib/format";
+import { Ago } from "@/components/ui/time";
 
 interface Member { id: string; name: string; email: string; status: string; roles: { key: string; name: string }[]; lastLoginAt: string | Date | null; twoFactorEnabled: boolean; projects: number; hourlyCost: number | null }
 interface Role { key: string; name: string; description: string | null; rank: number; permissions: string[] }
@@ -28,7 +29,7 @@ export function TeamManager({ members, roles, meId, isSuper }: { members: Member
               <Avatar name={m.name} size={38} />
               <div className="min-w-0 flex-1 basis-56">
                 <div className="flex flex-wrap items-center gap-2"><b className="text-sm">{m.name}</b>{m.id === meId ? <span className="text-xs text-subtle">(you)</span> : null}{m.status === "INVITED" ? <Badge tone="warning">Invited</Badge> : m.status === "SUSPENDED" ? <Badge tone="danger">Suspended</Badge> : null}{m.twoFactorEnabled ? <Badge tone="success" icon="shield" dot={false}>2FA</Badge> : null}</div>
-                <div className="truncate text-xs text-muted">{m.email} · {m.lastLoginAt ? `seen ${timeAgo(m.lastLoginAt)}` : "never signed in"}</div>
+                <div className="truncate text-xs text-muted">{m.email} · {m.lastLoginAt ? <Ago value={m.lastLoginAt} prefix="seen " /> : "never signed in"}</div>
               </div>
               <div className="flex flex-wrap gap-1">{m.roles.map((r) => <Badge key={r.key} tone={r.key === "super_admin" ? "accent" : "neutral"} dot={false} icon={false}>{r.name}</Badge>)}</div>
               <span className="w-20 text-right text-xs text-subtle">{m.projects} project{m.projects === 1 ? "" : "s"}</span>

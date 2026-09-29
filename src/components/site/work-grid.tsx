@@ -69,7 +69,7 @@ export function WorkGrid({ items, categories }: { items: WorkItem[]; categories:
                   </span>
                 ) : null}
                 {w.beforeVideoUrl && w.afterVideoUrl ? <span className="absolute left-3 top-3 rounded-full bg-black/70 px-2.5 py-1 text-[11px] font-bold text-white backdrop-blur">Before / After</span> : null}
-                {w.isDemo ? <span className="absolute right-3 top-3 rounded-full bg-warning px-2 py-0.5 text-[10px] font-extrabold uppercase text-black">Demo</span> : null}
+                {w.isDemo ? <span className="absolute right-3 top-3 rounded-full bg-warning px-2 py-0.5 text-[10px] font-extrabold uppercase text-warning-fg">Demo</span> : null}
               </button>
               <div className="p-5">
                 <div className="mb-2 flex flex-wrap gap-1.5">
@@ -80,7 +80,7 @@ export function WorkGrid({ items, categories }: { items: WorkItem[]; categories:
                 <p className="mt-1 text-sm text-muted">{[w.clientName, w.industry].filter(Boolean).join(" · ")}</p>
                 {w.platforms.length ? <p className="mt-3 text-xs text-subtle">{w.platforms.join(" · ")}</p> : null}
                 {w.caseStudySlug ? (
-                  <Link href={`/case-studies/${w.caseStudySlug}`} className="mt-4 inline-flex items-center gap-1.5 text-sm font-bold hover:text-accent">
+                  <Link href={`/case-studies/${w.caseStudySlug}`} className="mt-4 inline-flex items-center gap-1.5 text-sm font-bold hover:text-accent-text">
                     View case study <Icon name="arrow" size={14} />
                   </Link>
                 ) : null}
@@ -105,7 +105,7 @@ export function WorkGrid({ items, categories }: { items: WorkItem[]; categories:
             )}
             {open.description ? <p className="text-sm leading-relaxed text-muted">{open.description}</p> : null}
             {open.caseStudySlug ? (
-              <Link href={`/case-studies/${open.caseStudySlug}`} className="inline-flex items-center gap-1.5 font-bold hover:text-accent">
+              <Link href={`/case-studies/${open.caseStudySlug}`} className="inline-flex items-center gap-1.5 font-bold hover:text-accent-text">
                 Read the full case study <Icon name="arrow" size={14} />
               </Link>
             ) : null}

@@ -30,7 +30,7 @@ export default async function LoginPage({ searchParams }: { searchParams: SP }) 
     <AuthCard
       title="Welcome back"
       description="Sign in to your client portal to review videos, approve edits and manage projects."
-      footer={<>New here? <Link href="/register" className="font-bold text-fg hover:text-accent">Create an account</Link> or <Link href="/start-project" className="font-bold text-fg hover:text-accent">start a project</Link></>}
+      footer={<>New here? <Link href="/register" className="font-bold text-fg hover:text-accent-text">Create an account</Link> or <Link href="/start-project" className="font-bold text-fg hover:text-accent-text">start a project</Link></>}
     >
       {one(sp.expired) ? <Notice>Your session expired. Please sign in again.</Notice> : null}
       {one(sp.reset) ? <Notice tone="success">Password updated. Sign in with your new password.</Notice> : null}
