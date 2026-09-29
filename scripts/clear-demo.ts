@@ -22,8 +22,22 @@ async function main() {
   }
 
   // 2) delete flagged rows; FK order is resolved by retrying until nothing more can be removed
-  const demoUserIds = (await db.user.findMany({ where: { isDemo: true }, select: { id: true } })).map((u) => u.id);
+  const demoUsers = await db.user.findMany({ where: { isDemo: true }, select: { id: true, email: true } });
+  const demoUserIds = demoUsers.map((u) => u.id);
   await db.auditLog.deleteMany({ where: { actorId: { in: demoUserIds } } });
+
+  // Remember which records are about to go — including unflagged ones created for demo clients while exploring (a quote sent,
+  // an invoice paid…). Activity and audit rows about them have no foreign keys, so they are swept by id afterwards.
+  const ids = async (sql: string, ...params: unknown[]) => (await db.$queryRawUnsafe<{ id: string }[]>(sql, ...params)).map((r) => r.id);
+  const clientIds = await ids(`SELECT id FROM clients WHERE "isDemo"`);
+  const leadIds = await ids(`SELECT id FROM leads WHERE "isDemo"`);
+  const orgIds = await ids(`SELECT id FROM organizations WHERE "isDemo"`);
+  const projectIds = await ids(`SELECT id FROM projects WHERE "isDemo" OR "clientId" = ANY ($1::text[])`, clientIds);
+  const invoiceIds = await ids(`SELECT id FROM invoices WHERE "isDemo" OR "clientId" = ANY ($1::text[]) OR "projectId" = ANY ($2::text[])`, clientIds, projectIds);
+  const quoteIds = await ids(`SELECT id FROM quotes WHERE "isDemo" OR "clientId" = ANY ($1::text[]) OR "projectId" = ANY ($2::text[])`, clientIds, projectIds);
+  const contractIds = await ids(`SELECT id FROM contracts WHERE "isDemo" OR "clientId" = ANY ($1::text[]) OR "projectId" = ANY ($2::text[])`, clientIds, projectIds);
+  const paymentIds = await ids(`SELECT id FROM payments WHERE "isDemo" OR "invoiceId" = ANY ($1::text[])`, invoiceIds);
+  const audited: Record<string, string[]> = { client: clientIds, lead: leadIds, organization: orgIds, project: projectIds, invoice: invoiceIds, quote: quoteIds, contract: contractIds, payment: paymentIds, user: demoUserIds };
 
   // History written by demo people that carries no isDemo flag of its own (internal notes, comments, time entries…).
   // Found from the schema itself, so new tables that reference users are covered automatically.
@@ -61,8 +75,25 @@ async function main() {
     pending = next;
   }
 
-  // 3) emails and jobs generated for demo addresses
-  const emails = await db.emailLog.deleteMany({ where: { toEmail: { endsWith: DEMO_DOMAIN } } });
+  // 3) history about the removed records, so a cleared system does not show payments or sign-ins for things that no longer exist
+  let history = 0;
+  for (const [type, entityIds] of Object.entries(audited)) {
+    if (entityIds.length) history += await db.$executeRawUnsafe(`DELETE FROM audit_logs WHERE "entityType" = $1 AND "entityId" = ANY ($2::text[])`, type, entityIds);
+  }
+  history += await db.$executeRawUnsafe(
+    `DELETE FROM activity_logs WHERE "clientId" = ANY ($1::text[]) OR "leadId" = ANY ($2::text[]) OR "projectId" = ANY ($3::text[]) OR "entityId" = ANY ($4::text[])`,
+    clientIds, leadIds, projectIds, [...invoiceIds, ...quoteIds, ...contractIds, ...paymentIds],
+  );
+  if (history) counts["history rows"] = history;
+
+  // Numbering starts again at the beginning once no real document of that kind is left.
+  for (const [key, table] of [["invoice", "invoices"], ["quote", "quotes"], ["contract", "contracts"], ["project", "projects"], ["lead-%", "leads"]] as const) {
+    const [{ n }] = await db.$queryRawUnsafe<{ n: bigint }[]>(`SELECT count(*) AS n FROM ${table}`);
+    if (Number(n) === 0) await db.$executeRawUnsafe(`DELETE FROM counters WHERE key LIKE $1`, key);
+  }
+
+  // 4) emails and jobs generated for demo addresses (including the addresses of the removed demo users)
+  const emails = await db.emailLog.deleteMany({ where: { OR: [{ toEmail: { endsWith: DEMO_DOMAIN } }, { toEmail: { in: demoUsers.map((u) => u.email) } }] } });
   const jobs = await db.job.deleteMany({ where: { status: { in: ["PENDING", "FAILED"] }, payload: { path: [], string_contains: DEMO_DOMAIN } } }).catch(() => ({ count: 0 }));
   await db.auditLog.deleteMany({ where: { message: { contains: DEMO_DOMAIN } } }).catch(() => {});
 

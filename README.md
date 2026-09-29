@@ -89,7 +89,9 @@ Remove everything (rows, generated emails, stored files) at any time:
 npm run db:clear-demo
 ```
 
-Real data is never touched — only rows flagged `isDemo`, plus history written by demo users.
+Real data is never touched. It removes rows flagged `isDemo`, anything you created for a demo client while exploring (a quote, an invoice…), history written by demo users, the activity and audit entries about all of those, and — once no real document of that kind remains — restarts invoice, quote, contract and project numbering.
+
+To confirm a cleared system is genuinely empty, create an admin and run `node scripts/qa-empty.mjs <email> <password>`: it visits every public and admin page and fails on errors or broken values such as `NaN`.
 
 ---
 
@@ -108,6 +110,7 @@ Real data is never touched — only rows flagged `isDemo`, plus history written 
 | `npm run test:e2e` | 32-step business workflow + security checks against a running app |
 | `npm run test:ui` | Browser flows (invoice, contract signing, form builder, automations, version upload) |
 | `node scripts/qa-layout.mjs [--dark]` | Overflow / label / heading / console-error sweep at phone, tablet and desktop widths |
+| `node scripts/qa-empty.mjs <admin-email> <password>` | On a cleared database: every public and admin page renders without errors or broken values (`NaN`, `undefined`) |
 | `TZ_ID=Asia/Karachi node scripts/qa-timezone.mjs` | Loads the portals in a browser set to another time zone and fails on any hydration mismatch |
 | `node scripts/qa-axe.mjs [--dark]` | WCAG 2.1 A/AA audit with axe-core (contrast, ARIA, names, landmarks) on the main public, client, admin and editor pages |
 
@@ -304,7 +307,17 @@ The UI suites use the Chromium that ships with Playwright (`PLAYWRIGHT_BROWSERS_
 
 ## Verification status and known limits
 
-Verified in this repository: type-check, production `next build` (with and without a database), production server start, the 158-check workflow suite, 27 browser checks, layout/a11y sweep across 60+ pages at 375 / 820 / 1440 px in light and dark mode, admin/editor/client authorisation boundaries.
+Verified in this repository (all re-run after the final code change):
+
+* type-check and production `next build` — with and without a database; production server start, sign-in and role redirects
+* the 158-check business-workflow and security suite (`test:e2e`) and the 27 browser flows (`test:ui`)
+* layout sweep across 75+ pages at 375 / 820 / 1440 px in light and dark mode (`qa-layout`): no horizontal overflow, labelled controls, one `<h1>` per page, no console errors
+* axe-core WCAG 2.1 A/AA audit of the public, client, admin and editor pages in light and dark mode (`qa-axe`): zero violations
+* hydration under other time zones — Asia/Karachi and America/Los_Angeles (`qa-timezone`)
+* an emptied database: every public and admin page renders cleanly (`qa-empty`), and `db:clear-demo` leaves no demo records, history or document numbering behind
+* admin / editor / client authorisation boundaries, including cross-client access attempts (IDOR)
+
+Keyboard-only use and screen-reader announcements were reviewed structurally (labels, landmarks, roles, focus rings) but not with real assistive technology.
 
 Not verified end to end, and worth a smoke test in your own environment:
 
