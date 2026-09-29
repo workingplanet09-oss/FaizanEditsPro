@@ -9,6 +9,9 @@ import { contrastOn } from "@/lib/color";
 import { SETTING_DEFAULTS } from "@/lib/site-defaults";
 import { env } from "@/server/env";
 
+/** Everything here is driven by database content and per-request settings, so nothing is prerendered at build time (builds need no database). */
+export const dynamic = "force-dynamic";
+
 async function safeSite() {
   try {
     return await getSiteContext();

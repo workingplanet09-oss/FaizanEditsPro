@@ -31,7 +31,8 @@ export function hit(key: string, limit: number, windowMs: number): { ok: boolean
 }
 
 export function rateLimit(key: string, limit: number, windowMs: number, message = "Too many attempts. Please wait a moment and try again.") {
-  if (process.env.DISABLE_RATE_LIMIT === "true") return;
+  // Test switch for local runs only — ignored in production so a stray variable can never turn protection off.
+  if (process.env.NODE_ENV !== "production" && process.env.DISABLE_RATE_LIMIT === "true") return;
   const r = hit(key, limit, windowMs);
   if (!r.ok) throw new AppError("RATE_LIMITED", message, { retryAfterSec: r.retryAfterSec });
 }

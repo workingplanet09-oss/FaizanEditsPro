@@ -12,6 +12,17 @@ function required(name: string, devFallback: string): string {
   return devFallback;
 }
 
+/** Weak or placeholder secrets are refused at startup in production (but not while `next build` collects pages). */
+function assertProductionSecrets() {
+  if (!isProd || e.NEXT_PHASE === "phase-production-build") return;
+  const secret = e.AUTH_SECRET ?? "";
+  if (secret.length < 32 || /change-me|dev-only/i.test(secret)) {
+    throw new Error("AUTH_SECRET must be a random string of at least 32 characters in production. Generate one with: openssl rand -base64 48");
+  }
+  if (e.DEMO_MODE === "true" || e.DEMO_MODE === "1") console.warn("[security] DEMO_MODE is on in production: demo logins and console-only providers are enabled. Set DEMO_MODE=false for a real deployment.");
+}
+assertProductionSecrets();
+
 const bool = (v: string | undefined, d = false) => (v === undefined || v === "" ? d : v === "true" || v === "1");
 
 export const env = {
