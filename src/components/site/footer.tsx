@@ -11,7 +11,7 @@ export function SiteFooter({ site }: { site: SiteContext }) {
   const socials = Object.entries(business.socials ?? {}).filter(([, v]) => v);
   return (
     <footer className="dark-zone relative border-t border-line">
-      <div className="container-page grid gap-12 py-16 lg:grid-cols-[1.4fr_2fr]">
+      <div className="container-page grid grid-cols-1 gap-12 py-16 lg:grid-cols-[1.4fr_2fr]">
         <div>
           <Logo name={business.name} logoUrl={business.logoUrl} />
           <p className="mt-4 max-w-sm text-sm leading-relaxed text-muted">{footer.description}</p>

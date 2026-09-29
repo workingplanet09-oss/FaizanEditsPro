@@ -44,16 +44,16 @@ export default async function ClientPage({ params, searchParams }: { params: Pro
       <TabNav basePath={`/admin/clients/${id}`} active={tab} tabs={[{ key: "overview", label: "Overview" }, { key: "projects", label: "Projects", count: projects.total }, { key: "billing", label: "Billing" }, { key: "files", label: "Files & brand" }, { key: "messages", label: "Messages" }, { key: "notes", label: "Notes" }]} />
 
       {tab === "overview" ? (
-        <div className="grid gap-6 xl:grid-cols-[1fr_24rem]">
+        <div className="grid grid-cols-1 gap-6 xl:grid-cols-[1fr_24rem]">
           <div className="space-y-6">
-            <div className="grid gap-3 sm:grid-cols-3">
+            <div className="grid grid-cols-1 gap-3 sm:grid-cols-3">
               <Card className="p-4"><div className="text-xs font-medium text-muted">Lifetime revenue</div><div className="mt-1.5 text-2xl font-extrabold tabular-nums"><MoneyMap value={life.revenue} /></div></Card>
               <Card className="p-4"><div className="text-xs font-medium text-muted">Projects</div><div className="mt-1.5 text-2xl font-extrabold tabular-nums">{life.totalProjects}</div><div className="text-xs text-subtle">{life.activeProjects} active</div></Card>
               <Card className="p-4"><div className="text-xs font-medium text-muted">Avg. project value</div><div className="mt-1.5 text-2xl font-extrabold tabular-nums"><MoneyMap value={life.averageProjectValue} /></div></Card>
             </div>
             <Card>
               <CardHeader title="Company" />
-              <dl className="grid gap-4 px-5 pb-5 sm:grid-cols-3">
+              <dl className="grid grid-cols-1 gap-4 px-5 pb-5 sm:grid-cols-3">
                 <Meta label="Industry">{c.industry}</Meta><Meta label="Country">{c.country}</Meta><Meta label="Time zone">{c.timezone}</Meta>
                 <Meta label="Website">{c.website ? <a className="text-accent hover:underline" href={c.website} target="_blank" rel="noreferrer">{c.website}</a> : null}</Meta>
                 <Meta label="Source">{c.source}</Meta><Meta label="Client since">{formatDate(c.createdAt)}</Meta>
@@ -133,7 +133,7 @@ async function FilesTab({ clientId, actor, canWrite }: { clientId: string; actor
     <div className="space-y-6">
       <Card>
         <CardHeader title="Brand kit" description="Maintained by the client; you can edit it too." />
-        <div className="grid gap-6 px-5 pb-6 md:grid-cols-2">
+        <div className="grid grid-cols-1 gap-6 px-5 pb-6 md:grid-cols-2">
           <div><h4 className="mb-2 text-xs font-bold uppercase tracking-wider text-subtle">Colours</h4>{colors.length ? <ul className="flex flex-wrap gap-3">{colors.map((c) => <li key={c.hex + c.name} className="flex items-center gap-2 text-sm"><span className="h-7 w-7 rounded-lg border border-line" style={{ background: c.hex }} />{c.name || c.hex}<span className="font-mono text-xs text-subtle">{c.hex}</span></li>)}</ul> : <p className="text-sm text-muted">None saved.</p>}</div>
           <div><h4 className="mb-2 text-xs font-bold uppercase tracking-wider text-subtle">Fonts</h4>{fonts.length ? <ul className="space-y-1 text-sm">{fonts.map((f) => <li key={f.name}><b>{f.name}</b> <span className="text-muted">{f.usage}</span></li>)}</ul> : <p className="text-sm text-muted">None saved.</p>}</div>
           {kit.musicPreference ? <div className="md:col-span-2"><h4 className="mb-1 text-xs font-bold uppercase tracking-wider text-subtle">Music</h4><p className="text-sm">{kit.musicPreference}</p></div> : null}

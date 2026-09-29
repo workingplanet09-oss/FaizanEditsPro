@@ -27,7 +27,7 @@ export default async function ContractPage({ params }: { params: Promise<{ id: s
         description={<>{c.title} · <Link className="font-semibold text-fg hover:underline" href={`/dashboard/projects/${c.project.id}`}>{c.project.name}</Link></>}
         actions={<ButtonLink href={`/api/contracts/${c.id}/download`} variant="outline" icon="download">Download / print</ButtonLink>}
       />
-      <div className="grid gap-6 lg:grid-cols-[1fr_22rem]">
+      <div className="grid grid-cols-1 gap-6 lg:grid-cols-[1fr_22rem]">
         <div className="space-y-6">
           <Card className="p-6 sm:p-10">
             <div className="prose-doc space-y-7">

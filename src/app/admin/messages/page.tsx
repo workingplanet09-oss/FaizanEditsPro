@@ -24,7 +24,7 @@ export default async function MessagesAdmin({ searchParams }: { searchParams: Se
       {!threads.length ? (
         <Card><EmptyState icon="message" title="No conversations yet" description="When clients message you from their portal, threads appear here." /></Card>
       ) : (
-        <div className="grid gap-5 lg:grid-cols-[22rem_1fr]">
+        <div className="grid grid-cols-1 gap-5 lg:grid-cols-[22rem_1fr]">
           <Card className="max-h-[38rem] overflow-y-auto">
             <ul className="divide-y divide-line" aria-label="Conversations">
               {threads.map((t) => {

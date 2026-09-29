@@ -143,7 +143,7 @@ export function ActivityFeed({ items, showProject = true, empty = "Nothing has h
 const ATTN_ICON: Record<string, string> = { quote: "clipboard", contract: "sign", invoice: "receipt", setup: "rocket", files: "upload", review: "play", approve: "check-circle", download: "download" };
 export function AttentionList({ items }: { items: { key: string; kind: string; title: string; detail: string; cta: string; href: string; tone: "warning" | "accent" | "success" }[] }) {
   return (
-    <ul className="grid gap-3 md:grid-cols-2 xl:grid-cols-3">
+    <ul className="grid grid-cols-1 gap-3 md:grid-cols-2 xl:grid-cols-3">
       {items.map((a) => (
         <li key={a.key}>
           <Link href={a.href} className={cn("group flex h-full items-start gap-3.5 rounded-2xl border p-4 transition hover:-translate-y-0.5 hover:shadow-lift", a.tone === "warning" ? "border-warning/30 bg-warning-soft/60" : a.tone === "success" ? "border-success/30 bg-success-soft/60" : "border-accent/40 bg-accent-soft/60")}>

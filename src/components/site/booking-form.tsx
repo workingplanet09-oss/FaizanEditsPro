@@ -102,7 +102,7 @@ export function BookingForm({ types }: { types: MeetingType[] }) {
     >
       <fieldset>
         <legend className="mb-3 text-sm font-bold">1 · What would you like to talk about?</legend>
-        <div className="grid gap-3 sm:grid-cols-2">
+        <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
           {types.map((t) => (
             <label key={t.key} className={cn("cursor-pointer rounded-2xl border p-4 transition", type === t.key ? "border-accent bg-accent-soft" : "border-line-strong bg-surface hover:border-subtle")}>
               <input type="radio" name="type" className="sr-only" checked={type === t.key} onChange={() => setType(t.key)} />
@@ -142,7 +142,7 @@ export function BookingForm({ types }: { types: MeetingType[] }) {
 
       <fieldset className="space-y-5">
         <legend className="mb-3 text-sm font-bold">3 · Your details</legend>
-        <div className="grid gap-5 sm:grid-cols-2">
+        <div className="grid grid-cols-1 gap-5 sm:grid-cols-2">
           <Field label="Name" required error={fields.name}>{(p) => <Input {...p} value={v.name} onChange={(e) => setV({ ...v, name: e.target.value })} autoComplete="name" />}</Field>
           <Field label="Email" required error={fields.email}>{(p) => <Input {...p} type="email" value={v.email} onChange={(e) => setV({ ...v, email: e.target.value })} autoComplete="email" />}</Field>
           <Field label="Phone" error={fields.phone}>{(p) => <Input {...p} type="tel" value={v.phone} onChange={(e) => setV({ ...v, phone: e.target.value })} />}</Field>

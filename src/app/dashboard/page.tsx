@@ -22,7 +22,7 @@ export default async function ClientDashboard() {
     return (
       <>
         <PageHeader title={`${greeting()}, ${first}`} description="Welcome to your client portal. This is where you'll follow your project from quote to final delivery." />
-        <div className="grid gap-6 lg:grid-cols-[1fr_22rem]">
+        <div className="grid grid-cols-1 gap-6 lg:grid-cols-[1fr_22rem]">
           <Card className="p-2">
             <EmptyState
               icon="film"
@@ -59,20 +59,20 @@ export default async function ClientDashboard() {
         )}
       </section>
 
-      <div className="mb-8 grid gap-3 sm:grid-cols-2 lg:grid-cols-4">
+      <div className="mb-8 grid grid-cols-1 gap-3 sm:grid-cols-2 lg:grid-cols-4">
         <Stat label="Active projects" value={open.length} icon="film" href="/dashboard/projects" />
         <Stat label="Ready for review" value={inReview} icon="play" tone={inReview ? "warning" : undefined} sub={inReview ? "Watch and approve" : "Nothing waiting"} />
         <Stat label="Unread messages" value={home.unreadMessages} icon="message" tone={home.unreadMessages ? "accent" : undefined} href="/dashboard/messages" />
         <Stat label="Delivered" value={delivered.length} icon="check-circle" tone="success" sub="Completed projects" href="/dashboard/projects?tab=delivered" />
       </div>
 
-      <div className="grid gap-6 xl:grid-cols-[1fr_24rem]">
+      <div className="grid grid-cols-1 gap-6 xl:grid-cols-[1fr_24rem]">
         <section aria-labelledby="proj">
           <div className="mb-3 flex items-center justify-between">
             <h2 id="proj" className="text-lg font-extrabold tracking-tight">Your projects</h2>
             <Link href="/dashboard/projects" className="text-sm font-semibold text-accent hover:underline">View all</Link>
           </div>
-          <div className="grid gap-4 md:grid-cols-2">
+          <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
             {open.slice(0, 6).map((p) => <ProjectCard key={p.id} p={p} />)}
             {!open.length ? <Card className="md:col-span-2"><EmptyState icon="film" title="No active projects" description="Everything is delivered. Ready for the next one?" action={<ButtonLink href="/start-project">Start a project</ButtonLink>} /></Card> : null}
           </div>

@@ -26,7 +26,7 @@ export default async function ExportsPage() {
   return (
     <>
       <PageHeader title="Exports" description="Download your data as CSV. Files open cleanly in Excel and Google Sheets; formula-like cells are neutralised for safety." />
-      <div className="grid gap-4 md:grid-cols-2 xl:grid-cols-3">
+      <div className="grid grid-cols-1 gap-4 md:grid-cols-2 xl:grid-cols-3">
         {list.map((e) => (
           <Card key={e.key} className="flex flex-col p-5">
             <div className="flex items-start gap-3"><span className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-surface-2"><Icon name={e.icon} size={18} /></span><div><h3 className="font-extrabold">{e.label}</h3><p className="mt-0.5 text-sm text-muted">{e.description}</p></div></div>

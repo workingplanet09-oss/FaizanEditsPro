@@ -17,7 +17,7 @@ export default async function CaseStudiesPage() {
       <PageHero eyebrow="Case studies" title="The problem, the edit, the result." description="Each story shows the brief, our approach and the outcomes the client actually saw." />
       <Section>
         {cases.length ? (
-          <div className="grid gap-6 md:grid-cols-2">
+          <div className="grid grid-cols-1 gap-6 md:grid-cols-2">
             {cases.map((c, i) => (
               <Reveal key={c.id} delay={(i % 2) * 80}>
                 <Link href={`/case-studies/${c.slug}`} className="group block overflow-hidden rounded-[var(--radius-card)] border border-line bg-surface transition duration-300 hover:-translate-y-1 hover:shadow-lift">

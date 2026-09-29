@@ -464,7 +464,7 @@ async function main() {
   for (const [i, p] of P.entries()) {
     const slug = p[0].toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/(^-|-$)/g, "");
     await db.portfolioProject.create({
-      data: { workspaceId: ws.id, slug, title: p[0], category: p[1], clientName: p[2], projectType: p[3], platforms: [...p[4]], videoUrl: p[5] ?? undefined, thumbnailUrl: thumbs(p[6]), featured: p[7], sortOrder: i, isDemo: true, description: `A ${p[1].toLowerCase()} edit for ${p[2]} — sample project.`, tags: [p[3]], results: p[7] ? [{ label: "Avg. watch time", value: "+38%" }, { label: "Turnaround", value: "3 days" }] : undefined },
+      data: { workspaceId: ws.id, slug, title: p[0], category: p[1], clientName: p[2], projectType: p[3], platforms: [...p[4]], videoUrl: p[5] ?? undefined, thumbnailUrl: thumbs(p[6]), featured: p[7], sortOrder: i, isDemo: true, description: `A ${p[1].toLowerCase()} edit for ${p[2]} — sample project.`, tags: [p[3]], results: p[7] ? { "Avg. watch time": "+38%", Turnaround: "3 days" } : undefined },
     });
   }
   const pf = await db.portfolioProject.findMany({ where: { workspaceId: ws.id, isDemo: true }, orderBy: { sortOrder: "asc" }, take: 3 });
@@ -479,7 +479,7 @@ async function main() {
         workspaceId: ws.id, portfolioProjectId: pf[i]?.id, slug: c.t.toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/(^-|-$)/g, "").slice(0, 60), title: c.t, clientName: c.c, industry: c.i, summary: c.s,
         problem: "Video production was slow and inconsistent, with feedback scattered across email and chat.", objective: "A repeatable pipeline: brief → draft → feedback → approval, with predictable turnaround.",
         strategy: "A dedicated editor, a structured brief and timestamped review on every draft.", creativeDirection: "Clean, cinematic, on-brand motion with tasteful sound design.",
-        results: [{ label: "Turnaround", value: "3 days" }, { label: "Revision rounds", value: "1.4 avg" }, { label: "Videos / month", value: "12" }], clientFeedback: "The process is what makes it — I always know where my project is.", feedbackAuthor: c.c,
+        results: { Turnaround: "3 days", "Revision rounds": "1.4 avg", "Videos / month": "12" }, clientFeedback: "The process is what makes it — I always know where my project is.", feedbackAuthor: c.c,
         deliverables: ["Master edit", "Social cut-downs", "Captions"], timeline: "3 weeks", heroImage: thumbs(i + 1), isDemo: true,
       },
     });

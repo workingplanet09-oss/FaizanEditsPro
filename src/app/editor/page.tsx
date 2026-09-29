@@ -24,7 +24,7 @@ export default async function EditorHome() {
     <>
       <PageHeader title={`${greeting()}, ${first}`} description="What's on your plate today." />
 
-      <div className="mb-6 grid gap-3 sm:grid-cols-2 xl:grid-cols-4">
+      <div className="mb-6 grid grid-cols-1 gap-3 sm:grid-cols-2 xl:grid-cols-4">
         <Stat label="Active projects" value={h.projects.length} icon="film" href="/editor/projects" />
         <Stat label="Tasks due today" value={h.tasksToday.length} sub={overdueTasks ? `${overdueTasks} overdue` : undefined} tone={overdueTasks ? "danger" : undefined} icon="checklist" href="/editor/tasks" />
         <Stat label="Open revisions" value={h.revisions.length} tone={h.revisions.length ? "warning" : undefined} icon="refresh" href="/editor/revisions" />
@@ -33,7 +33,7 @@ export default async function EditorHome() {
 
       {can(actor, "time:track") ? <div className="mb-6 max-w-xl"><TimerWidget running={timer as any} base="/editor" /></div> : null}
 
-      <div className="grid gap-6 lg:grid-cols-[1.3fr_1fr]">
+      <div className="grid grid-cols-1 gap-6 lg:grid-cols-[1.3fr_1fr]">
         <div className="space-y-6">
           <Card>
             <CardHeader title="Today's tasks" description="Due today, overdue or in progress." action={<Link href="/editor/tasks" className="text-sm font-semibold text-accent hover:underline">All tasks</Link>} />

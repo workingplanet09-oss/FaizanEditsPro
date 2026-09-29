@@ -33,7 +33,7 @@ export function TimePanel({ projectId, entries, running, canTrack }: { projectId
     <Card>
       <CardHeader title="Time tracking" description={`${hm(total)} logged on this project`} />
       {canTrack ? (
-        <div className="grid gap-3 px-5 pb-4 sm:grid-cols-[1fr_auto_auto]">
+        <div className="grid grid-cols-1 gap-3 px-5 pb-4 sm:grid-cols-[1fr_auto_auto]">
           <Field label="Note" optional={false}>{(p) => <Input {...p} value={note} onChange={(e) => setNote(e.target.value)} placeholder="What are you working on?" />}</Field>
           <div className="flex items-end gap-2">
             {runningHere ? (

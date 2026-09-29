@@ -23,7 +23,7 @@ export function NewRetainer({ clients, currencies, defaultCurrency, plans }: { c
     <>
       <Button icon="plus" variant="dark" onClick={() => setOpen(true)}>New retainer</Button>
       <Modal open={open} onClose={() => setOpen(false)} size="lg" title="New retainer" description="A monthly allowance billed automatically each period." footer={<><Button variant="ghost" onClick={() => setOpen(false)}>Cancel</Button><Button loading={create.pending} disabled={!v.clientId || v.name.trim().length < 2} onClick={() => void create.run()}>Create retainer</Button></>}>
-        <div className="grid gap-4 sm:grid-cols-2">
+        <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
           {create.error ? <p role="alert" className="rounded-xl bg-danger-soft px-4 py-3 text-sm font-medium text-danger sm:col-span-2">{create.error}</p> : null}
           <Field label="Client" required className="sm:col-span-2">{(p) => <Select {...p} value={v.clientId} onChange={set("clientId")}><option value="">Choose…</option>{clients.map((c) => <option key={c.id} value={c.id}>{c.label}</option>)}</Select>}</Field>
           {plans.length ? <Field label="Start from a plan" className="sm:col-span-2">{(p) => <Select {...p} value={v.planId} onChange={(e) => pickPlan(e.target.value)}><option value="">Custom</option>{plans.map((c) => <option key={c.id} value={c.id}>{c.name}</option>)}</Select>}</Field> : null}

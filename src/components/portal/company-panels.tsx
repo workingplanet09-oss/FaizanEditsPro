@@ -18,7 +18,7 @@ export function CompanyForm({ clientId, initial, canEdit }: { clientId: string; 
   return (
     <Card>
       <CardHeader title="Company & billing" description="Shown on invoices and contracts." />
-      <form onSubmit={(e) => (e.preventDefault(), void go.run())} className="grid gap-4 px-5 pb-6 sm:grid-cols-2">
+      <form onSubmit={(e) => (e.preventDefault(), void go.run())} className="grid grid-cols-1 gap-4 px-5 pb-6 sm:grid-cols-2">
         <Field label="Company name" required error={go.fields.companyName}>{(p) => <Input {...p} disabled={!canEdit} value={v.companyName} onChange={set("companyName")} autoComplete="organization" />}</Field>
         <Field label="Industry">{(p) => <Input {...p} disabled={!canEdit} value={v.industry} onChange={set("industry")} />}</Field>
         <Field label="Website">{(p) => <Input {...p} type="url" disabled={!canEdit} value={v.website} onChange={set("website")} />}</Field>

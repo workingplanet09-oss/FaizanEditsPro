@@ -110,7 +110,7 @@ function Week({ date, byDay, today }: { date: Date; byDay: Map<string, CalEvent[
   const start = startOfWeek(date);
   const days = Array.from({ length: 7 }, (_, i) => new Date(start.getFullYear(), start.getMonth(), start.getDate() + i));
   return (
-    <div className="grid gap-3 md:grid-cols-7">
+    <div className="grid grid-cols-1 gap-3 md:grid-cols-7">
       {days.map((d) => {
         const list = byDay.get(ymd(d)) ?? [];
         return (

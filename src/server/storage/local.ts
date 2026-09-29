@@ -4,13 +4,13 @@ import { env } from "../env";
 import { signPayload } from "../auth/crypto";
 import type { DownloadOptions, StorageProvider, UploadTarget } from "./types";
 
-export const localRoot = () => path.resolve(process.cwd(), env.storage.localDir);
+export const localRoot = () => path.resolve(/* turbopackIgnore: true */ process.cwd(), env.storage.localDir);
 
 /** Resolves a storage key to a path inside the storage root, refusing traversal. */
 export function localPath(key: string): string {
   if (!key || key.includes("\0") || key.split("/").some((seg) => seg === ".." || seg === "")) throw new Error("Invalid storage key");
   const root = localRoot();
-  const full = path.resolve(root, key);
+  const full = path.resolve(/* turbopackIgnore: true */ root, key);
   if (!full.startsWith(root + path.sep)) throw new Error("Invalid storage key");
   return full;
 }

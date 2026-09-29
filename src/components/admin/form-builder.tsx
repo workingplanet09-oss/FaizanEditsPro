@@ -45,7 +45,7 @@ export function FormBuilder({ form, forms, categories, activeSection }: { form: 
     void mv.run(ids);
   };
   return (
-    <div className="grid gap-6 lg:grid-cols-[16rem_1fr]">
+    <div className="grid grid-cols-1 gap-6 lg:grid-cols-[16rem_1fr]">
       <nav aria-label="Sections" className="space-y-1">
         <div className="mb-3 flex gap-1 rounded-xl bg-surface-2 p-1 text-sm font-semibold">
           {forms.map((f) => <a key={f.key} href={`/admin/forms?form=${f.key}`} aria-current={f.key === form.key ? "page" : undefined} className={cn("flex-1 rounded-lg px-2 py-1.5 text-center", f.key === form.key ? "bg-surface shadow-soft" : "text-muted")}>{f.key === "inquiry" ? "Inquiry" : "Project brief"}</a>)}
@@ -132,7 +132,7 @@ function QuestionEditor({ q, formKey, sectionKey, sections, categories, all, onC
       footer={<><Button variant="ghost" onClick={onClose}>Cancel</Button><Button loading={save.pending} disabled={v.text.trim().length < 3} onClick={() => void save.run()}>{q ? "Save changes" : "Add question"}</Button></>}>
       <div className="space-y-7">
         {save.error && !Object.keys(save.fields).length ? <p role="alert" className="rounded-xl bg-danger-soft px-4 py-3 text-sm font-medium text-danger">{save.error}</p> : null}
-        <section className="grid gap-4 sm:grid-cols-2">
+        <section className="grid grid-cols-1 gap-4 sm:grid-cols-2">
           <Field label="Question" required className="sm:col-span-2" error={save.fields.text}>{(p) => <Input {...p} value={v.text} onChange={(e) => setV({ ...v, text: e.target.value, key: q ? v.key : slug(e.target.value) })} />}</Field>
           <Field label="Answer type" optional={false}>{(p) => <Select {...p} value={v.type} onChange={(e) => setV({ ...v, type: e.target.value as QuestionDef["type"] })}>{TYPES.map((t) => <option key={t} value={t}>{t.toLowerCase().replace("_", " ")}</option>)}</Select>}</Field>
           <Field label="Section" optional={false}>{(p) => <Select {...p} value={v.sectionKey} onChange={(e) => setV({ ...v, sectionKey: e.target.value })}>{sections.map((s) => <option key={s.key} value={s.key}>{s.title}</option>)}</Select>}</Field>
@@ -148,7 +148,7 @@ function QuestionEditor({ q, formKey, sectionKey, sections, categories, all, onC
             <p className="mb-3 text-xs text-muted">Choose which extra question groups an option unlocks — that's how "Real estate" adds property questions.</p>
             <div className="space-y-2">
               {opts.map((o, i) => (
-                <div key={i} className="grid gap-2 rounded-xl border border-line p-3 sm:grid-cols-[1fr_1fr_1fr_auto]">
+                <div key={i} className="grid grid-cols-1 gap-2 rounded-xl border border-line p-3 sm:grid-cols-[1fr_1fr_1fr_auto]">
                   <Input aria-label="Option label" placeholder="Label" value={o.label} onChange={(e) => setOpts(opts.map((x, j) => (j === i ? { ...x, label: e.target.value, value: x.value && slug(x.label) !== x.value ? x.value : slug(e.target.value) } : x)))} />
                   <Input aria-label="Option value" className="font-mono" placeholder="value" value={o.value} onChange={(e) => setOpts(opts.map((x, j) => (j === i ? { ...x, value: slug(e.target.value) } : x)))} />
                   <select aria-label="Adds question group" value={o.categoryKeys[0] ?? ""} onChange={(e) => setOpts(opts.map((x, j) => (j === i ? { ...x, categoryKeys: e.target.value ? [e.target.value] : [] } : x)))} className="h-11 rounded-xl border border-line-strong bg-surface px-3 text-sm"><option value="">Adds no group</option>{categories.filter((c) => c.key !== "COMMON").map((c) => <option key={c.key} value={c.key}>Adds: {c.name}</option>)}</select>
@@ -166,7 +166,7 @@ function QuestionEditor({ q, formKey, sectionKey, sections, categories, all, onC
           {conds.length > 1 ? <div className="mb-3 flex items-center gap-2 text-sm">Match <select aria-label="Match mode" value={mode} onChange={(e) => setMode(e.target.value as "all" | "any")} className="h-9 rounded-lg border border-line-strong bg-surface px-2 font-semibold"><option value="all">all conditions</option><option value="any">any condition</option></select></div> : null}
           <div className="space-y-2">
             {conds.map((c, i) => (
-              <div key={i} className="grid gap-2 sm:grid-cols-[1.4fr_1fr_1.2fr_auto]">
+              <div key={i} className="grid grid-cols-1 gap-2 sm:grid-cols-[1.4fr_1fr_1.2fr_auto]">
                 <select aria-label="Question" value={c.field} onChange={(e) => setConds(conds.map((x, j) => (j === i ? { ...x, field: e.target.value } : x)))} className="h-11 rounded-xl border border-line-strong bg-surface px-3 text-sm"><option value="">Choose question…</option>{others.map((o) => <option key={o.key} value={o.key}>{o.text.slice(0, 60)}</option>)}</select>
                 <select aria-label="Operator" value={c.op} onChange={(e) => setConds(conds.map((x, j) => (j === i ? { ...x, op: e.target.value } : x)))} className="h-11 rounded-xl border border-line-strong bg-surface px-3 text-sm">{OPS.map(([k, l]) => <option key={k} value={k}>{l}</option>)}</select>
                 {NO_VALUE.has(c.op) ? <span /> : <Input aria-label="Value" placeholder={["in", "nin"].includes(c.op) ? "a, b, c" : "value"} value={c.value} onChange={(e) => setConds(conds.map((x, j) => (j === i ? { ...x, value: e.target.value } : x)))} />}

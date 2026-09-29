@@ -13,7 +13,7 @@ export default async function AboutPage() {
     <>
       <PageHero eyebrow={`About ${site.business.name}`} title={about.headline} />
       <Section>
-        <div className="grid gap-12 lg:grid-cols-[1.1fr_0.9fr]">
+        <div className="grid grid-cols-1 gap-12 lg:grid-cols-[1.1fr_0.9fr]">
           <Reveal className="space-y-5 text-lg leading-relaxed text-muted">
             {about.story.split(/\n{2,}/).map((p, i) => <p key={i}>{p}</p>)}
           </Reveal>
@@ -30,7 +30,7 @@ export default async function AboutPage() {
       {about.team.length ? (
         <Section tone="alt">
           <SectionHeading eyebrow="Team" title="The people behind the edits." />
-          <div className="grid gap-5 sm:grid-cols-2 lg:grid-cols-4">
+          <div className="grid grid-cols-1 gap-5 sm:grid-cols-2 lg:grid-cols-4">
             {about.team.map((m) => (
               <div key={m.name} className="rounded-[var(--radius-card)] border border-line bg-surface p-6 text-center">
                 <Avatar name={m.name} src={m.imageUrl} size={72} className="mx-auto" />

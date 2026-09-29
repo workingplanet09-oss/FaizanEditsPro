@@ -341,7 +341,7 @@ export function ReviewPlayer({ base, staff, me, project, versions, current, comm
         </div>
       </div>
 
-      <div className="grid gap-5 lg:grid-cols-[minmax(0,1fr)_24rem] xl:grid-cols-[minmax(0,1fr)_26rem]">
+      <div className="grid grid-cols-1 gap-5 lg:grid-cols-[minmax(0,1fr)_24rem] xl:grid-cols-[minmax(0,1fr)_26rem]">
         {/* ───── player ───── */}
         <div>
           <div

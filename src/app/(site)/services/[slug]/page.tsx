@@ -73,12 +73,12 @@ export default async function ServicePage({ params }: { params: Promise<{ slug: 
       </PageHero>
 
       <Section>
-        <div className="grid gap-12 lg:grid-cols-[1.2fr_0.8fr]">
+        <div className="grid grid-cols-1 gap-12 lg:grid-cols-[1.2fr_0.8fr]">
           <Reveal>
             <h2 className="text-2xl font-extrabold tracking-tight sm:text-3xl">What you get</h2>
             {s.description ? <div className="prose-lite mt-5 text-muted" dangerouslySetInnerHTML={{ __html: renderMarkdown(s.description) }} /> : null}
             <h3 className="mt-10 text-lg font-extrabold">Included in every project</h3>
-            <ul className="mt-4 grid gap-3 sm:grid-cols-2">
+            <ul className="mt-4 grid grid-cols-1 gap-3 sm:grid-cols-2">
               {s.included.map((i) => (
                 <li key={i} className="flex gap-3 text-sm">
                   <Icon name="check-circle" size={18} className="mt-px shrink-0 text-accent" />
@@ -122,7 +122,7 @@ export default async function ServicePage({ params }: { params: Promise<{ slug: 
       {s.deliverables.length || s.exampleDeliverables.length ? (
         <Section tone="alt">
           <SectionHeading eyebrow="Deliverables" title="Exactly what lands in your portal." />
-          <div className="grid gap-5 md:grid-cols-2">
+          <div className="grid grid-cols-1 gap-5 md:grid-cols-2">
             <div className="rounded-[var(--radius-card)] border border-line bg-surface p-7">
               <h3 className="font-extrabold">Standard deliverables</h3>
               <ul className="mt-4 space-y-3 text-sm">
@@ -161,7 +161,7 @@ export default async function ServicePage({ params }: { params: Promise<{ slug: 
 
       <Section>
         <SectionHeading eyebrow="Workflow" title="How a project runs." description={s.revisionPolicy ?? site.business.revisionPolicy} />
-        <ol className="grid gap-4 md:grid-cols-5">
+        <ol className="grid grid-cols-1 gap-4 md:grid-cols-5">
           {(workflow.length ? workflow : ["Tell us what you need", "Receive a quote", "Onboard & upload", "Review & revise", "Approve & download"]).map((w, i) => (
             <li key={w} className="rounded-[var(--radius-card)] border border-line bg-surface p-5">
               <span className="flex h-8 w-8 items-center justify-center rounded-full bg-accent-soft font-display text-sm font-extrabold">{i + 1}</span>
@@ -180,7 +180,7 @@ export default async function ServicePage({ params }: { params: Promise<{ slug: 
 
       {faqs.length ? (
         <Section>
-          <div className="grid gap-12 lg:grid-cols-[0.7fr_1.3fr]">
+          <div className="grid grid-cols-1 gap-12 lg:grid-cols-[0.7fr_1.3fr]">
             <SectionHeading eyebrow="FAQ" title={`${s.title}: common questions`} className="mb-0" />
             <FaqList items={faqs} />
           </div>

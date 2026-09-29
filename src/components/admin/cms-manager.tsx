@@ -172,7 +172,7 @@ function Editor({ resource, row, relations, currencyDefault, onClose, onSaved }:
         {groups.map((g) => (
           <section key={g}>
             <h3 className="mb-3 text-xs font-bold uppercase tracking-wider text-subtle">{g}</h3>
-            <div className="grid gap-4 sm:grid-cols-2">
+            <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
               {resource.fields.filter((f) => (f.group ?? "Details") === g).map((f) => (
                 <div key={f.key} className={cn(!f.half && "sm:col-span-2")}>
                   <FieldEditor f={f} value={vals[f.key]} onChange={(v) => set(f.key, v)} error={save.fields[f.key]} relations={relations} locked={!!row && !!f.readOnlyOnEdit} />

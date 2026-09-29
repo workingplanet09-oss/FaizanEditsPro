@@ -34,7 +34,7 @@ export function ClientToolbar({ client, staff, canWrite }: { client: { id: strin
         {canWrite ? <Button variant="outline" icon="send" loading={invite.pending} onClick={() => void invite.run()}>{client.hasUser ? "Resend portal invite" : "Invite to portal"}</Button> : null}
       </div>
       <Modal open={open} onClose={() => setOpen(false)} title="Edit client" footer={<><Button variant="ghost" onClick={() => setOpen(false)}>Cancel</Button><Button loading={patch.pending} onClick={() => void patch.run({ name: v.name, email: v.email, phone: v.phone || null, companyName: v.companyName, industry: v.industry || null, website: v.website || null, country: v.country || null })}>Save changes</Button></>}>
-        <div className="grid gap-4 sm:grid-cols-2">
+        <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
           {patch.error ? <p role="alert" className="rounded-xl bg-danger-soft px-4 py-3 text-sm font-medium text-danger sm:col-span-2">{patch.error}</p> : null}
           <Field label="Contact name" required error={patch.fields.name}>{(p) => <Input {...p} value={v.name} onChange={(e) => setV({ ...v, name: e.target.value })} />}</Field>
           <Field label="Email" required error={patch.fields.email}>{(p) => <Input {...p} type="email" value={v.email} onChange={(e) => setV({ ...v, email: e.target.value })} />}</Field>
@@ -59,7 +59,7 @@ export function NewClientForm() {
   });
   const set = (k: keyof typeof v) => (e: React.ChangeEvent<HTMLInputElement>) => setV({ ...v, [k]: e.target.value });
   return (
-    <form noValidate onSubmit={(e) => (e.preventDefault(), void go.run())} className="grid max-w-3xl gap-4 rounded-[var(--radius-card)] border border-line bg-surface p-6 shadow-soft sm:grid-cols-2">
+    <form noValidate onSubmit={(e) => (e.preventDefault(), void go.run())} className="grid grid-cols-1 max-w-3xl gap-4 rounded-[var(--radius-card)] border border-line bg-surface p-6 shadow-soft sm:grid-cols-2">
       {go.error ? <p role="alert" className="rounded-xl bg-danger-soft px-4 py-3 text-sm font-medium text-danger sm:col-span-2">{go.error}</p> : null}
       <Field label="Contact name" required error={go.fields.name}>{(p) => <Input {...p} value={v.name} onChange={set("name")} autoFocus />}</Field>
       <Field label="Email" required error={go.fields.email}>{(p) => <Input {...p} type="email" value={v.email} onChange={set("email")} />}</Field>

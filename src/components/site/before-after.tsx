@@ -18,7 +18,7 @@ export function BeforeAfter({ before, after }: { before: string; after: string }
   };
   return (
     <div>
-      <div className="grid gap-3 sm:grid-cols-2">
+      <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
         {[
           { label: "Before", src: before, ref: a },
           { label: "After", src: after, ref: b },

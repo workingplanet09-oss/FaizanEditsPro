@@ -28,7 +28,7 @@ export default async function RetainersPage() {
           {list.map((r) => (
             <Card key={r.id}>
               <CardHeader title={<span className="flex flex-wrap items-center gap-3">{r.name} <RetainerBadge value={r.status} /></span>} description={`${formatMoney(r.monthlyPrice, r.currency)} / month · renews ${formatDate(r.renewalDate)} · ${r.turnaroundDays}-day turnaround · ${r.revisionsIncluded} revisions per video`} action={r.status === "ACTIVE" && canManage ? <RetainerStart id={r.id} /> : null} />
-              <div className="grid gap-6 px-5 pb-6 md:grid-cols-2">
+              <div className="grid grid-cols-1 gap-6 px-5 pb-6 md:grid-cols-2">
                 <div className="space-y-4">
                   <h3 className="text-xs font-bold uppercase tracking-wider text-subtle">This month</h3>
                   {r.videosIncluded ? <ProgressRow label="Videos" used={r.usage.used.videos} total={r.videosIncluded} /> : null}

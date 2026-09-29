@@ -27,7 +27,7 @@ export default async function BlogPage({ searchParams }: { searchParams: Promise
         </div>
         {posts.items.length ? (
           <>
-            <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
+            <div className="grid grid-cols-1 gap-6 md:grid-cols-2 lg:grid-cols-3">
               {posts.items.map((p, i) => (
                 <Reveal key={p.id} delay={(i % 3) * 60}>
                   <Link href={`/blog/${p.slug}`} className="group flex h-full flex-col overflow-hidden rounded-[var(--radius-card)] border border-line bg-surface transition duration-300 hover:-translate-y-1 hover:shadow-lift">

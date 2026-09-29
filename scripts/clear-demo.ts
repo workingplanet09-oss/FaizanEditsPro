@@ -24,9 +24,24 @@ async function main() {
   // 2) delete flagged rows; FK order is resolved by retrying until nothing more can be removed
   const demoUserIds = (await db.user.findMany({ where: { isDemo: true }, select: { id: true } })).map((u) => u.id);
   await db.auditLog.deleteMany({ where: { actorId: { in: demoUserIds } } });
+
+  // History written by demo people that carries no isDemo flag of its own (internal notes, comments, time entries…).
+  // Found from the schema itself, so new tables that reference users are covered automatically.
+  const counts: Record<string, number> = {};
+  if (demoUserIds.length) {
+    const refs = await db.$queryRawUnsafe<{ tbl: string; col: string }[]>(
+      `SELECT c.conrelid::regclass::text AS tbl, a.attname AS col FROM pg_constraint c JOIN pg_attribute a ON a.attrelid = c.conrelid AND a.attnum = ANY (c.conkey) WHERE c.confrelid = 'users'::regclass AND c.contype = 'f' AND c.confdeltype IN ('a', 'r')`,
+    );
+    // several passes: replies may reference comments that are removed in the same sweep
+    for (let pass = 0; pass < 3; pass++) {
+      for (const r of refs) {
+        const n = await db.$executeRawUnsafe(`DELETE FROM ${r.tbl} WHERE "${r.col}" = ANY ($1::text[])`, demoUserIds).catch(() => 0);
+        if (n) counts[r.tbl] = (counts[r.tbl] ?? 0) + n;
+      }
+    }
+  }
   // every model that carries an isDemo flag — children first, people last
   let pending = ["ActivityLog", "Notification", "Message", "VideoComment", "RevisionRequest", "VideoVersion", "Payment", "Invoice", "Contract", "Quote", "Meeting", "Retainer", "Asset", "Project", "Testimonial", "CaseStudy", "PortfolioProject", "BlogPost", "PricingPlan", "ContactSubmission", "Lead", "Client", "Organization", "User"];
-  const counts: Record<string, number> = {};
   for (let pass = 0; pass < 8 && pending.length; pass++) {
     const next: string[] = [];
     for (const name of pending) {

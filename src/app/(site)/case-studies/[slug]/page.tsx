@@ -19,12 +19,24 @@ export async function generateMetadata({ params }: { params: Promise<{ slug: str
 
 const METRIC_LABELS: Record<string, string> = { views: "Views", watchTime: "Watch time", engagement: "Engagement", ctr: "CTR", leads: "Leads", conversions: "Conversions" };
 
+/** Accepts the CMS shape ({ "Views": "12k" }) and, defensively, [{ label, value }] — anything else is ignored rather than crashing the page. */
+function metricEntries(raw: unknown): [string, string][] {
+  const out: [string, string][] = [];
+  const add = (k: unknown, v: unknown) => {
+    if (typeof k !== "string" || !k.trim()) return;
+    if (typeof v === "string" || typeof v === "number") if (String(v).trim()) out.push([k, String(v)]);
+  };
+  if (Array.isArray(raw)) for (const r of raw) add((r as { label?: unknown })?.label, (r as { value?: unknown })?.value);
+  else if (raw && typeof raw === "object") for (const [k, v] of Object.entries(raw)) add(k, v);
+  return out;
+}
+
 export default async function CaseStudyPage({ params }: { params: Promise<{ slug: string }> }) {
   const { slug } = await params;
   const c = await getPublicCaseStudy(slug);
   if (!c) notFound();
   // Only metrics the admin actually entered are shown — nothing is inferred or filled in.
-  const results = Object.entries((c.results ?? {}) as Record<string, string>).filter(([, v]) => v);
+  const results = metricEntries(c.results);
   const sections: [string, string | null][] = [
     ["The problem", c.problem],
     ["The objective", c.objective],
@@ -36,7 +48,7 @@ export default async function CaseStudyPage({ params }: { params: Promise<{ slug
       <JsonLd data={{ "@context": "https://schema.org", "@type": "Article", headline: c.title, description: excerpt(c.summary ?? c.problem), image: c.heroImage ?? undefined, datePublished: c.createdAt.toISOString(), dateModified: c.updatedAt.toISOString() }} />
       <PageHero eyebrow={`Case study · ${[c.clientName, c.industry].filter(Boolean).join(" · ")}`} title={c.title} description={c.summary ?? undefined} />
       <Section>
-        <div className="grid gap-12 lg:grid-cols-[1.4fr_0.6fr]">
+        <div className="grid grid-cols-1 gap-12 lg:grid-cols-[1.4fr_0.6fr]">
           <div className="space-y-12">
             {c.beforeVideoUrl && c.afterVideoUrl ? (
               <Reveal>

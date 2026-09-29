@@ -76,7 +76,7 @@ export function FeedbackForm({ projectId, defaults }: { projectId: string; defau
         )}
       </Field>
       <Field label="Your experience" required error={go.fields.quote}>{(p) => <Textarea {...p} rows={4} value={quote} onChange={(e) => setQuote(e.target.value)} placeholder="What went well? What made the biggest difference?" />}</Field>
-      <div className="grid gap-4 sm:grid-cols-3">
+      <div className="grid grid-cols-1 gap-4 sm:grid-cols-3">
         <Field label="Name" required error={go.fields.name}>{(p) => <Input {...p} value={name} onChange={(e) => setName(e.target.value)} />}</Field>
         <Field label="Role">{(p) => <Input {...p} value={role} onChange={(e) => setRole(e.target.value)} />}</Field>
         <Field label="Company">{(p) => <Input {...p} value={company} onChange={(e) => setCompany(e.target.value)} />}</Field>

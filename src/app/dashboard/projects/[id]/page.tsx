@@ -89,7 +89,7 @@ export default async function ClientProjectPage({ params, searchParams }: { para
 
       <Card className="mb-6 p-5 sm:p-6">
         <ClientStepper status={status} />
-        <div className="mt-5 grid gap-4 border-t border-line pt-5 sm:grid-cols-2">
+        <div className="mt-5 grid grid-cols-1 gap-4 border-t border-line pt-5 sm:grid-cols-2">
           <div><div className="text-xs font-bold uppercase tracking-wider text-subtle">Right now</div><p className="mt-1 text-sm font-medium">{meta.clientNow}</p></div>
           <div><div className="text-xs font-bold uppercase tracking-wider text-subtle">Next</div><p className="mt-1 text-sm font-medium">{meta.clientNext}</p></div>
         </div>
@@ -122,13 +122,13 @@ function Overview({ p, docs, projectId }: { p: Detail; docs: Docs; actorId: stri
     { label: "Final payment", done: gate.allPaid && docs.invoices.length > 0 },
   ];
   return (
-    <div className="grid gap-6 lg:grid-cols-[1fr_22rem]">
+    <div className="grid grid-cols-1 gap-6 lg:grid-cols-[1fr_22rem]">
       <div className="space-y-6">
         <MilestoneCard projectId={projectId} />
         {p.brief ? (
           <Card>
             <CardHeader title="Project brief" description={p.brief.status === "LOCKED" ? "Locked — production has started. Use change requests for anything new." : `Version ${p.brief.version}`} action={p.brief.status !== "LOCKED" && ["ONBOARDING", "AWAITING_ASSETS", "QUEUED"].includes(status) ? <ButtonLink href={`/dashboard/projects/${projectId}/setup`} size="sm" variant="outline" icon="pencil">Edit</ButtonLink> : null} />
-            <div className="grid gap-x-8 gap-y-5 px-5 pb-6 sm:grid-cols-2">
+            <div className="grid grid-cols-1 gap-x-8 gap-y-5 px-5 pb-6 sm:grid-cols-2">
               {p.brief.content.sections.slice(0, 6).map((s: any) => (
                 <div key={s.key}>
                   <h4 className="mb-2 text-xs font-bold uppercase tracking-wider text-subtle">{s.label}</h4>
@@ -246,7 +246,7 @@ async function Versions({ projectId, actor, versions, status }: { projectId: str
   if (!versions.length) return <Card><EmptyState icon="film" title="No drafts yet" description={STATUS_META[status].clientNext} /></Card>;
   return (
     <div className="space-y-8">
-      <div className="grid gap-4 sm:grid-cols-2 xl:grid-cols-3">
+      <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 xl:grid-cols-3">
         {versions.map((v, i) => (
           <Link key={v.id} href={`/dashboard/projects/${projectId}/review/${v.id}`} className="group overflow-hidden rounded-[var(--radius-card)] border border-line bg-surface shadow-soft transition hover:-translate-y-0.5 hover:shadow-lift">
             <div className="relative aspect-video bg-surface-2">
@@ -351,7 +351,7 @@ async function Changes({ projectId, actor, canManage, locked }: { projectId: str
   const list = await listChangeRequests(actor, projectId);
   const CLASS: Record<string, { label: string; tone: "neutral" | "success" | "warning" | "info" }> = { PENDING: { label: "In review", tone: "info" }, INCLUDED: { label: "Included", tone: "success" }, OUT_OF_SCOPE: { label: "Out of scope", tone: "neutral" }, ADDITIONAL_COST: { label: "Needs a quote", tone: "warning" } };
   return (
-    <div className="grid gap-6 lg:grid-cols-[1fr_26rem]">
+    <div className="grid grid-cols-1 gap-6 lg:grid-cols-[1fr_26rem]">
       <div>
         {list.length ? (
           <ul className="space-y-3">

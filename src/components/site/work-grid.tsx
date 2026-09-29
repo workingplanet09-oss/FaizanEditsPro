@@ -49,7 +49,7 @@ export function WorkGrid({ items, categories }: { items: WorkItem[]; categories:
       {shown.length === 0 ? (
         <p className="rounded-2xl border border-dashed border-line-strong p-10 text-center text-muted">No projects in this category yet.</p>
       ) : (
-        <ul className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
+        <ul className="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3">
           {shown.map((w) => (
             <li key={w.id} id={w.slug} className="group overflow-hidden rounded-[var(--radius-card)] border border-line bg-surface transition duration-300 hover:-translate-y-1 hover:shadow-lift">
               <button type="button" onClick={() => setOpen(w)} className="relative block aspect-video w-full overflow-hidden bg-surface-2 text-left" aria-label={`Open ${w.title}`}>

@@ -28,7 +28,7 @@ export default async function InvoiceAdminPage({ params }: { params: Promise<{ i
         description={<>{inv.client.companyName}{inv.project ? <> · <Link className="font-semibold text-fg hover:underline" href={`/admin/projects/${inv.project.id}`}>{inv.project.code} {inv.project.name}</Link></> : null}{inv.quote ? <> · from <Link className="font-semibold text-fg hover:underline" href={`/admin/quotes/${inv.quote.id}`}>{inv.quote.number}</Link></> : null}</>}
         actions={<><PrintButton /><InvoiceActions id={id} status={inv.status} due={due} currency={inv.currency} canWrite={can(actor, "invoices:write")} canPay={can(actor, "payments:write")} /></>}
       />
-      <div className="grid gap-6 lg:grid-cols-[1fr_22rem]">
+      <div className="grid grid-cols-1 gap-6 lg:grid-cols-[1fr_22rem]">
         <Card className="p-6 sm:p-8">
           <DocLines items={inv.items} currency={inv.currency} subtotal={inv.subtotal} discount={inv.discount} tax={inv.tax} total={inv.total} amountPaid={inv.amountPaid} />
           {inv.notes ? <p className="mt-6 whitespace-pre-wrap text-sm text-muted">{inv.notes}</p> : null}

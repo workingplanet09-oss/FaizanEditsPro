@@ -49,7 +49,7 @@ export default async function HomePage() {
       <section className="dark-zone grain relative isolate overflow-hidden">
         <div aria-hidden className="pointer-events-none absolute inset-0 -z-10 bg-[radial-gradient(60%_50%_at_85%_0%,color-mix(in_srgb,var(--accent)_26%,transparent),transparent_70%),radial-gradient(50%_45%_at_0%_100%,color-mix(in_srgb,var(--accent)_10%,transparent),transparent_70%)]" />
         <div aria-hidden className="pointer-events-none absolute inset-0 -z-10 opacity-[0.35] [background-image:linear-gradient(to_right,rgb(255_255_255/0.05)_1px,transparent_1px),linear-gradient(to_bottom,rgb(255_255_255/0.05)_1px,transparent_1px)] [background-size:64px_64px] [mask-image:radial-gradient(70%_60%_at_50%_30%,#000,transparent)]" />
-        <div className="container-page grid items-center gap-14 py-16 sm:py-24 lg:grid-cols-[1.05fr_0.95fr] lg:gap-10 lg:py-32">
+        <div className="container-page grid grid-cols-1 items-center gap-14 py-16 sm:py-24 lg:grid-cols-[1.05fr_0.95fr] lg:gap-10 lg:py-32">
           <div>
             <Reveal className="mb-6 inline-flex items-center gap-2 rounded-full border border-white/10 bg-white/5 py-1.5 pl-2 pr-4 text-xs font-semibold text-muted backdrop-blur">
               <span className="flex h-5 w-5 items-center justify-center rounded-full bg-accent text-accent-fg">
@@ -106,7 +106,7 @@ export default async function HomePage() {
                 ))}
               </dl>
             ) : (
-              <ul className="grid gap-4 text-sm sm:grid-cols-2 lg:grid-cols-4">
+              <ul className="grid grid-cols-1 gap-4 text-sm sm:grid-cols-2 lg:grid-cols-4">
                 {[
                   ["clipboard", "Fixed-scope quotes"],
                   ["message", "Timestamped feedback"],
@@ -127,7 +127,7 @@ export default async function HomePage() {
       {/* ───────── SERVICES ───────── */}
       <Section id="services">
         <SectionHeading eyebrow="Services" title="Every kind of edit, one production system." description="From vertical shorts to long-form YouTube, podcasts to property tours — pick a service and we'll tailor the brief to it." />
-        <div className="grid gap-5 sm:grid-cols-2 lg:grid-cols-3">
+        <div className="grid grid-cols-1 gap-5 sm:grid-cols-2 lg:grid-cols-3">
           {services.map((s, i) => (
             <Reveal key={s.id} delay={(i % 3) * 70}>
               <ServiceCard s={{ ...s, deliverables: s.deliverables }} compact />
@@ -157,7 +157,7 @@ export default async function HomePage() {
       {/* ───────── PROCESS ───────── */}
       <Section id="process" tone="dark">
         <SectionHeading eyebrow="How it works" title={process.heading} description={process.intro} />
-        <ol className="grid gap-px overflow-hidden rounded-[var(--radius-card)] border border-line bg-line sm:grid-cols-2 lg:grid-cols-4">
+        <ol className="grid grid-cols-1 gap-px overflow-hidden rounded-[var(--radius-card)] border border-line bg-line sm:grid-cols-2 lg:grid-cols-4">
           {process.steps.map((s, i) => (
             <Reveal as="li" key={s.title} delay={i * 50} className="group relative bg-surface p-6 transition hover:bg-surface-2">
               <div className="flex items-center gap-3">
@@ -186,7 +186,7 @@ export default async function HomePage() {
       {/* ───────── PORTAL ───────── */}
       <Section id="portal">
         <SectionHeading eyebrow="Your client portal" title="A studio with its own production software." description="You'll never wonder where a project stands, where a file went, or who's handling what." />
-        <div className="grid gap-5 sm:grid-cols-2 lg:grid-cols-3">
+        <div className="grid grid-cols-1 gap-5 sm:grid-cols-2 lg:grid-cols-3">
           {PORTAL_FEATURES.map((f, i) => (
             <Reveal key={f.title} delay={(i % 3) * 70} className="rounded-[var(--radius-card)] border border-line bg-surface p-6 shadow-soft">
               <span className="mb-4 flex h-11 w-11 items-center justify-center rounded-2xl bg-accent-soft">
@@ -203,7 +203,7 @@ export default async function HomePage() {
       {testimonials.length ? (
         <Section tone="alt">
           <SectionHeading eyebrow="Client feedback" title="What clients say after delivery." />
-          <div className="grid gap-5 md:grid-cols-3">
+          <div className="grid grid-cols-1 gap-5 md:grid-cols-3">
             {testimonials.map((t) => (
               <TestimonialCard key={t.id} t={t} />
             ))}
@@ -215,13 +215,13 @@ export default async function HomePage() {
       <Section id="pricing">
         <SectionHeading eyebrow="Pricing" title="Flexible by design." description="One-time projects, per-video or per-short pricing, or a monthly retainer. Every project gets a clear, fixed-scope quote before anything starts." />
         {plans.length ? (
-          <div className="grid gap-6 md:grid-cols-2 xl:grid-cols-4">
+          <div className="grid grid-cols-1 gap-6 md:grid-cols-2 xl:grid-cols-4">
             {plans.slice(0, 4).map((p) => (
               <PlanCard key={p.id} p={p} />
             ))}
           </div>
         ) : (
-          <div className="grid gap-4 md:grid-cols-3">
+          <div className="grid grid-cols-1 gap-4 md:grid-cols-3">
             {[
               ["one-time", "One-time projects", "A single video or a defined package — quoted once, delivered once."],
               ["repeat", "Per-video & per-short", "Predictable pricing for creators who publish on a schedule."],
@@ -244,7 +244,7 @@ export default async function HomePage() {
 
       {/* ───────── FAQ ───────── */}
       <Section tone="alt">
-        <div className="grid gap-12 lg:grid-cols-[0.8fr_1.2fr]">
+        <div className="grid grid-cols-1 gap-12 lg:grid-cols-[0.8fr_1.2fr]">
           <SectionHeading eyebrow="FAQ" title="Questions, answered." description="Can't find yours? Ask us anything — we reply within one business day." className="mb-0" />
           <div>
             <FaqList items={faqs.slice(0, 7)} />

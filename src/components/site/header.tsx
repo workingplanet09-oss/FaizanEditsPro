@@ -35,7 +35,7 @@ export function SiteHeader({ name, logoUrl, links, loginLabel, ctaLabel, signedI
 
   return (
     <header className={cn("sticky top-0 z-40 border-b transition-colors duration-300", scrolled || open ? "border-line bg-bg/85 backdrop-blur-xl" : "border-transparent bg-bg/60 backdrop-blur-md")}>
-      <div className="container-page flex h-16 items-center gap-6">
+      <div className="container-page flex h-16 items-center gap-3 sm:gap-6">
         <Logo name={name} logoUrl={logoUrl} />
         <nav aria-label="Main" className="ml-4 hidden items-center gap-0.5 lg:flex">
           {links.map((l) => {
@@ -48,7 +48,7 @@ export function SiteHeader({ name, logoUrl, links, loginLabel, ctaLabel, signedI
             );
           })}
         </nav>
-        <div className="ml-auto flex items-center gap-1.5 sm:gap-2">
+        <div className="ml-auto flex shrink-0 items-center gap-1.5 sm:gap-2">
           <ThemeToggle className="hidden sm:flex" />
           <ButtonLink href={signedIn ? portalHref ?? "/dashboard" : "/login"} variant="ghost" size="sm" className="hidden sm:inline-flex">
             {signedIn ? "My portal" : loginLabel}

@@ -122,7 +122,7 @@ export function VersionUpload({ projectId, revisions }: { projectId: string; rev
         )}
         <Field label="What changed?" optional={false}>{(p) => <Input {...p} value={summary} onChange={(e) => setSummary(e.target.value)} placeholder="e.g. Tightened intro, swapped music, added captions" />}</Field>
         <Field label="Note to the client" optional={false}>{(p) => <Textarea {...p} rows={2} value={notes} onChange={(e) => setNotes(e.target.value)} />}</Field>
-        <div className="grid gap-4 sm:grid-cols-2">
+        <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
           <Field label="Answers revision" optional={false}>{(p) => <Select {...p} value={revisionId} onChange={(e) => setRevisionId(e.target.value)}><option value="">— not a revision —</option>{revisions.map((r) => <option key={r.id} value={r.id}>{r.label}</option>)}</Select>}</Field>
           <Field label="Release" optional={false}>{(p) => <Select {...p} value={release} onChange={(e) => setRelease(e.target.value)}><option value="auto">Follow workflow setting</option><option value="client">Release to client now</option><option value="internal">Send to internal review</option><option value="draft">Team-only draft</option></Select>}</Field>
         </div>
@@ -145,7 +145,7 @@ export function DeliverablesAdmin({ projectId, unpublished, canUpload }: { proje
       <CardHeader title="Final deliverables" description="Upload the finished files, then publish them. Clients can download once the project is approved and payment conditions are met." />
       <div className="space-y-4 px-5 pb-5">
         {canUpload ? (
-          <div className="grid gap-3 sm:grid-cols-[1fr_auto] sm:items-end">
+          <div className="grid grid-cols-1 gap-3 sm:grid-cols-[1fr_auto] sm:items-end">
             <Field label="Label shown to the client" optional={false}>{(p) => <Input {...p} value={label} onChange={(e) => setLabel(e.target.value)} />}</Field>
           </div>
         ) : null}
@@ -202,7 +202,7 @@ export function ProjectEdit({ project }: { project: { id: string; name: string; 
     <>
       <Button variant="outline" icon="pencil" onClick={() => setOpen(true)}>Edit project</Button>
       <Modal open={open} onClose={() => setOpen(false)} title="Edit project" footer={<><Button variant="ghost" onClick={() => setOpen(false)}>Cancel</Button><Button loading={go.pending} onClick={() => void go.run()}>Save</Button></>}>
-        <div className="grid gap-4 sm:grid-cols-2">
+        <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
           <Field label="Name" required className="sm:col-span-2">{(p) => <Input {...p} value={v.name} onChange={(e) => setV({ ...v, name: e.target.value })} />}</Field>
           <Field label="Description" className="sm:col-span-2">{(p) => <Textarea {...p} rows={3} value={v.description} onChange={(e) => setV({ ...v, description: e.target.value })} />}</Field>
           <Field label="Priority" optional={false}>{(p) => <Select {...p} value={v.priority} onChange={(e) => setV({ ...v, priority: e.target.value })}>{Object.entries(PRIORITY_META).map(([k, m]) => <option key={k} value={k}>{m.label}</option>)}</Select>}</Field>

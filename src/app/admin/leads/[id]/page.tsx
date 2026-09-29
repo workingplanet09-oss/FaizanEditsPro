@@ -40,7 +40,7 @@ export default async function LeadPage({ params }: { params: Promise<{ id: strin
       />
       <div className="mb-6"><LeadDecisions leadId={lead.id} status={lead.status} canConvert={can(actor, "leads:convert") && can(actor, "clients:write")} canWrite={can(actor, "leads:write")} hasClient={!!lead.client} /></div>
 
-      <div className="grid gap-6 xl:grid-cols-[1fr_24rem]">
+      <div className="grid grid-cols-1 gap-6 xl:grid-cols-[1fr_24rem]">
         <div className="space-y-6">
           {lead.client || lead.project ? (
             <Card className="flex flex-wrap items-center gap-x-6 gap-y-3 p-5">
@@ -56,7 +56,7 @@ export default async function LeadPage({ params }: { params: Promise<{ id: strin
               {sections.map((sec) => (
                 <div key={sec}>
                   <h3 className="mb-2 text-xs font-bold uppercase tracking-wider text-subtle">{sec.replace(/_/g, " ")}</h3>
-                  <dl className="grid gap-x-8 gap-y-3 sm:grid-cols-2">
+                  <dl className="grid grid-cols-1 gap-x-8 gap-y-3 sm:grid-cols-2">
                     {lead.answers.filter((a) => a.section === sec).map((a) => <Meta key={a.key} label={a.question}>{a.answer}</Meta>)}
                   </dl>
                 </div>

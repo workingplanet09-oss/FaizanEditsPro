@@ -43,7 +43,7 @@ export default async function QuoteAdminPage({ params, searchParams }: { params:
           {canWrite && ["DRAFT", "SENT", "VIEWED"].includes(q.status) ? <ActionButton url={`/api/quotes/${id}/send`} icon="send" variant="dark" success={q.status === "DRAFT" ? "Quote sent to the client" : "Quote re-sent"}>{q.status === "DRAFT" ? "Send to client" : "Resend"}</ActionButton> : null}
         </>}
       />
-      <div className="grid gap-6 lg:grid-cols-[1fr_22rem]">
+      <div className="grid grid-cols-1 gap-6 lg:grid-cols-[1fr_22rem]">
         <Card className="p-6 sm:p-8">
           <DocLines items={q.items} currency={q.currency} subtotal={q.subtotal} discount={q.discount} tax={q.tax} taxRateBps={q.taxRateBps} total={q.total} deposit={q.deposit} balance={q.balance} depositPercent={q.depositPercent} />
           {q.notes ? <p className="mt-6 whitespace-pre-wrap text-sm">{q.notes}</p> : null}

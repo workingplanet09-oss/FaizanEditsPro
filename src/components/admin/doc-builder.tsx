@@ -57,11 +57,11 @@ export function DocBuilder({ mode, clients, projects, services, currencies, init
   const set = (i: number, k: keyof Line, v: string) => setLines(lines.map((l, j) => (j === i ? { ...l, [k]: v } : l)));
   const canSave = !!clientId && valid.length > 0;
   return (
-    <div className="grid gap-6 xl:grid-cols-[1fr_26rem]">
+    <div className="grid grid-cols-1 gap-6 xl:grid-cols-[1fr_26rem]">
       <div className="space-y-6">
         <Card>
           <CardHeader title={mode === "quote" ? "Quote details" : "Invoice details"} />
-          <div className="grid gap-4 px-5 pb-6 sm:grid-cols-2">
+          <div className="grid grid-cols-1 gap-4 px-5 pb-6 sm:grid-cols-2">
             <Field label="Client" required className="sm:col-span-2">{(p) => <Select {...p} disabled={editing} value={clientId} onChange={(e) => (setClientId(e.target.value), setProjectId(""))}><option value="">Choose a client…</option>{clients.map((c) => <option key={c.id} value={c.id}>{c.label}</option>)}</Select>}</Field>
             <Field label="Project" hint={mode === "quote" ? "Leave empty to create a project when the quote is accepted." : undefined}>{(p) => <Select {...p} disabled={editing} value={projectId} onChange={(e) => setProjectId(e.target.value)}><option value="">{mode === "quote" ? "New project (auto)" : "— none —"}</option>{clientProjects.map((c) => <option key={c.id} value={c.id}>{c.label}</option>)}</Select>}</Field>
             <Field label="Currency" optional={false}>{(p) => <Select {...p} disabled={editing} value={currency} onChange={(e) => setCurrency(e.target.value)}>{currencies.map((c) => <option key={c}>{c}</option>)}</Select>}</Field>
@@ -85,7 +85,7 @@ export function DocBuilder({ mode, clients, projects, services, currencies, init
         </Card>
         <Card>
           <CardHeader title="Pricing & terms" />
-          <div className="grid gap-4 px-5 pb-6 sm:grid-cols-3">
+          <div className="grid grid-cols-1 gap-4 px-5 pb-6 sm:grid-cols-3">
             <Field label="Discount" optional={false}>{(p) => <Input {...p} inputMode="decimal" value={discount} onChange={(e) => setDiscount(e.target.value)} placeholder="0" />}</Field>
             <Field label="Tax rate (%)" optional={false}>{(p) => <Input {...p} inputMode="decimal" value={tax} onChange={(e) => setTax(e.target.value)} />}</Field>
             {mode === "quote" ? <Field label="Deposit (%)" optional={false} hint="Paid before work starts; the rest is billed on approval.">{(p) => <Input {...p} type="number" min={0} max={100} value={deposit} onChange={(e) => setDeposit(e.target.value)} />}</Field> : <Field label="Due date" optional={false}>{(p) => <Input {...p} type="date" value={dueDate} onChange={(e) => setDueDate(e.target.value)} />}</Field>}

@@ -16,7 +16,7 @@ export default async function ContactPage({ searchParams }: { searchParams: Prom
     <>
       <PageHero eyebrow="Contact" title={site.contactInfo.heading} description={site.contactInfo.intro} />
       <Section>
-        <div className="grid gap-12 lg:grid-cols-[1.3fr_0.7fr]">
+        <div className="grid grid-cols-1 gap-12 lg:grid-cols-[1.3fr_0.7fr]">
           <div className="rounded-[var(--radius-card)] border border-line bg-surface p-6 shadow-soft sm:p-9">
             <ContactForm defaultReason={reason && valid.includes(reason.toUpperCase()) ? reason.toUpperCase() : "GENERAL"} />
           </div>

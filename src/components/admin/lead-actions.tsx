@@ -54,7 +54,7 @@ export function LeadActivityForm({ leadId }: { leadId: string }) {
   return (
     <Card>
       <CardHeader title="Log activity" />
-      <form onSubmit={(e) => (e.preventDefault(), void add.run())} className="grid gap-3 px-5 pb-5 sm:grid-cols-[10rem_1fr]">
+      <form onSubmit={(e) => (e.preventDefault(), void add.run())} className="grid grid-cols-1 gap-3 px-5 pb-5 sm:grid-cols-[10rem_1fr]">
         <Field label="Type" optional={false}>{(p) => <Select {...p} value={type} onChange={(e) => setType(e.target.value)}>{ACTIVITY_TYPES.map(([k, l]) => <option key={k} value={k}>{l}</option>)}</Select>}</Field>
         <Field label="Summary" required>{(p) => <Input {...p} value={title} onChange={(e) => setTitle(e.target.value)} placeholder="e.g. Called — wants a quote by Friday" />}</Field>
         <Field label="Details" className="sm:col-span-2">{(p) => <Textarea {...p} rows={2} value={note} onChange={(e) => setNote(e.target.value)} />}</Field>

@@ -18,7 +18,7 @@ export default async function ServicesPage() {
         </div>
       </PageHero>
       <Section>
-        <div className="grid gap-5 sm:grid-cols-2 lg:grid-cols-3">
+        <div className="grid grid-cols-1 gap-5 sm:grid-cols-2 lg:grid-cols-3">
           {services.map((s, i) => (
             <Reveal key={s.id} delay={(i % 3) * 60}>
               <ServiceCard s={s} />

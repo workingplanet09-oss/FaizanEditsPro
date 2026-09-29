@@ -44,7 +44,7 @@ export default async function SettingsAdmin({ searchParams }: { searchParams: Se
   return (
     <>
       <PageHeader title="Settings" description="Everything about your studio, site and workflow. Changes go live immediately." />
-      <div className="grid gap-6 lg:grid-cols-[15rem_1fr]">
+      <div className="grid grid-cols-1 gap-6 lg:grid-cols-[15rem_1fr]">
         <nav aria-label="Settings sections" className="thin-scroll -mx-4 flex gap-1 overflow-x-auto px-4 lg:mx-0 lg:block lg:space-y-0.5 lg:overflow-visible lg:px-0">
           {[{ key: "integrations", label: "Integrations & system", icon: "zap", description: "" }, ...GROUPS].map((g) => (
             <Link key={g.key} href={`/admin/settings?g=${g.key}`} aria-current={g.key === key ? "page" : undefined} className={cn("flex shrink-0 items-center gap-2.5 whitespace-nowrap rounded-xl px-3 py-2 text-sm font-semibold transition", g.key === key ? "bg-fg text-bg" : "text-muted hover:bg-surface-2 hover:text-fg")}>

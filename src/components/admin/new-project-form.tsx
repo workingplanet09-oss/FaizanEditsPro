@@ -20,7 +20,7 @@ export function NewProjectForm({ clients, services, types, templates, staff, def
     onSuccess: (p) => (toast.success("Project created"), router.push(`/admin/projects/${p.id}`)),
   });
   return (
-    <form noValidate onSubmit={(e) => (e.preventDefault(), void go.run())} className="grid max-w-4xl gap-4 rounded-[var(--radius-card)] border border-line bg-surface p-6 shadow-soft sm:grid-cols-2">
+    <form noValidate onSubmit={(e) => (e.preventDefault(), void go.run())} className="grid grid-cols-1 max-w-4xl gap-4 rounded-[var(--radius-card)] border border-line bg-surface p-6 shadow-soft sm:grid-cols-2">
       {go.error ? <p role="alert" className="rounded-xl bg-danger-soft px-4 py-3 text-sm font-medium text-danger sm:col-span-2">{go.error}</p> : null}
       <Field label="Client" required error={go.fields.clientId} className="sm:col-span-2">{(p) => <Select {...p} value={v.clientId} onChange={set("clientId")}><option value="">Choose a client…</option>{clients.map((c) => <option key={c.id} value={c.id}>{c.label}</option>)}</Select>}</Field>
       <Field label="Project name" required error={go.fields.name} className="sm:col-span-2">{(p) => <Input {...p} value={v.name} onChange={set("name")} placeholder="e.g. Autumn campaign — 6 shorts" />}</Field>

@@ -58,7 +58,7 @@ export function ContactForm({ defaultReason = "GENERAL" }: { defaultReason?: str
       }}
       className="space-y-5"
     >
-      <div className="grid gap-5 sm:grid-cols-2">
+      <div className="grid grid-cols-1 gap-5 sm:grid-cols-2">
         <Field label="Your name" required error={fields.name}>{(p) => <Input {...p} value={v.name} onChange={set("name")} autoComplete="name" />}</Field>
         <Field label="Email" required error={fields.email}>{(p) => <Input {...p} type="email" value={v.email} onChange={set("email")} autoComplete="email" />}</Field>
         <Field label="Phone" error={fields.phone}>{(p) => <Input {...p} type="tel" value={v.phone} onChange={set("phone")} autoComplete="tel" />}</Field>

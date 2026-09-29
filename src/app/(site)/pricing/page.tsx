@@ -28,7 +28,7 @@ export default async function PricingPage() {
 
       {plans.length ? (
         <Section>
-          <div className="grid gap-6 md:grid-cols-2 xl:grid-cols-4">
+          <div className="grid grid-cols-1 gap-6 md:grid-cols-2 xl:grid-cols-4">
             {plans.map((p) => (
               <Reveal key={p.id}>
                 <PlanCard p={p} />
@@ -41,7 +41,7 @@ export default async function PricingPage() {
 
       <Section tone={plans.length ? "alt" : "default"}>
         <SectionHeading eyebrow="Pricing models" title="Choose how you'd like to work." description="Not every client needs the same structure. We support all of these — mix them if it helps." />
-        <div className="grid gap-5 sm:grid-cols-2 lg:grid-cols-3">
+        <div className="grid grid-cols-1 gap-5 sm:grid-cols-2 lg:grid-cols-3">
           {MODELS.map((m, i) => (
             <Reveal key={m.title} delay={(i % 3) * 60} className="rounded-[var(--radius-card)] border border-line bg-surface p-6">
               <span className="flex h-11 w-11 items-center justify-center rounded-2xl bg-accent-soft"><Icon name={m.icon} size={20} /></span>
@@ -54,7 +54,7 @@ export default async function PricingPage() {
       </Section>
 
       <Section>
-        <div className="grid gap-5 md:grid-cols-3">
+        <div className="grid grid-cols-1 gap-5 md:grid-cols-3">
           {[
             ["shield", "No surprises", "Your quote lists deliverables, quantity, revisions, turnaround and total before you commit."],
             ["layers", "Revisions built in", site.business.revisionPolicy],
@@ -71,7 +71,7 @@ export default async function PricingPage() {
 
       {faqs.length ? (
         <Section tone="alt">
-          <div className="grid gap-12 lg:grid-cols-[0.7fr_1.3fr]">
+          <div className="grid grid-cols-1 gap-12 lg:grid-cols-[0.7fr_1.3fr]">
             <SectionHeading eyebrow="Pricing FAQ" title="Before you ask." className="mb-0" />
             <FaqList items={faqs} />
           </div>

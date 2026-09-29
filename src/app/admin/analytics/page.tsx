@@ -32,7 +32,7 @@ export default async function AnalyticsPage({ searchParams }: { searchParams: Se
         <Card><EmptyState icon="chart" title="No data available yet" description="As leads arrive, projects are delivered and invoices are paid, your charts fill in automatically." /></Card>
       ) : (
         <>
-          <div className="mb-6 grid gap-3 sm:grid-cols-2 xl:grid-cols-4">
+          <div className="mb-6 grid grid-cols-1 gap-3 sm:grid-cols-2 xl:grid-cols-4">
             <Stat label="Revenue collected" value={<MoneyMap value={r.revenueTotals} compact />} icon="trending" tone="success" />
             <Stat label="Outstanding invoices" value={formatMoney(r.outstanding, cur, { compact: true })} icon="wallet" tone={r.outstanding ? "warning" : undefined} />
             <Stat label="Average payment" value={<MoneyMap value={r.averageOrderValue} compact />} icon="receipt" />
@@ -42,7 +42,7 @@ export default async function AnalyticsPage({ searchParams }: { searchParams: Se
             <Stat label="Active / repeat clients" value={`${r.activeClients} / ${r.repeatClients}`} sub={`${r.retainerClients} on retainer`} icon="users" />
             <Stat label="Revision requests" value={r.revisionCount} sub={r.overdueProjects ? `${r.overdueProjects} projects overdue` : "none overdue"} icon="refresh" tone={r.overdueProjects ? "danger" : undefined} />
           </div>
-          <div className="grid gap-6 lg:grid-cols-2">
+          <div className="grid grid-cols-1 gap-6 lg:grid-cols-2">
             <ChartCard title="Revenue by month" subtitle={`Payments received in ${cur}`}><BarChart data={r.revenueByMonth.map((x) => ({ label: x.month, value: x.value }))} format={m} label="Revenue by month" /></ChartCard>
             <ChartCard title="New leads by month"><LineChart data={r.leadsByMonth.map((x) => ({ label: x.month, value: x.value }))} label="New leads by month" /></ChartCard>
             <ChartCard title="Client growth" subtitle="New clients per month"><LineChart data={r.clientGrowth.map((x) => ({ label: x.month, value: x.value }))} label="New clients by month" color="var(--info)" /></ChartCard>

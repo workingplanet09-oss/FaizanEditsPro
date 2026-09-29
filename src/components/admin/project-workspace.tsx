@@ -80,13 +80,13 @@ export async function ProjectWorkspace({ actor, id, sp, base }: { actor: Actor; 
       <TabNav basePath={`${base}/projects/${id}`} active={tab} tabs={tabs} />
 
       {tab === "overview" ? (
-        <div className="grid gap-6 xl:grid-cols-[1fr_26rem]">
+        <div className="grid grid-cols-1 gap-6 xl:grid-cols-[1fr_26rem]">
           <div className="space-y-6">
             {can(actor, "projects:transition") || can(actor, "versions:upload") ? <StatusControl projectId={id} status={status} allowedNext={p.allowedNext as ProjectStatusKey[]} canOverride={can(actor, "deliverables:override")} history={p.history} /> : null}
             <Milestones actor={actor} projectId={id} />
             <Card>
               <CardHeader title="Scope" />
-              <dl className="grid gap-4 px-5 pb-5 sm:grid-cols-2">
+              <dl className="grid grid-cols-1 gap-4 px-5 pb-5 sm:grid-cols-2">
                 <Meta label="Deliverables">{p.scope.deliverables.length ? p.scope.deliverables.map((d) => `${d.quantity}× ${d.label}`).join(", ") : null}</Meta>
                 <Meta label="Turnaround">{p.scope.turnaroundBusinessDays} business days</Meta>
                 <Meta label="Service">{p.service?.title}</Meta>
@@ -135,7 +135,7 @@ async function Milestones({ actor, projectId }: { actor: Actor; projectId: strin
   return (
     <Card>
       <CardHeader title="Milestones" />
-      <ol className="grid gap-x-8 gap-y-3 px-5 pb-5 sm:grid-cols-2">
+      <ol className="grid grid-cols-1 gap-x-8 gap-y-3 px-5 pb-5 sm:grid-cols-2">
         {ms.map((m) => <li key={m.key} className="flex items-start gap-3"><span className={cn("mt-0.5 flex h-5 w-5 shrink-0 items-center justify-center rounded-full", m.done ? "bg-fg text-bg" : "border-2 border-line-strong")}>{m.done ? <Icon name="check" size={11} strokeWidth={3} /> : null}</span><div><div className={cn("text-sm font-semibold", !m.done && "text-muted")}>{m.label}</div><div className="text-xs text-subtle">{m.done ? `${formatDateShort(m.at)}${m.by ? ` · ${m.by}` : ""}` : "Pending"}</div></div></li>)}
       </ol>
     </Card>
@@ -148,7 +148,7 @@ async function BriefTab({ actor, projectId }: { actor: Actor; projectId: string 
   return (
     <div className="space-y-4">
       <div className="flex flex-wrap items-center gap-3 text-sm"><Badge tone={brief.status === "LOCKED" ? "neutral" : "info"} icon={brief.status === "LOCKED" ? "lock" : "pencil"}>{brief.status === "LOCKED" ? "Locked (production started)" : `Draft v${brief.version}`}</Badge>{brief.confirmedAt ? <Badge tone="success">Approved by client {formatDateShort(brief.confirmedAt)}</Badge> : <Badge tone="warning">Not yet approved by client</Badge>}</div>
-      <div className="grid gap-4 lg:grid-cols-2">
+      <div className="grid grid-cols-1 gap-4 lg:grid-cols-2">
         {brief.content.sections.map((s: any) => (
           <Card key={s.key}>
             <CardHeader title={s.label} />
@@ -170,10 +170,10 @@ async function VideosTab({ actor, projectId, versions, status, canUpload, base }
   const posters = await Promise.all(versions.map((v) => getVersionPoster(actor, v.id).then((r) => r.url).catch(() => null)));
   const revs = await listRevisions(actor, { projectId, status: "open" });
   return (
-    <div className="grid gap-6 xl:grid-cols-[1fr_28rem]">
+    <div className="grid grid-cols-1 gap-6 xl:grid-cols-[1fr_28rem]">
       <div>
         {versions.length ? (
-          <div className="grid gap-4 sm:grid-cols-2">
+          <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
             {versions.map((v, i) => (
               <Link key={v.id} href={`${base}/projects/${projectId}/review/${v.id}`} className="group overflow-hidden rounded-[var(--radius-card)] border border-line bg-surface shadow-soft transition hover:-translate-y-0.5 hover:shadow-lift">
                 <div className="relative aspect-video bg-surface-2">{posters[i] ? /* eslint-disable-next-line @next/next/no-img-element */ <img src={posters[i]!} alt="" className="h-full w-full object-cover" loading="lazy" /> : <div className="flex h-full items-center justify-center text-subtle"><Icon name="film" size={30} /></div>}{v.durationMs ? <span className="absolute bottom-2 right-2 rounded-md bg-black/70 px-1.5 py-0.5 text-[11px] font-semibold text-white">{formatTimecode(v.durationMs)}</span> : null}</div>
@@ -192,7 +192,7 @@ async function RevisionsTab({ actor, projectId, base }: { actor: Actor; projectI
   const [revs, crs] = await Promise.all([listRevisions(actor, { projectId }), listChangeRequests(actor, projectId)]);
   const canManage = can(actor, "revisions:manage");
   return (
-    <div className="grid gap-6 lg:grid-cols-2">
+    <div className="grid grid-cols-1 gap-6 lg:grid-cols-2">
       <Card>
         <CardHeader title="Revision rounds" description="Feedback batches sent by the client." />
         {revs.length ? <ul className="divide-y divide-line">{revs.map((r) => <li key={r.id} className="flex flex-wrap items-center gap-3 px-5 py-3.5"><div className="min-w-0 flex-1"><div className="text-sm font-bold">Round {r.roundNumber} · {r.versionLabel}</div><div className="truncate text-xs text-muted">{r.description || "Timestamped notes"} · {r.commentCount ?? 0} note(s) · {timeAgo(r.createdAt)}</div></div><PriorityBadge value={r.priority} /><RevisionBadge value={r.status} /><RevisionRow id={r.id} status={r.status} canManage={canManage} /><Link className="text-xs font-bold text-accent hover:underline" href={`${base}/projects/${projectId}/review/${r.versionId}`}>Open</Link></li>)}</ul> : <EmptyState icon="refresh" title="No revision requests" description="When the client requests changes, each round appears here." />}
@@ -222,7 +222,7 @@ function BillingTab({ docs, projectId, clientId, canInvoice, canQuote }: { docs:
         {canQuote ? <ButtonLink href={`/admin/quotes/new?clientId=${clientId}&projectId=${projectId}`} icon="clipboard" variant="outline">New quote</ButtonLink> : null}
         {canInvoice ? <ButtonLink href={`/admin/invoices/new?clientId=${clientId}&projectId=${projectId}`} icon="receipt" variant="outline">New invoice</ButtonLink> : null}
       </div>
-      <div className="grid gap-6 lg:grid-cols-3">
+      <div className="grid grid-cols-1 gap-6 lg:grid-cols-3">
         <Card><CardHeader title="Quotes" />{docs.quotes.length ? <ul className="divide-y divide-line">{docs.quotes.map((q) => <li key={q.id}><Link href={`/admin/quotes/${q.id}`} className="flex items-center justify-between gap-2 px-5 py-3 text-sm hover:bg-surface-2/60"><span><b>{q.number}</b><span className="block text-xs tabular-nums text-muted">{formatMoney(q.total, q.currency)}</span></span><QuoteBadge value={q.status} /></Link></li>)}</ul> : <p className="px-5 pb-5 text-sm text-muted">No quotes.</p>}</Card>
         <Card><CardHeader title="Contracts" />{docs.contracts.length ? <ul className="divide-y divide-line">{docs.contracts.map((c) => <li key={c.id}><Link href={`/admin/contracts/${c.id}`} className="flex items-center justify-between gap-2 px-5 py-3 text-sm hover:bg-surface-2/60"><span><b>{c.number}</b><span className="block text-xs text-muted">{c.signedAt ? `Signed ${formatDateShort(c.signedAt)}` : "Not signed"}</span></span><ContractBadge value={c.status} /></Link></li>)}</ul> : <p className="px-5 pb-5 text-sm text-muted">No contracts.</p>}</Card>
         <Card><CardHeader title="Invoices" />{docs.invoices.length ? <ul className="divide-y divide-line">{docs.invoices.map((i) => <li key={i.id}><Link href={`/admin/invoices/${i.id}`} className="flex items-center justify-between gap-2 px-5 py-3 text-sm hover:bg-surface-2/60"><span><b>{i.number}</b><span className="block text-xs tabular-nums text-muted">{formatMoney(i.total, i.currency)} · {i.kind.toLowerCase()}</span></span><InvoiceBadge value={i.status} /></Link></li>)}</ul> : <p className="px-5 pb-5 text-sm text-muted">No invoices.</p>}</Card>
@@ -235,7 +235,7 @@ async function DeliveryTab({ actor, projectId, status }: { actor: Actor; project
   const d = await listDeliverables(actor, projectId);
   const unpublished = d.items.filter((i) => !i.visibleToClient).length;
   return (
-    <div className="grid gap-6 xl:grid-cols-[1fr_28rem]">
+    <div className="grid grid-cols-1 gap-6 xl:grid-cols-[1fr_28rem]">
       <DeliveryList items={d.items} unlocked={d.unlocked} lockedReason={d.lockedReason} status={status} projectId={projectId} staff />
       <DeliverablesAdmin projectId={projectId} unpublished={unpublished} canUpload={can(actor, "files:write")} />
     </div>

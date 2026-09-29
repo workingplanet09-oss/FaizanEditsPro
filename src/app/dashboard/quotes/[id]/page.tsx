@@ -26,7 +26,7 @@ export default async function QuotePage({ params }: { params: Promise<{ id: stri
         title={<span className="flex flex-wrap items-center gap-3">{q.number} <QuoteBadge value={q.status} /></span>}
         description={q.project ? <>For <Link className="font-semibold text-fg hover:underline" href={`/dashboard/projects/${q.project.id}`}>{q.project.name}</Link></> : q.title}
       />
-      <div className="grid gap-6 lg:grid-cols-[1fr_20rem]">
+      <div className="grid grid-cols-1 gap-6 lg:grid-cols-[1fr_20rem]">
         <Card className="p-5 sm:p-8">
           <div className="mb-6 flex flex-wrap justify-between gap-4 border-b border-line pb-6 text-sm">
             <div><div className="text-xs font-bold uppercase tracking-wider text-subtle">Prepared for</div><div className="mt-1 font-bold">{q.client.companyName}</div><div className="text-muted">{q.client.name}</div></div>

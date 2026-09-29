@@ -18,7 +18,7 @@ export function ProfileForm({ name, email, phone, timezone }: { name: string; em
   return (
     <Card>
       <CardHeader title="Your profile" description="How your name appears on messages, approvals and signatures." />
-      <form onSubmit={(e) => (e.preventDefault(), void go.run())} className="grid gap-4 px-5 pb-6 sm:grid-cols-2">
+      <form onSubmit={(e) => (e.preventDefault(), void go.run())} className="grid grid-cols-1 gap-4 px-5 pb-6 sm:grid-cols-2">
         <Field label="Full name" required error={go.fields.name}>{(p) => <Input {...p} value={v.name} onChange={(e) => setV({ ...v, name: e.target.value })} autoComplete="name" />}</Field>
         <Field label="Email" optional={false} hint="Contact the studio to change your sign-in email.">{(p) => <Input {...p} value={email} disabled />}</Field>
         <Field label="Phone">{(p) => <Input {...p} value={v.phone} onChange={(e) => setV({ ...v, phone: e.target.value })} autoComplete="tel" />}</Field>
@@ -46,7 +46,7 @@ export function NotificationPrefs({ prefs }: { prefs: { category: string; inApp:
         <div className="hidden grid-cols-[1fr_6rem_6rem] items-center gap-3 border-b border-line pb-2 text-xs font-semibold text-subtle sm:grid"><span>Type</span><span className="text-center">In-app</span><span className="text-center">Email</span></div>
         <ul className="divide-y divide-line">
           {rows.map((r) => (
-            <li key={r.category} className="grid items-center gap-3 py-3.5 sm:grid-cols-[1fr_6rem_6rem]">
+            <li key={r.category} className="grid grid-cols-1 items-center gap-3 py-3.5 sm:grid-cols-[1fr_6rem_6rem]">
               <span className="text-sm font-semibold">{LABEL[r.category] ?? r.category}</span>
               <span className="flex items-center justify-between sm:justify-center"><span className="text-xs text-subtle sm:hidden">In-app</span><Switch checked={r.inApp} onChange={(v) => set(r.category, "inApp", v)} label={<span className="sr-only">In-app {LABEL[r.category]}</span>} /></span>
               <span className="flex items-center justify-between sm:justify-center"><span className="text-xs text-subtle sm:hidden">Email</span><Switch checked={r.email} onChange={(v) => set(r.category, "email", v)} label={<span className="sr-only">Email {LABEL[r.category]}</span>} /></span>
@@ -86,7 +86,7 @@ export function SecurityPanel({ twoFactorEnabled, sessions }: { twoFactorEnabled
     <div className="space-y-6">
       <Card>
         <CardHeader title="Password" />
-        <form onSubmit={(e) => (e.preventDefault(), !mismatch && void change.run())} className="grid gap-4 px-5 pb-6 sm:grid-cols-3">
+        <form onSubmit={(e) => (e.preventDefault(), !mismatch && void change.run())} className="grid grid-cols-1 gap-4 px-5 pb-6 sm:grid-cols-3">
           {change.error ? <p role="alert" className="rounded-xl bg-danger-soft px-4 py-3 text-sm font-medium text-danger sm:col-span-3">{change.error}</p> : null}
           <Field label="Current password" required>{(p) => <Input {...p} type="password" autoComplete="current-password" value={pw.current} onChange={(e) => setPw({ ...pw, current: e.target.value })} />}</Field>
           <Field label="New password" required hint="At least 10 characters." error={change.fields.password}>{(p) => <Input {...p} type="password" autoComplete="new-password" value={pw.next} onChange={(e) => setPw({ ...pw, next: e.target.value })} />}</Field>
@@ -107,7 +107,7 @@ export function SecurityPanel({ twoFactorEnabled, sessions }: { twoFactorEnabled
               <Button className="ml-2 mt-4" variant="ghost" onClick={() => { setCodes(null); router.refresh(); }}>I've saved them</Button>
             </div>
           ) : setup ? (
-            <div className="grid gap-6 sm:grid-cols-[220px_1fr]">
+            <div className="grid grid-cols-1 gap-6 sm:grid-cols-[220px_1fr]">
               {/* eslint-disable-next-line @next/next/no-img-element */}
               <img src={setup.qrDataUrl} alt="QR code to scan with your authenticator app" width={220} height={220} className="rounded-2xl border border-line bg-white" />
               <div className="space-y-3">

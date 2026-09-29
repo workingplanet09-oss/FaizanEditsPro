@@ -35,7 +35,7 @@ export default async function InvoicePage({ params, searchParams }: { params: Pr
       />
       {first(sp.paid) === "1" && inv.status === "PAID" ? <p role="status" className="mb-5 flex items-center gap-2 rounded-2xl bg-success-soft px-5 py-3.5 text-sm font-semibold text-success"><Icon name="check-circle" size={18} /> Payment received — thank you! Your project is moving forward.</p> : null}
       {first(sp.cancelled) === "1" ? <p role="status" className="mb-5 rounded-2xl bg-warning-soft px-5 py-3.5 text-sm font-semibold text-warning">Checkout was cancelled. You haven't been charged.</p> : null}
-      <div className="grid gap-6 lg:grid-cols-[1fr_22rem]">
+      <div className="grid grid-cols-1 gap-6 lg:grid-cols-[1fr_22rem]">
         <Card className="p-5 sm:p-8 print:border-0 print:shadow-none">
           <div className="mb-6 flex flex-wrap justify-between gap-6 border-b border-line pb-6 text-sm">
             <div><div className="text-xs font-bold uppercase tracking-wider text-subtle">From</div><div className="mt-1 font-bold">{business.name}</div>{business.legalName ? <div className="text-muted">{business.legalName}</div> : null}{business.address ? <div className="whitespace-pre-line text-muted">{business.address}</div> : null}{business.taxId ? <div className="text-muted">Tax ID: {business.taxId}</div> : null}</div>

@@ -285,7 +285,7 @@ export function FormWizard<R>(p: WizardProps<R>) {
                       const label = (x: any) => q.options.find((o) => o.value === String(x))?.label ?? String(x);
                       const shown = q.type === "FILE" ? (uploadedNames.current[q.key] ?? []).join(", ") || "Files attached" : Array.isArray(v) ? v.map(label).join(", ") : typeof v === "boolean" ? (v ? "Yes" : "No") : label(v);
                       return (
-                        <div key={q.key} className="grid gap-0.5 sm:grid-cols-[38%_1fr] sm:gap-4">
+                        <div key={q.key} className="grid grid-cols-1 gap-0.5 sm:grid-cols-[38%_1fr] sm:gap-4">
                           <dt className="text-xs text-subtle">{q.text}</dt>
                           <dd className="whitespace-pre-line break-words text-sm font-medium">{shown}</dd>
                         </div>

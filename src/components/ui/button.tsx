@@ -8,9 +8,13 @@ import { Icon } from "./icon";
 type Variant = "primary" | "secondary" | "outline" | "ghost" | "danger" | "dark" | "soft";
 type Size = "xs" | "sm" | "md" | "lg";
 
+/** cn() is plain clsx (no class merging), so an unconditional display utility passed in (e.g. "hidden sm:inline-flex") would fight the base inline-flex. */
+const hasOwnDisplay = (className?: string) => !!className && /(^|\s)(hidden|block|flex|inline|inline-block|inline-flex|grid)(\s|$)/.test(className);
+
 export const buttonStyles = (variant: Variant = "primary", size: Size = "md", className?: string) =>
   cn(
-    "relative inline-flex items-center justify-center gap-2 whitespace-nowrap font-semibold select-none transition-[background,transform,box-shadow,color,border-color] duration-200 active:scale-[0.98] disabled:pointer-events-none disabled:opacity-50 rounded-xl",
+    !hasOwnDisplay(className) && "inline-flex",
+    "relative items-center justify-center gap-2 whitespace-nowrap font-semibold select-none transition-[background,transform,box-shadow,color,border-color] duration-200 active:scale-[0.98] disabled:pointer-events-none disabled:opacity-50 rounded-xl",
     size === "xs" && "h-7 px-2.5 text-xs rounded-lg",
     size === "sm" && "h-9 px-3.5 text-sm",
     size === "md" && "h-11 px-5 text-sm",

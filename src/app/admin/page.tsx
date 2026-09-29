@@ -49,7 +49,7 @@ export default async function AdminHome() {
         <p className="mb-6 flex items-center gap-2 rounded-xl border border-success/30 bg-success-soft/50 px-4 py-3 text-sm font-semibold text-success"><Icon name="check-circle" size={16} /> Nothing urgent right now.</p>
       )}
 
-      <div className="mb-6 grid gap-3 sm:grid-cols-2 xl:grid-cols-4">
+      <div className="mb-6 grid grid-cols-1 gap-3 sm:grid-cols-2 xl:grid-cols-4">
         {h.perms.leads ? <Stat label="New leads (14 days)" value={h.metrics.newLeads} icon="inbox" href="/admin/leads?section=leads" /> : null}
         <Stat label="Active clients" value={h.metrics.activeClients} icon="building" href="/admin/clients" />
         {h.perms.projects ? <Stat label="Active projects" value={h.metrics.activeProjects} icon="film" href="/admin/projects" /> : null}
@@ -60,7 +60,7 @@ export default async function AdminHome() {
         {h.perms.invoices ? <Stat label="Retainer revenue / mo" value={<MoneyMap value={h.metrics.retainerRevenue} compact />} icon="repeat" href="/admin/retainers" /> : null}
       </div>
 
-      <div className="grid gap-6 xl:grid-cols-[1fr_24rem]">
+      <div className="grid grid-cols-1 gap-6 xl:grid-cols-[1fr_24rem]">
         <div className="space-y-6">
           {h.perms.projects ? (
             <Card>
@@ -77,7 +77,7 @@ export default async function AdminHome() {
             </Card>
           ) : null}
 
-          <div className="grid gap-6 lg:grid-cols-2">
+          <div className="grid grid-cols-1 gap-6 lg:grid-cols-2">
             {h.perms.projects ? (
               <Card>
                 <CardHeader title="Upcoming deadlines" action={<Link href="/admin/calendar" className="text-sm font-semibold text-accent hover:underline">Calendar</Link>} />

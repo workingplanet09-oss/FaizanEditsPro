@@ -27,7 +27,7 @@ export default async function RetainersAdmin() {
       {!list.length ? (
         <Card><EmptyState icon="repeat" title="No retainers yet" description="Create a retainer for clients who need a steady monthly flow of edits." /></Card>
       ) : (
-        <div className="grid gap-5 lg:grid-cols-2">
+        <div className="grid grid-cols-1 gap-5 lg:grid-cols-2">
           {list.map((r) => (
             <Card key={r.id}>
               <CardHeader title={<span className="flex flex-wrap items-center gap-2"><Link className="hover:underline" href={`/admin/clients/${r.client.id}`}>{r.client.companyName}</Link><RetainerBadge value={r.status} /></span>} description={`${r.name} · ${formatMoney(r.monthlyPrice, r.currency)}/mo · renews ${formatDate(r.renewalDate)}`} action={manage ? <RetainerStatus id={r.id} status={r.status} /> : null} />

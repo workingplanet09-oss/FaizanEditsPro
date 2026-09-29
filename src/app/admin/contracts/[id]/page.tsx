@@ -26,7 +26,7 @@ export default async function ContractAdminPage({ params }: { params: Promise<{ 
         description={<>{c.title} · {c.client.companyName} · <Link className="font-semibold text-fg hover:underline" href={`/admin/projects/${c.project.id}`}>{c.project.code}</Link> · version {c.currentVersion}</>}
         actions={<><ButtonLink href={`/api/contracts/${id}/download`} icon="download" variant="outline">Download / print</ButtonLink>{canWrite && c.status !== "SIGNED" ? <ActionButton url={`/api/contracts/${id}/send`} icon="send" variant="dark" success="Contract sent for signature">{c.status === "DRAFT" ? "Send for signature" : "Resend"}</ActionButton> : null}</>}
       />
-      <div className="grid gap-6 lg:grid-cols-[1fr_22rem]">
+      <div className="grid grid-cols-1 gap-6 lg:grid-cols-[1fr_22rem]">
         <div className="space-y-6">
           <Card className="p-6 sm:p-10">
             <div className="space-y-7">{c.sections.map((s) => <section key={s.key}><h2 className="text-base font-extrabold">{s.title}</h2><div className="mt-2 text-sm leading-relaxed text-muted [&_li]:ml-4 [&_li]:list-disc [&_p]:mb-2" dangerouslySetInnerHTML={{ __html: renderMarkdown(s.body) }} /></section>)}</div>

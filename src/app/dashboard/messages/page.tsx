@@ -27,7 +27,7 @@ export default async function MessagesPage({ searchParams }: { searchParams: Sea
   return (
     <>
       <PageHeader title="Messages" description="One conversation per project, plus a general thread. Replies also reach you by email." />
-      <div className="grid gap-5 lg:grid-cols-[20rem_1fr]">
+      <div className="grid grid-cols-1 gap-5 lg:grid-cols-[20rem_1fr]">
         <Card className="max-h-[36rem] overflow-y-auto">
           <ul className="divide-y divide-line" aria-label="Conversations">
             {rows.map((r) => (

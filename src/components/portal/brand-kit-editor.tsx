@@ -122,7 +122,7 @@ export function BrandKitEditor({ clientId, kit, assets, canEdit }: { clientId: s
 
       <Card>
         <CardHeader title="Style & links" />
-        <div className="grid gap-4 px-5 pb-6 md:grid-cols-2">
+        <div className="grid grid-cols-1 gap-4 px-5 pb-6 md:grid-cols-2">
           <Field label="Music preferences" className="md:col-span-2">{(p) => <Textarea {...p} rows={2} disabled={!canEdit} value={music} onChange={(e) => setMusic(e.target.value)} placeholder="Genres, artists, licensing libraries you already pay for…" />}</Field>
           <Field label="Website" className="md:col-span-2">{(p) => <Input {...p} type="url" disabled={!canEdit} value={site} onChange={(e) => setSite(e.target.value)} placeholder="https://" />}</Field>
           {SOCIALS.map((s) => <Field key={s} label={s === "x" ? "X / Twitter" : s[0].toUpperCase() + s.slice(1)}>{(p) => <Input {...p} disabled={!canEdit} value={social[s] ?? ""} onChange={(e) => setSocial({ ...social, [s]: e.target.value })} placeholder="@handle or URL" />}</Field>)}

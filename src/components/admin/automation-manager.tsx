@@ -102,7 +102,7 @@ function Editor({ row, events, templates, onClose }: { row: AutomationRow | null
     <Modal open onClose={onClose} size="xl" title={row ? "Edit automation" : "New automation"} description="When something happens, do something — automatically." footer={<><Button variant="ghost" onClick={onClose}>Cancel</Button><Button loading={save.pending} disabled={!name.trim()} onClick={() => void save.run()}>{row ? "Save changes" : "Create automation"}</Button></>}>
       <div className="space-y-7">
         {save.error ? <p role="alert" className="rounded-xl bg-danger-soft px-4 py-3 text-sm font-medium text-danger">{save.error}</p> : null}
-        <section className="grid gap-4 sm:grid-cols-2">
+        <section className="grid grid-cols-1 gap-4 sm:grid-cols-2">
           <Field label="Name" required className="sm:col-span-2">{(p) => <Input {...p} value={name} onChange={(e) => setName(e.target.value)} />}</Field>
           <Field label="Description" className="sm:col-span-2">{(p) => <Input {...p} value={description} onChange={(e) => setDescription(e.target.value)} />}</Field>
           <Field label="Trigger — when this happens" optional={false}>{(p) => <Select {...p} value={event} onChange={(e) => setEvent(e.target.value)}>{events.map((e) => <option key={e.value} value={e.value}>{e.label}</option>)}</Select>}</Field>
@@ -114,7 +114,7 @@ function Editor({ row, events, templates, onClose }: { row: AutomationRow | null
           <p className="mb-3 text-xs text-muted">Conditions look at the event's data, e.g. <code>toStatus</code> is <code>CLIENT_REVIEW</code> for a status change.</p>
           <div className="space-y-2">
             {conds.map((c, i) => (
-              <div key={i} className="grid gap-2 sm:grid-cols-[1fr_9rem_1fr_auto]">
+              <div key={i} className="grid grid-cols-1 gap-2 sm:grid-cols-[1fr_9rem_1fr_auto]">
                 <Input aria-label="Field" placeholder="field (e.g. toStatus)" value={c.field} onChange={(e) => setConds(conds.map((x, j) => (j === i ? { ...x, field: e.target.value } : x)))} className="font-mono" />
                 <select aria-label="Operator" value={c.op} onChange={(e) => setConds(conds.map((x, j) => (j === i ? { ...x, op: e.target.value } : x)))} className="h-11 rounded-xl border border-line-strong bg-surface px-3 text-sm">{OPS.map(([k, l]) => <option key={k} value={k}>{l}</option>)}</select>
                 {c.op === "exists" ? <span /> : <Input aria-label="Value" placeholder="value" value={c.value} onChange={(e) => setConds(conds.map((x, j) => (j === i ? { ...x, value: e.target.value } : x)))} />}
@@ -153,14 +153,14 @@ function ActionFields({ a, templates, set }: { a: ActionDraft; templates: { key:
   if (a.type === "STATUS_UPDATE") return <Field label="Move the project to" optional={false}>{(p) => <Select {...p} value={c.toStatus ?? ""} onChange={(e) => set({ toStatus: e.target.value })}>{PROJECT_STATUSES.map((s) => <option key={s} value={s}>{STATUS_META[s].label}</option>)}</Select>}</Field>;
   if (a.type === "CREATE_TASK")
     return (
-      <div className="grid gap-3 sm:grid-cols-2">
+      <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
         <Field label="Task title" required className="sm:col-span-2">{(p) => <Input {...p} value={c.taskTitle ?? ""} onChange={(e) => set({ taskTitle: e.target.value })} placeholder="e.g. Follow up on {{project_name}}" />}</Field>
         <Field label="Assign to" optional={false}>{(p) => <Select {...p} value={c.assignee ?? ""} onChange={(e) => set({ assignee: e.target.value })}><option value="manager">Project manager</option><option value="editor">Assigned editor</option><option value="">Unassigned</option></Select>}</Field>
         <Field label="Due in (days)" optional={false}>{(p) => <Input {...p} type="number" min={0} value={c.dueInDays ?? 2} onChange={(e) => set({ dueInDays: Number(e.target.value) })} />}</Field>
       </div>
     );
   return (
-    <div className="grid gap-3 sm:grid-cols-2">
+    <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
       <Field label="Send to" optional={false}>{(p) => <Select {...p} value={c.recipient ?? ""} onChange={(e) => set({ recipient: e.target.value })}>{RECIPIENTS.map(([k, l]) => <option key={k} value={k}>{l}</option>)}</Select>}</Field>
       {a.type === "EMAIL" ? (
         <Field label="Email template" required>{(p) => <Select {...p} value={c.templateKey ?? ""} onChange={(e) => set({ templateKey: e.target.value })}><option value="">Choose…</option>{templates.map((t) => <option key={t.key} value={t.key}>{t.name}</option>)}</Select>}</Field>

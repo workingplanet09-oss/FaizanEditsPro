@@ -125,6 +125,8 @@
 
 @layer base {
   * { border-color: var(--line); }
+  /* fieldsets default to min-width: min-content, which lets a scroller inside them blow out the whole page */
+  fieldset { min-inline-size: 0; }
   html { scroll-behavior: smooth; -webkit-text-size-adjust: 100%; }
   body {
     background: var(--bg);
