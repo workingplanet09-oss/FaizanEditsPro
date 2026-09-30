@@ -121,7 +121,7 @@ Make a backup before every change, and regularly:
 
 ## Moving from the previous (Node.js / PostgreSQL) version
 
-Follow [`MIGRATION.md`](MIGRATION.md). The table-by-table mapping is in [`MIGRATION_MAP.md`](MIGRATION_MAP.md).
+Ask for the project's `MIGRATION.md` (step-by-step data move) and `MIGRATION_MAP.md` (table-by-table mapping); they are kept with the source code, not on the hosting account.
 
 ---
 
@@ -150,5 +150,3 @@ Run a real website over **HTTPS**: switch on the free AutoSSL certificate in cPa
 * Clients can only ever see their own projects, files and invoices; editors only their assigned projects.
 * Errors shown to visitors never contain file paths, SQL or secrets (unless you switch `'debug'` on).
 * Every important action is written to the audit log (Admin → **Audit log**).
-
-Developers: see [`DEVELOPMENT.md`](DEVELOPMENT.md) (not needed to run the site).
