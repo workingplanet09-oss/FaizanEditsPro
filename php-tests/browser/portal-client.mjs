@@ -48,7 +48,7 @@ console.log("Cross-client protection");
 await sB.page.goto(`${BASE}/dashboard/projects/${A.projectId}`, { waitUntil: "load" });
 check("client B cannot open client A's project (404)", (await sB.page.content()).includes("couldn't find") );
 const r1 = await sB.page.request.get(`${BASE}/api/quotes/${A.quoteId}`); check("client B cannot read client A's quote via the API", r1.status() === 404, String(r1.status()));
-await sB.page.goto(`${BASE}/admin`, { waitUntil: "load" }); check("client cannot open the admin console", !(await body(sB.page)).includes("Command center"), sB.page.url());
+await sB.page.goto(`${BASE}/admin`, { waitUntil: "load" }); check("client is sent away from the admin console", sB.page.url().endsWith("/dashboard") && !(await body(sB.page)).includes("Command center"), sB.page.url());
 await sB.ctx.close();
 
 console.log("Contract: sign");

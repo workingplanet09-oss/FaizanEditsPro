@@ -22,7 +22,10 @@
   });
 
   // dialogs that should be open when the page loads
-  function openOnLoad() { $$("[data-open-on-load]").forEach(function (el) { FE.modal.open(el.getAttribute("data-open-on-load")); }); }
+  function openOnLoad() {
+    $$("[data-open-on-load]").forEach(function (el) { FE.modal.open(el.getAttribute("data-open-on-load")); });
+    try { var u = new URL(location.href); if (u.searchParams.has("new")) { u.searchParams.delete("new"); history.replaceState(null, "", u.pathname + u.search); } } catch (e) {}
+  }
   if (document.readyState === "complete") openOnLoad(); else window.addEventListener("load", openOnLoad);
 
   // ───────────── stopwatch ─────────────

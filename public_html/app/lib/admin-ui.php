@@ -268,7 +268,17 @@ function tasks_panel(array $tasks, array $o): string
     $order = ['BLOCKED', 'IN_PROGRESS', 'REVIEW', 'TODO', 'COMPLETE'];
     usort($tasks, fn($a, $b) => array_search($a['status'], $order, true) <=> array_search($b['status'], $order, true));
     $open = count(array_filter($tasks, fn($t) => $t['status'] !== 'COMPLETE'));
-    $assignOpts = select_options(array_map(fn($s) => ['id' => $s['id'], 'label' => $s['name']], $staff), 'id', 'label', 'Unassigned');
+    // the assignee lists may be empty for people who can't assign others (editors): always offer "me", and keep a task's current assignee selectable
+    $people = array_column($staff, 'name', 'id');
+    if (!empty($o['meId']) && !isset($people[$o['meId']])) {
+        $people[$o['meId']] = 'Me';
+    }
+    foreach ($tasks as $t) {
+        if (!empty($t['assignee']['id']) && !isset($people[$t['assignee']['id']])) {
+            $people[$t['assignee']['id']] = $t['assignee']['name'];
+        }
+    }
+    $assignOpts = select_options(array_map(fn($id, $name) => ['id' => $id, 'label' => $name], array_keys($people), $people), 'id', 'label', 'Unassigned');
     $h = '';
     if (!$tasks) {
         $h .= ui_empty('No tasks yet', $canWrite ? 'Add the first task to keep the work organised.' : 'Nothing assigned here.', 'checklist');
@@ -289,8 +299,8 @@ function tasks_panel(array $tasks, array $o): string
             if ($canWrite) {
                 $h .= '<select aria-label="Assignee" data-patch="/api/tasks/' . e($t['id']) . '" data-field="assigneeId" data-null-empty class="h-8 w-32 rounded-lg border border-line bg-surface px-2 text-xs font-medium">';
                 $h .= '<option value="">Unassigned</option>';
-                foreach ($staff as $s) {
-                    $h .= '<option value="' . e($s['id']) . '"' . (($t['assignee']['id'] ?? '') === $s['id'] ? ' selected' : '') . '>' . e($s['name']) . '</option>';
+                foreach ($people as $pid => $pname) {
+                    $h .= '<option value="' . e($pid) . '"' . (($t['assignee']['id'] ?? '') === $pid ? ' selected' : '') . '>' . e($pname) . '</option>';
                 }
                 $h .= '</select><select aria-label="Status" data-patch="/api/tasks/' . e($t['id']) . '" data-field="status" class="h-8 rounded-lg border border-line bg-surface px-2 text-xs font-semibold">';
                 foreach (status_data('TASK_STATUS_META') as $k => $m) {

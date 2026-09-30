@@ -66,3 +66,17 @@ page('/opengraph-image', function (Ctx $c) {
 });
 page('/apple-icon', fn(Ctx $c) => send_static_image('apple-icon.png', 'image/png'));
 page('/favicon.ico', fn(Ctx $c) => send_static_image('favicon-32.png', 'image/png'));
+
+/** Public share links: /s/<token> → short-lived signed URL. Revocable per file; delivery gating still applies. */
+page('/s/{token}', function (Ctx $c) {
+    [$ok] = rate_hit('share:' . $c->ip, 60, 60000);
+    if (!$ok) {
+        Pages::error(429, 'Slow down', 'clock', 'Too many requests', 'Please wait a moment and try that link again.');
+    }
+    try {
+        $r = resolve_share($c->params['token']);
+    } catch (AppError $e) {
+        Pages::error($e->status ?? 404, 'Unavailable', 'lock', "This link isn't available", $e->getMessage() ?: 'It may have expired or been turned off.');
+    }
+    Res::redirect($r['url']);
+});
