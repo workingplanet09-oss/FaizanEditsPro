@@ -601,7 +601,7 @@
   /** Mounts every [data-fe-component] inside root that is not mounted yet (also used for markup built by JavaScript). */
   FE.mount = function (root) {
     $$("[data-fe-component]", root).concat(root.getAttribute && root.getAttribute("data-fe-component") ? [root] : []).forEach(function (el) {
-      var name = el.getAttribute("data-fe-component"), c = FE.components[name];
+      var name = el.getAttribute("data-fe-component"), c = FE.components[name] || FE.components[name.replace(/-([a-z])/g, function (m, ch) { return ch.toUpperCase(); })];
       if (c && !el.__mounted) { el.__mounted = true; try { c(el, FE.props(el)); } catch (err) { if (window.console) console.error("component " + name, err); } }
     });
     if (root !== document) { FE.refreshTimes && FE.refreshTimes(); }

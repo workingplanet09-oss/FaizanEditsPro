@@ -75,7 +75,7 @@
       var ctrl = new AbortController();
       it.state = "uploading"; it.pct = 0; it.error = null; it.abort = ctrl; draw(it);
       var file = it.file, token = root.getAttribute("data-draft-token") || props.draftToken;
-      return FE.api("/api/assets/upload-url", { body: { purpose: purpose, projectId: props.projectId, clientId: props.clientId, draftToken: token, folderKey: props.folderKey, filename: file.name, size: file.size, mimeType: file.type || "application/octet-stream", fileRequestId: props.fileRequestId, label: props.label } })
+      return FE.api("/api/assets/upload-url", { body: { purpose: purpose, projectId: props.projectId, clientId: props.clientId, draftToken: token, folderKey: props.folderKey, filename: file.name, size: file.size, mimeType: file.type || "application/octet-stream", fileRequestId: props.fileRequestId, label: root.getAttribute("data-label") || props.label } })
         .then(function (r) {
           return FE.uploadChunked(r.upload, file, function (pct) { it.pct = pct; draw(it); }, ctrl.signal).then(function () { return videoDuration(file); }).then(function (duration) {
             return FE.api("/api/assets/" + r.asset.id + "/complete", { body: { draftToken: token, fileRequestId: props.fileRequestId, durationMs: duration } });
