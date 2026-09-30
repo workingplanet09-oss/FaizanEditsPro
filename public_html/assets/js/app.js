@@ -269,7 +269,7 @@
     var url = form.getAttribute("data-fe-form"), method = form.getAttribute("data-method") || "POST";
     var body = FE.formData(form);
     var pre = form.getAttribute("data-prepare");
-    if (pre && FE.handlers[pre]) { body = FE.handlers[pre](body, form) || body; if (body === false) return Promise.resolve(); }
+    if (pre && FE.handlers[pre]) { var prepared = FE.handlers[pre](body, form); if (prepared === false) return Promise.resolve(); body = prepared || body; }
     var btn = submitter || form.querySelector('[type="submit"]');
     FE.busy(btn, true);
     FE.showFieldErrors(form, {}, "");

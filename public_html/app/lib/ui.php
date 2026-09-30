@@ -296,6 +296,8 @@ function ui_switch(string $name, bool $checked, ?string $label = null, ?string $
 /** Link-based tabs: the active tab lives in the URL. $tabs: [['key','label','count'?,'alert'?]] */
 function ui_tabs(array $tabs, string $active, string $basePath, string $param = 'tab', array $extra = []): string
 {
+    // tabs may be written positionally: [key, label, count?, alert?]
+    $tabs = array_map(fn($t) => isset($t['key']) ? $t : ['key' => $t[0], 'label' => $t[1], 'count' => $t[2] ?? null, 'alert' => $t[3] ?? null], $tabs);
     $href = function (string $k) use ($tabs, $basePath, $param, $extra) {
         $q = array_filter($extra, fn($v) => $v !== null && $v !== '');
         if ($k !== $tabs[0]['key']) {

@@ -1,0 +1,103 @@
+import { BASE, check, launch, done } from "./lib.mjs";
+import { execFileSync } from "node:child_process";
+
+const scenario = (stage) => JSON.parse(execFileSync("php", ["php-tests/scenario.php", stage], { env: { ...process.env, FEP_STRICT: "1", FEP_DISABLE_RATE_LIMIT: "1", REAL_VIDEO: "1" }, cwd: process.cwd() }).toString().trim().split("\n").pop());
+const { browser, errors } = await launch();
+async function login(s, email, width = 1280) {
+  const ctx = await browser.newContext({ viewport: { width, height: 900 } });
+  const page = await ctx.newPage(); page.on("pageerror", (e) => errors.push("pageerror: " + e.message));
+  await page.goto(BASE + "/login", { waitUntil: "load" });
+  await page.fill("#f-email", email); await page.fill("#f-password", s.password);
+  await page.click("form[data-mode-form=password] button[type=submit]"); await page.waitForURL(/\/(dashboard|admin|editor)/, { timeout: 10000 });
+  return { ctx, page };
+}
+const body = (page) => page.locator("body").innerText();
+
+console.log("Open the review page");
+const S = scenario("review");
+const { ctx, page } = await login(S, S.clientEmail);
+await page.goto(`${BASE}/dashboard/projects/${S.projectId}/review/${S.versionId}`, { waitUntil: "load" });
+await page.waitForFunction(() => { const v = document.querySelector("[data-main] video"); return v && v.readyState >= 1; }, null, { timeout: 15000 }).catch(() => {});
+const info = await page.evaluate(() => { const v = document.querySelector("[data-main] video"); return v ? { rs: v.readyState, dur: v.duration, src: v.currentSrc } : null; });
+check("video loads from a signed, short-lived URL", !!info && info.rs >= 1 && info.dur > 1 && /\/api\/storage\/object\?t=/.test(info.src), JSON.stringify(info));
+check("version label + status badge shown", (await body(page)).includes("V1") && (await body(page)).includes("Awaiting client review"));
+check("clock shows the real duration", /\/ 0\d:\d\d/.test((await page.locator("[data-clock]").innerText())), await page.locator("[data-clock]").innerText());
+
+console.log("Playback controls + keyboard");
+await page.locator("[data-stage]").focus();
+await page.keyboard.press("Space"); await page.waitForTimeout(700);
+check("Space starts playback", await page.evaluate(() => !document.querySelector("[data-main] video").paused));
+await page.keyboard.press("Space"); await page.waitForTimeout(200);
+check("Space pauses again", await page.evaluate(() => document.querySelector("[data-main] video").paused));
+const t0 = await page.evaluate(() => document.querySelector("[data-main] video").currentTime);
+await page.keyboard.press("ArrowRight"); await page.waitForTimeout(300);
+const t1 = await page.evaluate(() => document.querySelector("[data-main] video").currentTime);
+check("ArrowRight seeks forward ~5s", t1 - t0 > 3 && t1 - t0 < 7, `${t0} → ${t1}`);
+await page.selectOption("[data-speed]", "1.5");
+check("playback speed can be changed", (await page.evaluate(() => document.querySelector("[data-main] video").playbackRate)) === 1.5);
+const scrub = await page.locator("[data-scrub]").boundingBox();
+await page.mouse.click(scrub.x + scrub.width * 0.6, scrub.y + scrub.height / 2); await page.waitForTimeout(300);
+const tSeek = await page.evaluate(() => ({ t: document.querySelector("[data-main] video").currentTime, d: document.querySelector("[data-main] video").duration }));
+check("clicking the timeline seeks there", Math.abs(tSeek.t / tSeek.d - 0.6) < 0.08, JSON.stringify(tSeek));
+
+console.log("Timestamped notes");
+await page.locator("[data-stage]").focus(); await page.keyboard.press("c");
+check("C focuses the note box", await page.evaluate(() => document.activeElement && document.activeElement.id === "new-comment"));
+check("the note is pinned to the paused moment", (await page.locator("[data-pin-state]").innerText()).toLowerCase().includes("follow"));
+await page.fill("#new-comment", "Trim this shot by half a second.");
+await page.locator("[data-add]").click();
+await page.waitForSelector("article:has-text('Trim this shot')", { timeout: 6000 }).catch(() => {});
+check("note saved and listed with its timecode", (await page.locator("article:has-text('Trim this shot') button[data-seek]").count()) === 1);
+check("a marker appears on the timeline", (await page.locator("[data-marker]").count()) === 1);
+const code = await page.locator("article:has-text('Trim this shot') button[data-seek]").innerText();
+await page.evaluate(() => { document.querySelector("[data-main] video").currentTime = 0; });
+await page.locator("article:has-text('Trim this shot') button[data-seek]").click(); await page.waitForTimeout(300);
+check("clicking a note's timecode jumps the video to it", (await page.evaluate(() => document.querySelector("[data-main] video").currentTime)) > 0.5, code);
+await page.locator("[data-reply]").first().click();
+await page.fill("textarea[id^=reply-]", "And keep the audio continuous.");
+await page.locator("[data-send-reply]").click();
+await page.waitForSelector("li:has-text('keep the audio continuous')", { timeout: 6000 }).catch(() => {});
+check("replies are threaded under the note", (await page.locator("li:has-text('keep the audio continuous')").count()) === 1);
+check("client cannot resolve notes (no Resolve button)", (await page.locator("[data-status=RESOLVED]").count()) === 0);
+await page.locator("[data-filter=resolved]").click();
+check("Resolved filter hides open notes", (await page.locator("article").count()) === 0);
+await page.locator("[data-filter=all]").click();
+const attack = await page.evaluate(async (id) => { const c = document.cookie.match(/fe_csrf=([^;]+)/)[1]; const r = await fetch(`/api/video-comments/${id}`, { method: "PATCH", headers: { "Content-Type": "application/json", "X-CSRF-Token": decodeURIComponent(c) }, body: JSON.stringify({ status: "RESOLVED" }) }); return r.status; }, (await page.locator("article").first().getAttribute("id")).replace("c-", ""));
+check("server refuses a client resolving a note by calling the API directly", attack === 403, String(attack));
+
+console.log("Request changes");
+await page.getByRole("button", { name: /Request changes/ }).click();
+check("modal shows the revision round counter", (await page.locator("#changes-modal").innerText()).includes("round 1 of"));
+await page.fill("#f-description", "Overall pacing feels slow in the middle.");
+await page.getByRole("button", { name: "Send changes" }).click();
+await page.waitForURL(`**/dashboard/projects/${S.projectId}`, { timeout: 10000 }).catch(() => {});
+check("changes sent and project moved to revision", page.url().endsWith(S.projectId) && (await body(page)).toLowerCase().includes("revision"), page.url());
+await page.goto(`${BASE}/dashboard/projects/${S.projectId}/review/${S.versionId}`, { waitUntil: "load" });
+check("after sending, the version shows Changes requested and the decision buttons are gone", (await body(page)).includes("Changes requested") && (await page.getByRole("button", { name: /^Approve V1/ }).count()) === 0);
+await ctx.close();
+
+console.log("Approve");
+const A = scenario("review");
+const a = await login(A, A.clientEmail);
+await a.page.goto(`${BASE}/dashboard/projects/${A.projectId}/review/${A.versionId}`, { waitUntil: "load" });
+await a.page.getByRole("button", { name: /^Approve V1/ }).click();
+await a.page.getByRole("button", { name: "Approve V1" }).last().click();
+await a.page.waitForTimeout(700);
+check("approval needs the confirmation tick", (await a.page.locator("#approve-modal").innerText()).includes("Tick the box"));
+await a.page.locator("#approve-modal label:has(input[name=sure])").click();
+await a.page.fill("#f-notes", "Looks great.");
+await a.page.getByRole("button", { name: "Approve V1" }).last().click();
+await a.page.waitForURL("**tab=delivery", { timeout: 10000 }).catch(() => {});
+check("approved → lands on the delivery tab", a.page.url().includes("tab=delivery"), a.page.url());
+check("delivery explains that files are being prepared / payment needed", /preparing|waiting|Ready/.test(await body(a.page)));
+await a.page.goto(`${BASE}/dashboard/projects/${A.projectId}/review/${A.versionId}`, { waitUntil: "load" });
+check("approved version shows who approved it and is closed for notes", (await body(a.page)).includes("Approved") && (await a.page.locator("#new-comment").count()) === 0);
+await a.ctx.close();
+
+console.log("Mobile");
+const M = await login(S, S.clientEmail, 375);
+await M.page.goto(`${BASE}/dashboard/projects/${S.projectId}/review/${S.versionId}`, { waitUntil: "load" });
+check("no horizontal scroll at 375px", await M.page.evaluate(() => document.documentElement.scrollWidth <= window.innerWidth + 1));
+await M.ctx.close();
+await browser.close();
+done(errors);
