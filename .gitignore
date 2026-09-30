@@ -14,3 +14,12 @@ coverage
 playwright-report
 test-results
 .claude/scratch
+
+# PHP version: runtime data that must never be committed
+public_html/storage/uploads/*
+public_html/storage/logs/*
+public_html/storage/tmp/*
+public_html/storage/secret.key
+!public_html/storage/uploads/.gitkeep
+!public_html/storage/logs/.gitkeep
+!public_html/storage/tmp/.gitkeep
