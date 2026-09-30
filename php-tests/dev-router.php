@@ -15,4 +15,10 @@ if ($path !== '/' && is_file($root . $path) && !str_ends_with($path, '.php')) {
 }
 define('FEP_CONFIG_OVERRIDE', require __DIR__ . '/test-config.php');
 chdir($root);
+if ($path === '/cron.php') {
+    define('FEP', true);
+    define('FEP_ROOT', $root);
+    require $root . '/cron.php';
+    return;
+}
 require $root . '/index.php';

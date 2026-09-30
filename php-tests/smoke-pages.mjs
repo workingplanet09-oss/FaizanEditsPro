@@ -7,7 +7,10 @@ function store(res) { for (const c of res.headers.getSetCookie?.() ?? []) { cons
 const cookie = () => Object.entries(jar).map(([k, v]) => `${k}=${v}`).join("; ");
 async function get(path, opts = {}) { const r = await fetch(BASE + path, { redirect: "manual", headers: { cookie: cookie() }, ...opts }); store(r); return r; }
 await get("/login");
-const login = await fetch(BASE + "/api/auth/demo", { method: "POST", headers: { cookie: cookie(), "content-type": "application/json", "x-csrf-token": jar.fe_csrf ?? "" }, body: JSON.stringify({ kind }) });
+// EMAIL/PASSWORD env vars sign in with a real account; otherwise the one-click demo login for <kind> is used
+const login = process.env.EMAIL
+  ? await fetch(BASE + "/api/auth/login", { method: "POST", headers: { cookie: cookie(), "content-type": "application/json", "x-csrf-token": jar.fe_csrf ?? "" }, body: JSON.stringify({ email: process.env.EMAIL, password: process.env.PASSWORD }) })
+  : await fetch(BASE + "/api/auth/demo", { method: "POST", headers: { cookie: cookie(), "content-type": "application/json", "x-csrf-token": jar.fe_csrf ?? "" }, body: JSON.stringify({ kind }) });
 store(login);
 if (!login.ok) { console.log("demo sign-in failed", login.status, await login.text()); process.exit(2); }
 let bad = 0;

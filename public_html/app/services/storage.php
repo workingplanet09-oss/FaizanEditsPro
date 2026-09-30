@@ -32,7 +32,21 @@ final class LocalStorage
                 throw new RuntimeException('Invalid storage key');
             }
         }
+        if ($this->isBundled($key)) { // the sample media that ships with the demo data (read-only, lives in assets/demo)
+            // demo/<asset id>~<file name>: every sample asset has its own (unique) key but they share the bundled files
+            $name = preg_replace('/^[A-Za-z0-9_-]{8,40}~/', '', substr($key, 5));
+            if (!preg_match('/^[A-Za-z0-9][A-Za-z0-9._-]{0,79}$/', $name)) {
+                throw new RuntimeException('Invalid storage key');
+            }
+            return FEP_ROOT . '/assets/demo/' . $name;
+        }
         return $this->root() . DIRECTORY_SEPARATOR . str_replace('/', DIRECTORY_SEPARATOR, $key);
+    }
+
+    /** Sample media referenced by the optional demo data. Never written to or deleted by the application. */
+    public function isBundled(string $key): bool
+    {
+        return str_starts_with($key, 'demo/') && substr_count($key, '/') === 1;
     }
 
     public function partialPath(string $key): string
@@ -70,6 +84,9 @@ final class LocalStorage
 
     public function remove(string $key): void
     {
+        if ($this->isBundled($key)) {
+            return;
+        }
         try {
             $p = $this->path($key);
             if (is_file($p)) {
@@ -81,6 +98,9 @@ final class LocalStorage
 
     public function put(string $key, string $body, string $contentType = ''): void
     {
+        if ($this->isBundled($key)) {
+            throw new RuntimeException('Bundled sample media is read-only');
+        }
         $p = $this->path($key);
         if (!is_dir(dirname($p))) {
             mkdir(dirname($p), 0750, true);

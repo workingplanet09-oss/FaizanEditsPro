@@ -158,6 +158,16 @@ function run_sweeps(): array
         }
         return ['removed' => $stale ? Db::delete('assets', ['id' => array_column($stale, 'id')]) : 0];
     });
+    // Upload pieces that were never completed (the visitor closed the tab) are tidied after two days.
+    $step('tempFiles', function () {
+        $n = 0;
+        foreach (glob(FEP_ROOT . '/storage/tmp/*.part') ?: [] as $f) {
+            if (is_file($f) && filemtime($f) < time() - 2 * 86400 && @unlink($f)) {
+                $n++;
+            }
+        }
+        return $n;
+    });
     $step('housekeeping', function () {
         $now = now_ms();
         $day = 86400000;

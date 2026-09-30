@@ -1,4 +1,4 @@
-<?php /** Vars: $key, $group, $jobs, $st, $demo, [$value] */
+<?php /** Vars: $key, $group, $jobs, $st, $demo, $demoLoaded, $demoCanLoad, $isSuper, [$value] */
 $nav = array_merge([['integrations', 'Integrations & system', 'zap']], array_map(fn($g) => [$g[0], $g[1], $g[2]], SETTING_GROUPS));
 $items = [
     ['Database', true, 'MySQL connected.', 'config.php → db'],
@@ -31,7 +31,14 @@ $items = [
           <?= !(array)$jobs['counts'] ? '<span class="text-sm text-muted">No jobs yet.</span>' : '' ?></div>
         <?php if ($jobs['failed']): ?><ul class="divide-y divide-line border-t border-line"><?php foreach ($jobs['failed'] as $j): ?><li class="px-5 py-3 text-sm"><b><?= e($j['type']) ?></b> <span class="text-muted">— <?= e(mb_substr((string)$j['lastError'], 0, 160)) ?></span></li><?php endforeach; ?></ul><?php endif; ?>
         <?= card(ob_get_clean(), '', 'Background jobs', 'Emails, reminders and automations run through a database-backed queue, processed on each page visit or by an optional cPanel cron job.') ?>
-        <?= card('<div class="p-5 text-sm text-muted">Need to remove the sample data? Open <b>Settings → Integrations</b> and use <b>Clear demo data</b> below, or run the clear-demo script. Sample rows are labelled <b>Sample</b> in the content lists.</div>') ?>
+        <?php ob_start(); ?><div class="flex flex-wrap items-center gap-4 px-5 pb-5">
+          <p class="min-w-0 flex-1 basis-72 text-sm text-muted"><?= $demoLoaded
+              ? 'A fictional studio (clients, projects, invoices and videos) is loaded so you can explore. Remove it before you start using the site for real — every sample row, file link and sign-in is deleted; your own data is never touched.'
+              : ($demoCanLoad ? 'Want to look around first? Add a fictional studio with clients, projects, invoices and review videos. You can remove it again with one click.' : 'Sample data can only be added to a site that has no clients, projects or invoices yet.') ?></p>
+          <?= $demoLoaded
+              ? ($isSuper ? ui_action('/api/admin/demo/clear', 'Remove demo data', ['variant' => 'danger', 'icon' => 'trash', 'success' => 'Demo data removed', 'confirm' => ['title' => 'Remove all demo data?', 'description' => 'Sample clients, projects, invoices, files and sample sign-ins will be deleted for good. Anything you created yourself is kept.', 'confirmLabel' => 'Remove demo data', 'tone' => 'danger']]) : '<span class="text-xs text-subtle">Only a Super Admin can remove it.</span>')
+              : ($demoCanLoad ? ui_action('/api/admin/demo/load', 'Load sample data', ['variant' => 'outline', 'icon' => 'sparkles', 'success' => 'Sample data loaded']) : '') ?></div>
+        <?= card(ob_get_clean(), '', 'Sample data', $demoLoaded ? 'Loaded' : null) ?>
       </div>
     <?php endif; ?>
   </div>

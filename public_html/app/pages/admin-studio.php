@@ -113,7 +113,7 @@ staff_get('admin', '/admin/settings', 'settings:manage', 'Settings', 'admin/sett
             $group = $g;
         }
     }
-    $v = ['extraScripts' => ['js/admin-editors.js'], 'key' => $group ? $key : 'integrations', 'group' => $group, 'jobs' => job_stats($a), 'st' => integration_status(), 'demo' => is_demo_mode()];
+    $v = ['extraScripts' => ['js/admin-editors.js'], 'key' => $group ? $key : 'integrations', 'group' => $group, 'jobs' => job_stats($a), 'st' => integration_status(), 'demo' => is_demo_mode(), 'demoLoaded' => demo_loaded(), 'demoCanLoad' => demo_can_load(), 'isSuper' => in_array('super_admin', $a->roleKeys, true)];
     if ($group) {
         $v['value'] = get_all_settings($a->workspaceId)[$key] ?? new stdClass();
     }

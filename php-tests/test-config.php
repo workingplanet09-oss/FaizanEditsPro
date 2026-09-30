@@ -8,4 +8,5 @@ return [
     'debug' => true,
     'trusted_proxy_hops' => 0,
     'email' => ['driver' => 'log'],
+    'cron_key' => 'test-cron-key-123',
 ];

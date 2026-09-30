@@ -126,6 +126,10 @@ final class App
                 http_response_code(204);
                 exit;
             }
+            install_gate($req, $isApi); // a site without its first administrator (or without database.sql) leads to /setup
+            if ($path !== '/api/health' && $path !== '/api/cron/run') {
+                register_shutdown_function('pseudo_cron_tick'); // queued emails and reminders go out without any cron setup (at most every 20 seconds)
+            }
             // Convenience redirect for signed-out visitors (real authorization still happens in every page and API call).
             if ($portal && empty($_COOKIE[Sessions::COOKIE])) {
                 Res::redirect('/login?next=' . rawurlencode($path . (!empty($_SERVER['QUERY_STRING']) ? '?' . $_SERVER['QUERY_STRING'] : '')));
