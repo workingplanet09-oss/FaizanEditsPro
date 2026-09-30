@@ -80,7 +80,7 @@ api('DELETE', '/api/members/{id}', fn(Ctx $c) => remove_member($c->actor, $c->pa
 /** POST /api/leads — the Start Project wizard. Public (anti-spam + rate limited); signed-in clients skip contact details. */
 api_public('POST', '/api/leads', function (Ctx $c) {
     $b = $c->body;
-    assert_not_spam(['hp' => $b['hp'] ?? null, 't' => $b['t'] ?? null, 'turnstile' => $b['turnstile'] ?? null], $c->ip, ['minMs' => 4000]);
+    assert_not_spam(['hp' => $b['hp'] ?? null, 't' => $b['t'] ?? null, 'turnstile' => $b['turnstile'] ?? null], $c->ip, ['minMs' => 4000, 'captcha' => true]);
     return submit_inquiry([
         'answers' => $b['answers'], 'serviceSlug' => $b['serviceSlug'] ?? null, 'draftToken' => $b['draftToken'] ?? null, 'utm' => $b['utm'] ?? null, 'referrer' => $b['referrer'] ?? null,
         'referralCode' => $b['referralCode'] ?? null, 'ip' => $c->ip, 'actor' => $c->actor,
@@ -118,7 +118,7 @@ api('POST', '/api/leads/{id}/reject', fn(Ctx $c) => reject_lead($c->actor, $c->p
 // ── contact form, contact submissions, booking, newsletter ──
 api_public('POST', '/api/contact', function (Ctx $c) {
     $b = $c->body;
-    assert_not_spam(['hp' => $b['hp'] ?? null, 't' => $b['t'] ?? null, 'turnstile' => $b['turnstile'] ?? null], $c->ip, ['minMs' => 2500]);
+    assert_not_spam(['hp' => $b['hp'] ?? null, 't' => $b['t'] ?? null, 'turnstile' => $b['turnstile'] ?? null], $c->ip, ['minMs' => 2500, 'captcha' => true]);
     unset($b['hp'], $b['t'], $b['turnstile']);
     return submit_contact($b + ['ip' => $c->ip]);
 }, ['status' => 201, 'body' => V::obj([

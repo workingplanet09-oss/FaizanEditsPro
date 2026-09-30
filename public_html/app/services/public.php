@@ -18,8 +18,15 @@ function get_site_context(): array
     if ($ctx !== null) {
         return $ctx;
     }
-    $ws = workspace_id();
-    $s = get_settings($ws, ['business', 'theme', 'nav', 'footer', 'seo', 'contactInfo', 'workflow', 'booking']);
+    try {
+        $ws = workspace_id();
+        $s = get_settings($ws, ['business', 'theme', 'nav', 'footer', 'seo', 'contactInfo', 'workflow', 'booking']);
+    } catch (Throwable $e) {
+        // No database yet (fresh upload before database.sql is imported, or a short outage): the error page still needs the brand shell.
+        $d = app_data('site-defaults')['SETTING_DEFAULTS'];
+        $ws = '';
+        $s = array_intersect_key($d, array_flip(['business', 'theme', 'nav', 'footer', 'seo', 'contactInfo', 'workflow', 'booking']));
+    }
     return $ctx = [
         'workspaceId' => $ws, 'business' => $s['business'], 'theme' => $s['theme'], 'nav' => $s['nav'], 'footer' => $s['footer'], 'seo' => $s['seo'], 'contactInfo' => $s['contactInfo'],
         'workflow' => ['referralsEnabled' => $s['workflow']['referralsEnabled']], 'booking' => ['enabled' => $s['booking']['enabled']], 'demoMode' => is_demo_mode(),

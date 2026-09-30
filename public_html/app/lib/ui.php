@@ -434,7 +434,7 @@ function fmt_money_map(mixed $map): string
 /** schema.org structured data — "<" is escaped so content can never break out of the script tag. */
 function json_ld(array $data): string
 {
-    return '<script type="application/ld+json">' . str_replace('<', '<', json_enc($data)) . '</script>';
+    return '<script type="application/ld+json">' . str_replace('<', '\\u003c', json_enc($data)) . '</script>';
 }
 
 /** Path of the current request (without the query string), for "active link" highlighting. */

@@ -484,7 +484,7 @@ function submit_contact(array $in): array
     rate_limit("contact:{$in['ip']}", 5, 15 * 60000, 'Too many messages. Please wait a few minutes before sending another.');
     $ws = workspace_id();
     $row = Db::insert('contact_submissions', [
-        'workspaceId' => $ws, 'name' => trim($in['name']), 'email' => strtolower(trim($in['email'])), 'phone' => $in['phone'] ?: null, 'company' => $in['company'] ?: null,
+        'workspaceId' => $ws, 'name' => trim($in['name']), 'email' => strtolower(trim($in['email'])), 'phone' => ($in['phone'] ?? null) ?: null, 'company' => ($in['company'] ?? null) ?: null,
         'reason' => $in['reason'], 'message' => trim($in['message']), 'source' => $in['source'] ?? null, 'utm' => $in['utm'] ?? null, 'ip' => $in['ip'],
     ]);
     queue_email(['workspaceId' => $ws, 'toEmail' => $row['email'], 'templateKey' => 'contact_received', 'vars' => ['client_name' => $row['name']]]);
