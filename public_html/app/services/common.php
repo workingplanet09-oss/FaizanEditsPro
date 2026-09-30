@@ -50,10 +50,14 @@ function start_of_month_ms(?int $ms = null): int
 
 function add_months_ms(int $ms, int $n): int
 {
+    // like date-fns addMonths: the day is clamped to the length of the target month (Jan 31 + 1 month = Feb 28/29)
     $t = intdiv($ms, 1000);
     $y = (int)gmdate('Y', $t);
     $m = (int)gmdate('n', $t) + $n;
     $d = (int)gmdate('j', $t);
+    $y += (int)floor(($m - 1) / 12);
+    $m = (($m - 1) % 12 + 12) % 12 + 1;
+    $d = min($d, (int)gmdate('t', gmmktime(0, 0, 0, $m, 1, $y)));
     $ts = gmmktime((int)gmdate('G', $t), (int)gmdate('i', $t), (int)gmdate('s', $t), $m, $d, $y);
     return $ts * 1000 + ($ms % 1000);
 }
