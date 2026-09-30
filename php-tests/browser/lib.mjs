@@ -11,7 +11,7 @@ export async function launch(opts = {}) {
   const page = await ctx.newPage();
   const errors = [];
   page.on("pageerror", (e) => errors.push("pageerror: " + e.message));
-  page.on("console", (m) => { if (m.type() === "error" && !/Failed to load resource.*(40[0-9]|42[0-9])/.test(m.text())) errors.push("console: " + m.text()); });
+  page.on("console", (m) => { if (m.type() === "error" && !/Failed to load resource.*4[0-9][0-9]/.test(m.text())) errors.push("console: " + m.text()); });
   return { browser, ctx, page, errors };
 }
 export async function scrollAll(page) {

@@ -596,11 +596,16 @@
     FE.refreshTimes();
     $$("[data-theme-toggle]").forEach(themeButton);
     headerScroll(); reveal(); offline(); attribution();
-    $$("[data-fe-component]").forEach(function (el) {
+    FE.mount(document);
+  }
+  /** Mounts every [data-fe-component] inside root that is not mounted yet (also used for markup built by JavaScript). */
+  FE.mount = function (root) {
+    $$("[data-fe-component]", root).concat(root.getAttribute && root.getAttribute("data-fe-component") ? [root] : []).forEach(function (el) {
       var name = el.getAttribute("data-fe-component"), c = FE.components[name];
       if (c && !el.__mounted) { el.__mounted = true; try { c(el, FE.props(el)); } catch (err) { if (window.console) console.error("component " + name, err); } }
     });
-  }
+    if (root !== document) { FE.refreshTimes && FE.refreshTimes(); }
+  };
   FE.boot = boot;
   // deferred page scripts (registered after this file) run before DOMContentLoaded, so wait for it
   if (document.readyState === "complete") boot(); else document.addEventListener("DOMContentLoaded", boot);
