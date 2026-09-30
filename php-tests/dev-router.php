@@ -7,7 +7,7 @@
 $root = dirname(__DIR__) . '/public_html';
 $path = rawurldecode((string)parse_url((string)$_SERVER['REQUEST_URI'], PHP_URL_PATH));
 if ($path !== '/' && is_file($root . $path) && !str_ends_with($path, '.php')) {
-    if (preg_match('#^/(app|storage)/#', $path) || preg_match('#\.(sql|log|key|ini|md)$#', $path)) {
+    if (preg_match('#^/(app|storage)/#', $path) || preg_match('#\.(sql|log|key|ini|bak|md)$#i', $path) || preg_match('#(^|/)\.#', $path)) {
         http_response_code(403);
         exit;
     }
