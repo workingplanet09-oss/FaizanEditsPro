@@ -7,7 +7,7 @@ $line = fn($l, $v) => '<div class="flex justify-between"><dt class="text-muted">
 <?= back_link('/admin/invoices', 'Invoices') ?>
 <div class="mb-6 flex flex-col gap-4 lg:flex-row lg:items-end lg:justify-between">
   <div class="min-w-0"><h1 class="flex flex-wrap items-center gap-3 text-2xl font-extrabold tracking-tight sm:text-3xl"><?= e($inv['number']) ?><?= meta_badge('INVOICE_STATUS', $inv['status']) ?></h1><p class="mt-1.5 text-sm text-muted sm:text-[15px]"><?= $desc ?></p></div>
-  <div class="flex flex-wrap items-center gap-2"><?= ui_button('Print', ['variant' => 'outline', 'icon' => 'printer', 'attrs' => ['data-print' => true]]) ?><?= invoice_actions($inv, $actor->can('invoices:write'), $actor->can('payments:write')) ?></div>
+  <div class="flex flex-wrap items-center gap-2"><?= ui_button('Print', ['variant' => 'outline', 'icon' => 'file', 'class' => 'print:hidden', 'attrs' => ['data-print' => true]]) ?><?= invoice_actions($inv, $actor->can('invoices:write'), $actor->can('payments:write')) ?></div>
 </div>
 <div class="grid grid-cols-1 gap-6 lg:grid-cols-[1fr_22rem]">
   <?= card(doc_lines($inv) . ($inv['notes'] ? '<p class="mt-6 whitespace-pre-wrap text-sm text-muted">' . e($inv['notes']) . '</p>' : ''), 'p-6 sm:p-8') ?>

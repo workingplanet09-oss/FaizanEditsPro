@@ -11,7 +11,7 @@ function staff_page(string $area, string $view, Actor $actor, array $vars, array
     if ($area === 'admin' && $actor->can('messages:read')) {
         $badges['/admin/messages'] = unread_message_count($actor);
     }
-    render_page('portal', $view, $vars + ['area' => $area, 'actor' => $actor, 'badges' => $badges, 'scripts' => ['js/uploader.js', 'js/portal.js', 'js/admin.js']], $meta + ['noindex' => true], $status);
+    render_page('portal', $view, $vars + ['area' => $area, 'actor' => $actor, 'badges' => $badges, 'scripts' => array_merge(['js/uploader.js', 'js/portal.js', 'js/admin.js'], $vars['extraScripts'] ?? [])], $meta + ['noindex' => true], $status);
 }
 
 /**
@@ -313,7 +313,7 @@ function tasks_panel(array $tasks, array $o): string
         $modal = form_modal('task-new', 'New task', '/api/tasks', $fields, 'Create task', ['size' => 'sm', 'success' => 'Task created']);
     }
     $action = $canWrite ? ui_button('Add task', ['size' => 'sm', 'icon' => 'plus', 'attrs' => ['data-modal-open' => '#task-new']]) : null;
-    return card($h, '', $o['title'] ?? 'Tasks', $open . ' open · ' . ($tasks ? count($tasks) - $open : 0) . ' done', $action) . $modal . (!empty($o['openNew']) && $canWrite ? '<script>document.addEventListener("DOMContentLoaded",function(){var d=document.getElementById("task-new");if(d&&!d.open)d.showModal();});</script>' : '');
+    return card($h, '', $o['title'] ?? 'Tasks', $open . ' open · ' . ($tasks ? count($tasks) - $open : 0) . ' done', $action) . $modal . (!empty($o['openNew']) && $canWrite ? '<span hidden data-open-on-load="#task-new"></span>' : '');
 }
 
 function hm(int $seconds): string { return intdiv($seconds, 3600) . 'h ' . str_pad((string)intdiv($seconds % 3600, 60), 2, '0', STR_PAD_LEFT) . 'm'; }
@@ -580,4 +580,164 @@ function new_retainer_modal(array $clients, array $currencies, string $defaultCu
         . field_textarea('notes', 'Notes', '', ['rows' => 2, 'class' => 'sm:col-span-2', 'attrs' => ['data-null-empty' => true]]) . '</div>';
     return ui_button('New retainer', ['icon' => 'plus', 'variant' => 'dark', 'attrs' => ['data-modal-open' => '#retainer-new']])
         . form_modal('retainer-new', 'New retainer', '/api/retainers', $fields, 'Create retainer', ['size' => 'lg', 'description' => 'A monthly allowance billed automatically each period.', 'prepare' => 'retainerPrep', 'success' => 'Retainer created']);
+}
+
+// ───────────────────────────── calendar ─────────────────────────────
+
+/** The viewer's time zone (browser cookie), else the studio's, else UTC. */
+function viewer_tz(): DateTimeZone
+{
+    $name = isset($_COOKIE['fe_tz']) ? rawurldecode((string)$_COOKIE['fe_tz']) : '';
+    foreach ([$name, get_site_context()['business']['timezone'] ?? ''] as $n) {
+        if ($n !== '') {
+            try {
+                return new DateTimeZone($n);
+            } catch (Throwable) {
+            }
+        }
+    }
+    return new DateTimeZone('UTC');
+}
+
+const CAL_KINDS = [
+    'deadline' => ['bg-danger-soft text-danger', 'clock', 'Deadline'], 'call' => ['bg-info-soft text-info', 'phone', 'Call'], 'meeting' => ['bg-info-soft text-info', 'users', 'Meeting'],
+    'start' => ['bg-success-soft text-success', 'rocket', 'Start'], 'draft' => ['bg-accent-soft text-fg', 'film', 'Draft'], 'revision' => ['bg-warning-soft text-warning', 'refresh', 'Revision'],
+    'retainer' => ['bg-accent-soft text-fg', 'repeat', 'Retainer'], 'custom' => ['bg-surface-2 text-muted', 'calendar', 'Event'], 'task' => ['bg-surface-2 text-fg', 'checklist', 'Task'],
+];
+
+/** Calendar date math in the viewer's zone. Returns [$date, $from, $to] (DateTimeImmutable, zone-aware). */
+function calendar_range(string $view, ?string $dateParam, DateTimeZone $tz): array
+{
+    $d = ($dateParam && preg_match('/^\d{4}-\d{2}-\d{2}$/', $dateParam)) ? DateTimeImmutable::createFromFormat('Y-m-d H:i:s', $dateParam . ' 12:00:00', $tz) : false;
+    $d = $d ?: new DateTimeImmutable('now', $tz);
+    $weekStart = fn(DateTimeImmutable $x) => $x->setTime(0, 0)->modify('-' . ((int)$x->format('N') - 1) . ' days');
+    if ($view === 'month') {
+        $from = $weekStart($d->modify('first day of this month'));
+        $to = $from->modify('+42 days');
+    } elseif ($view === 'week') {
+        $from = $weekStart($d);
+        $to = $from->modify('+7 days');
+    } else {
+        $from = $d->setTime(0, 0);
+        $to = $from->modify('+1 day');
+    }
+    return [$d, $from, $to];
+}
+
+function calendar_chip(array $e): string
+{
+    [$cls, $ic] = CAL_KINDS[$e['kind']] ?? CAL_KINDS['custom'];
+    $inner = '<span class="flex items-center gap-1.5 truncate rounded-md px-1.5 py-1 text-[11px] font-semibold leading-tight ' . $cls . '" title="' . e($e['title']) . '">' . icon($ic, 11, 'shrink-0')
+        . '<span class="truncate">' . (empty($e['allDay']) ? local_time($e['at'], 'time') . ' ' : '') . e($e['title']) . '</span></span>';
+    return !empty($e['href']) ? '<a href="' . e($e['href']) . '" class="block hover:brightness-95">' . $inner . '</a>' : '<div>' . $inner . '</div>';
+}
+
+function calendar_view(array $events, string $view, DateTimeImmutable $date, string $base, DateTimeZone $tz): string
+{
+    $today = new DateTimeImmutable('now', $tz);
+    $ymd = fn(DateTimeInterface $d) => $d->format('Y-m-d');
+    $byDay = [];
+    foreach ($events as $e) {
+        $ms = (int)ts_ms($e['at']);
+        $key = !empty($e['allDay']) ? gmdate('Y-m-d', intdiv($ms, 1000)) : (new DateTimeImmutable('@' . intdiv($ms, 1000)))->setTimezone($tz)->format('Y-m-d');
+        $byDay[$key][] = $e;
+    }
+    $shift = function (string $v, int $dir) use ($date, $base, $ymd) {
+        $d = $v === 'month' ? $date->modify('first day of this month')->modify(($dir > 0 ? '+' : '-') . '1 month') : $date->modify(($dir > 0 ? '+' : '-') . ($v === 'week' ? 7 : 1) . ' days');
+        return $base . '?view=' . $v . '&date=' . $ymd($d);
+    };
+    $weekStart = $date->setTime(0, 0)->modify('-' . ((int)$date->format('N') - 1) . ' days');
+    $title = $view === 'month' ? $date->format('F Y') : ($view === 'week' ? 'Week of ' . $weekStart->format('M j') : $date->format('l, F j'));
+    $nav = 'flex h-9 w-9 items-center justify-center rounded-lg border border-line-strong hover:bg-surface-2';
+    $h = '<div class="mb-4 flex flex-wrap items-center justify-between gap-3"><div class="flex items-center gap-2">'
+        . '<a href="' . e($shift($view, -1)) . '" aria-label="Previous" class="' . $nav . '">' . icon('chevron-left', 16) . '</a><a href="' . e($shift($view, 1)) . '" aria-label="Next" class="' . $nav . '">' . icon('chevron-right', 16) . '</a>'
+        . '<a href="' . e($base . '?view=' . $view . '&date=' . $ymd($today)) . '" class="h-9 rounded-lg border border-line-strong px-3 text-sm font-semibold leading-9 hover:bg-surface-2">Today</a><h2 class="ml-2 text-lg font-extrabold">' . e($title) . '</h2></div>'
+        . '<div class="inline-flex rounded-xl bg-surface-2 p-1 text-sm font-semibold" role="group" aria-label="Calendar view">';
+    foreach (['month', 'week', 'day'] as $v) {
+        $h .= '<a href="' . e($base . '?view=' . $v . '&date=' . $ymd($date)) . '"' . ($view === $v ? ' aria-current="page"' : '') . ' class="rounded-lg px-3.5 py-1.5 capitalize ' . ($view === $v ? 'bg-surface shadow-soft' : 'text-muted hover:text-fg') . '">' . $v . '</a>';
+    }
+    $h .= '</div></div>';
+    if ($view === 'month') {
+        $start = $date->modify('first day of this month')->setTime(0, 0);
+        $start = $start->modify('-' . ((int)$start->format('N') - 1) . ' days');
+        $h .= '<div class="overflow-hidden rounded-[var(--radius-card)] border border-line bg-surface shadow-soft"><div class="grid grid-cols-7 border-b border-line bg-surface-2/50 text-center text-[11px] font-bold uppercase tracking-wider text-subtle">';
+        foreach (['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'] as $dn) {
+            $h .= '<div class="py-2">' . $dn . '</div>';
+        }
+        $h .= '</div><div class="grid grid-cols-7">';
+        for ($i = 0; $i < 42; $i++) {
+            $d = $start->modify("+{$i} days");
+            $list = $byDay[$ymd($d)] ?? [];
+            $other = $d->format('n') !== $date->format('n');
+            $isToday = $ymd($d) === $ymd($today);
+            $h .= '<div class="min-h-24 border-b border-r border-line p-1.5 max-md:min-h-16 ' . ($other ? 'bg-surface-2/40 ' : '') . (($i + 1) % 7 === 0 ? 'border-r-0 ' : '') . ($i >= 35 ? 'border-b-0' : '') . '">'
+                . '<a href="' . e($base . '?view=day&date=' . $ymd($d)) . '" class="mb-1 inline-flex h-6 min-w-6 items-center justify-center rounded-full px-1 text-xs font-bold ' . ($isToday ? 'bg-accent text-accent-fg' : ($other ? 'text-subtle' : 'hover:bg-surface-2')) . '">' . $d->format('j') . '</a><div class="space-y-1 max-md:hidden">';
+            foreach (array_slice($list, 0, 3) as $e) {
+                $h .= calendar_chip($e);
+            }
+            if (count($list) > 3) {
+                $h .= '<a href="' . e($base . '?view=day&date=' . $ymd($d)) . '" class="block px-1 text-[11px] font-semibold text-muted hover:text-fg">+' . (count($list) - 3) . ' more</a>';
+            }
+            $h .= '</div>';
+            if ($list) {
+                $h .= '<div class="flex gap-0.5 md:hidden">' . implode('', array_map(fn($e) => '<span class="h-1.5 w-1.5 rounded-full ' . explode(' ', (CAL_KINDS[$e['kind']] ?? CAL_KINDS['custom'])[0])[0] . '"></span>', array_slice($list, 0, 4))) . '</div>';
+            }
+            $h .= '</div>';
+        }
+        $h .= '</div></div>';
+    } elseif ($view === 'week') {
+        $h .= '<div class="grid grid-cols-1 gap-3 md:grid-cols-7">';
+        for ($i = 0; $i < 7; $i++) {
+            $d = $weekStart->modify("+{$i} days");
+            $list = $byDay[$ymd($d)] ?? [];
+            $isToday = $ymd($d) === $ymd($today);
+            $h .= '<section class="rounded-2xl border bg-surface p-3 ' . ($isToday ? 'border-accent' : 'border-line') . '" aria-label="' . e($d->format('D M j Y')) . '"><h3 class="mb-2 flex items-baseline justify-between text-xs font-bold uppercase tracking-wider text-subtle"><span>' . $d->format('D') . '</span><span class="text-base font-extrabold normal-case tracking-normal ' . ($isToday ? 'text-accent-text' : 'text-fg') . '">' . $d->format('j') . '</span></h3><div class="space-y-1.5">'
+                . ($list ? implode('', array_map('calendar_chip', $list)) : '<p class="py-3 text-center text-xs text-subtle">—</p>') . '</div></section>';
+        }
+        $h .= '</div>';
+    } else {
+        $list = $byDay[$ymd($date)] ?? [];
+        $h .= '<div class="rounded-[var(--radius-card)] border border-line bg-surface p-5 shadow-soft">';
+        if ($list) {
+            $h .= '<ul class="divide-y divide-line">';
+            foreach ($list as $e) {
+                [$cls, $ic, $lab] = CAL_KINDS[$e['kind']] ?? CAL_KINDS['custom'];
+                $when = !empty($e['allDay']) ? 'All day' : local_time($e['at'], 'time') . (!empty($e['end']) ? ' – ' . local_time($e['end'], 'time') : '');
+                $row = '<div class="flex items-center gap-4 py-3.5"><span class="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl ' . $cls . '">' . icon($ic, 18) . '</span><div class="min-w-0 flex-1"><div class="text-sm font-bold">' . e($e['title']) . '</div><div class="text-xs text-muted">' . e($lab) . ' · ' . $when . '</div></div>' . (!empty($e['href']) ? icon('chevron-right', 16, 'text-subtle') : '') . '</div>';
+                $h .= '<li>' . (!empty($e['href']) ? '<a href="' . e($e['href']) . '" class="block rounded-lg hover:bg-surface-2/50">' . $row . '</a>' : $row) . '</li>';
+            }
+            $h .= '</ul>';
+        } else {
+            $h .= '<p class="py-10 text-center text-sm text-muted">Nothing scheduled for ' . e($date->format('l')) . '.</p>';
+        }
+        $h .= '</div>';
+    }
+    $h .= '<ul class="mt-4 flex flex-wrap gap-x-4 gap-y-1.5 text-xs text-muted" aria-label="Legend">';
+    foreach (CAL_KINDS as $v) {
+        $h .= '<li class="flex items-center gap-1.5"><span class="h-2.5 w-2.5 rounded-sm ' . explode(' ', $v[0])[0] . '"></span>' . e($v[2]) . '</li>';
+    }
+    return $h . '</ul>';
+}
+
+function schedule_call_modal(array $clients): string
+{
+    $types = [['value' => 'DISCOVERY_CALL', 'label' => 'Discovery call'], ['value' => 'PROJECT_CONSULTATION', 'label' => 'Project consultation'], ['value' => 'CLIENT_REVIEW_CALL', 'label' => 'Client review call'], ['value' => 'STRATEGY_CALL', 'label' => 'Strategy call']];
+    $fields = field_input('title', 'Title', '', ['required' => true, 'placeholder' => 'e.g. Review call — Harbor View']) . field_select('type', 'Type', $types, 'DISCOVERY_CALL', ['optional' => false])
+        . '<div class="grid grid-cols-2 gap-4">' . field_input('when', 'Date & time', '', ['required' => true, 'type' => 'datetime-local']) . field_input('minutes', 'Minutes', '30', ['optional' => false, 'type' => 'number', 'min' => 10, 'max' => 240, 'step' => 5, 'attrs' => ['data-type' => 'int']]) . '</div>'
+        . field_select('clientId', 'Client', select_options(array_map(fn($c) => ['id' => $c['id'], 'label' => $c['companyName']], $clients), 'id', 'label', '— none —'), '', ['attrs' => ['data-null-empty' => true]])
+        . field_textarea('notes', 'Notes', '', ['rows' => 2]);
+    return ui_button('Schedule call', ['icon' => 'plus', 'variant' => 'dark', 'attrs' => ['data-modal-open' => '#schedule-call']]) . form_modal('schedule-call', 'Schedule a call', '/api/meetings', $fields, 'Schedule', ['size' => 'sm', 'prepare' => 'meetingPrep', 'success' => 'Call scheduled']);
+}
+
+/** Revision rounds table shared by the admin and editor areas. */
+function revisions_board(array $rows, string $base, bool $canManage): string
+{
+    return card(ui_table([
+        ['key' => 'p', 'header' => 'Project', 'primary' => true, 'render' => fn($r) => '<a class="font-bold hover:underline" href="' . e("{$base}/projects/" . ($r['project']['id'] ?? '') . "/review/{$r['versionId']}") . '">' . e($r['project']['name'] ?? '') . '<span class="block text-xs font-normal text-muted">' . e(($r['project']['code'] ?? '') . ' · Round ' . $r['roundNumber'] . ' · ' . ($r['versionLabel'] ?? '')) . '</span></a>'],
+        ['key' => 'd', 'header' => 'Request', 'hideOnMobile' => true, 'render' => fn($r) => '<span class="line-clamp-2 max-w-md text-muted">' . e(($r['description'] ?: 'Timestamped notes') . ' (' . (int)($r['commentCount'] ?? 0) . ')') . '</span>'],
+        ['key' => 'pr', 'header' => 'Priority', 'hideOnMobile' => true, 'render' => fn($r) => priority_badge($r['priority'])],
+        ['key' => 's', 'header' => 'Status', 'render' => fn($r) => meta_badge('REVISION_STATUS', $r['status'])],
+        ['key' => 'w', 'header' => 'Requested', 'hideOnMobile' => true, 'render' => fn($r) => '<span class="text-muted">' . ago($r['createdAt']) . '</span>'],
+        ['key' => 'a', 'header' => '', 'align' => 'right', 'render' => fn($r) => revision_buttons($r['id'], $r['status'], $canManage)],
+    ], $rows, fn($r) => $r['id'], null, ui_empty('No revision requests', 'When clients request changes they show up here with the exact timestamps.', 'refresh')));
 }

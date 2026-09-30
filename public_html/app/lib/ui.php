@@ -134,7 +134,7 @@ function local_time(mixed $value, string $format = 'datetime', string $class = '
     if ($ms === null) {
         return '—';
     }
-    $text = match ($format) { 'date' => fmt_date($ms), 'short' => fmt_date_short($ms), default => fmt_datetime($ms) };
+    $text = match ($format) { 'date' => fmt_date($ms), 'short' => fmt_date_short($ms), 'time' => gmdate('g:i A', intdiv($ms, 1000)) . ' UTC', default => fmt_datetime($ms) };
     return '<time datetime="' . e(iso_dt($ms)) . '" data-local="' . e($format) . '"' . ($class ? ' class="' . e($class) . '"' : '') . '>' . e($text) . '</time>';
 }
 
@@ -201,7 +201,7 @@ function ui_action(string $url, string $label, array $o = []): string
         $a['data-confirm-label'] = $o['confirm']['confirmLabel'] ?? null;
         $a['data-confirm-tone'] = $o['confirm']['tone'] ?? null;
     }
-    return ui_button($label, $o + ['attrs' => $a + ($o['attrs'] ?? [])]);
+    return ui_button($label, array_replace($o, ['attrs' => $a + ($o['attrs'] ?? [])]));
 }
 
 // ─────────── Form controls ───────────

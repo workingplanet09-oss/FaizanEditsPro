@@ -21,6 +21,10 @@
     }, function (err) { el.disabled = false; FE.toast.error("Couldn't save", err.message); FE.refresh(); });
   });
 
+  // dialogs that should be open when the page loads
+  function openOnLoad() { $$("[data-open-on-load]").forEach(function (el) { FE.modal.open(el.getAttribute("data-open-on-load")); }); }
+  if (document.readyState === "complete") openOnLoad(); else window.addEventListener("load", openOnLoad);
+
   // ───────────── stopwatch ─────────────
   function clock(s) { return [Math.floor(s / 3600), Math.floor((s % 3600) / 60), s % 60].map(function (n) { return String(n).padStart(2, "0"); }).join(":"); }
   function tickTimers() { $$("[data-timer]").forEach(function (el) { var t = new Date(el.getAttribute("data-timer")).getTime(); if (!isNaN(t)) el.textContent = clock(Math.max(0, Math.floor((Date.now() - t) / 1000))); }); }
@@ -173,6 +177,104 @@
     $$("[data-doc-save]", root).forEach(function (b) { b.addEventListener("click", function () { save(b.getAttribute("data-doc-save") === "send", b); }); });
     drawLines(); update();
   };
+
+  FE.handlers.meetingPrep = function (body) {
+    var d = new Date(body.when);
+    if (isNaN(d)) return false;
+    var out = { title: body.title, type: body.type, startsAt: d.toISOString(), minutes: body.minutes || 30 };
+    if (body.clientId) out.clientId = body.clientId;
+    if (body.notes) out.notes = body.notes;
+    return out;
+  };
+
+
+  // ───────────── small UI toolkit for the editors (admin-editors.js) ─────────────
+  var h = FE.h;
+  var INPUT = "w-full rounded-xl border border-line-strong bg-surface px-3.5 text-sm text-fg placeholder:text-subtle transition-[border-color,box-shadow] duration-150 hover:border-subtle focus:border-accent focus:outline-none focus:ring-4 focus:ring-accent/20 disabled:cursor-not-allowed disabled:opacity-60";
+  var UI = (FE.ui = {});
+  UI.INPUT = INPUT;
+  UI.btnClass = function (variant, size) {
+    var sz = { xs: "h-7 px-2.5 text-xs rounded-lg", sm: "h-9 px-3.5 text-sm rounded-xl", md: "h-11 px-5 text-sm rounded-xl" }[size || "md"];
+    var v = { primary: "bg-accent text-accent-fg hover:brightness-105", dark: "bg-fg text-bg hover:opacity-90", outline: "border border-line-strong text-fg hover:bg-surface-2", ghost: "text-muted hover:text-fg hover:bg-surface-2", danger: "bg-danger-soft text-danger hover:bg-danger hover:text-white", secondary: "bg-surface-2 text-fg hover:bg-line" }[variant || "primary"];
+    return "relative inline-flex items-center justify-center gap-2 whitespace-nowrap font-semibold select-none transition duration-200 active:scale-[0.98] disabled:pointer-events-none disabled:opacity-50 " + sz + " " + v;
+  };
+  UI.btn = function (label, o) {
+    o = o || {};
+    var b = h("button", { type: o.type || "button", class: UI.btnClass(o.variant, o.size) + (o.class ? " " + o.class : ""), html: (o.icon ? FE.icon(o.icon, 16) : "") + FE.esc(label) });
+    if (o.onclick) b.addEventListener("click", o.onclick);
+    return b;
+  };
+  UI.iconBtn = function (icon, label, onclick, danger) {
+    var b = h("button", { type: "button", "aria-label": label, title: label, class: "rounded-lg p-2 text-subtle " + (danger ? "hover:bg-danger-soft hover:text-danger" : "hover:bg-surface-2 hover:text-fg"), html: FE.icon(icon, 15) });
+    b.addEventListener("click", onclick); return b;
+  };
+  UI.input = function (value, o) {
+    o = o || {};
+    var el = h("input", { type: o.type || "text", class: INPUT + " h-11 " + (o.class || ""), value: value == null ? "" : value, placeholder: o.placeholder, "aria-label": o["aria-label"], disabled: o.disabled, inputmode: o.inputmode, min: o.min, max: o.max });
+    el.value = value == null ? "" : value; return el;
+  };
+  UI.textarea = function (value, rows, o) {
+    o = o || {};
+    var el = h("textarea", { rows: rows || 3, class: INPUT + " py-3 leading-relaxed " + (o.class || ""), placeholder: o.placeholder, "aria-label": o["aria-label"] });
+    el.value = value == null ? "" : value; return el;
+  };
+  UI.select = function (options, value, o) {
+    o = o || {};
+    var el = h("select", { class: INPUT + " h-11 " + (o.class || ""), "aria-label": o["aria-label"], disabled: o.disabled });
+    options.forEach(function (x) { var op = h("option", { value: x.value }, x.label); el.appendChild(op); });
+    el.value = value == null ? "" : value; return el;
+  };
+  /** label + control + hint + error slot. Returns an element with setError(msg). */
+  UI.field = function (label, control, o) {
+    o = o || {};
+    var id = "f-" + Math.random().toString(36).slice(2, 8);
+    if (control.id === "" || !control.id) control.id = id;
+    var err = h("p", { class: "hidden items-center gap-1.5 text-xs font-medium text-danger", role: "alert" });
+    var el = h("div", { class: "space-y-1.5 " + (o.class || "") },
+      label ? h("label", { for: control.id, class: "flex items-center gap-1.5 text-sm font-semibold" }, label, o.required ? h("span", { class: "text-danger", "aria-hidden": "true" }, "*") : o.optional ? h("span", { class: "text-xs font-normal text-subtle" }, "optional") : null) : null,
+      control, err, o.hint ? h("p", { class: "text-xs text-subtle" }, o.hint) : null);
+    el.setError = function (m) { err.textContent = m || ""; err.classList.toggle("hidden", !m); err.classList.toggle("flex", !!m); control.setAttribute("aria-invalid", m ? "true" : "false"); };
+    return el;
+  };
+  /** accessible switch; returns an element with get()/set() */
+  UI.sw = function (checked, label, description) {
+    var on = !!checked;
+    var btn = h("button", { type: "button", role: "switch", "aria-checked": on ? "true" : "false", "data-switch": "x", class: "relative h-6 w-11 shrink-0 rounded-full transition-colors duration-200 " + (on ? "bg-accent" : "bg-line-strong"), html: '<span class="absolute top-0.5 h-5 w-5 rounded-full bg-white shadow transition-transform duration-200 ' + (on ? "translate-x-[22px]" : "translate-x-0.5") + '"></span><span class="sr-only">' + (on ? "On" : "Off") + "</span>" });
+    var wrap = h("div", { class: "flex items-center justify-between gap-4" }, label ? h("span", { class: "min-w-0" }, h("span", { class: "block text-sm font-semibold leading-snug" }, label), description ? h("span", { class: "mt-0.5 block text-xs text-muted" }, description) : null) : null, btn);
+    wrap.get = function () { return btn.getAttribute("aria-checked") === "true"; };
+    wrap.button = btn;
+    return wrap;
+  };
+  UI.checkbox = function (checked, label, description) {
+    var cb = h("input", { type: "checkbox", class: "mt-0.5 h-[18px] w-[18px] shrink-0 cursor-pointer accent-[var(--accent)]" });
+    cb.checked = !!checked;
+    var el = h("label", { class: "flex cursor-pointer items-start gap-3" }, cb, h("span", { class: "min-w-0" }, h("span", { class: "block text-sm font-medium leading-snug" }, label), description ? h("span", { class: "mt-0.5 block text-xs text-muted" }, description) : null));
+    el.get = function () { return cb.checked; }; el.box = cb; return el;
+  };
+  UI.banner = function (msg, tone) {
+    return h("p", { role: "alert", class: "rounded-xl px-4 py-3 text-sm font-medium " + (tone === "warning" ? "bg-warning-soft text-warning" : "bg-danger-soft text-danger") }, msg);
+  };
+  var SIZES = { sm: "max-w-md", md: "max-w-xl", lg: "max-w-3xl", xl: "max-w-5xl" };
+  /** Builds and opens a <dialog>. o: title, description, size, body (Node), footer (Node|Node[]). Returns {el, body, foot, close()}. */
+  FE.dialog = function (o) {
+    var id = "dlg-" + Math.random().toString(36).slice(2, 8);
+    var body = h("div", { class: "thin-scroll min-h-0 flex-1 overflow-y-auto px-6 py-5" }, o.body);
+    var foot = h("div", { class: "flex flex-wrap items-center justify-end gap-2 border-t border-line bg-surface-2/40 px-6 py-4" }, o.footer);
+    var dlg = h("dialog", { id: id, "aria-labelledby": id + "-t", class: "m-auto w-[calc(100%-1.5rem)] max-h-[92dvh] overflow-hidden rounded-3xl border border-line bg-surface p-0 text-fg shadow-lift open:flex open:flex-col open:animate-pop " + (SIZES[o.size || "md"]) },
+      h("div", { class: "flex items-start justify-between gap-4 border-b border-line px-6 py-4" }, h("div", { class: "min-w-0" }, h("h2", { id: id + "-t", class: "text-lg font-bold leading-tight" }, o.title), o.description ? h("p", { class: "mt-1 text-sm text-muted" }, o.description) : null),
+        h("button", { type: "button", "data-modal-close": true, "aria-label": "Close dialog", class: "-mr-2 flex h-9 w-9 shrink-0 items-center justify-center rounded-xl text-muted hover:bg-surface-2 hover:text-fg", html: FE.icon("x", 18) })),
+      body, foot);
+    dlg.addEventListener("close", function () { dlg.remove(); if (o.onClose) o.onClose(); });
+    document.body.appendChild(dlg);
+    dlg.showModal();
+    return { el: dlg, body: body, foot: foot, close: function () { if (dlg.open) dlg.close(); } };
+  };
+  /** run an API call with a busy button; on success run ok(data); on failure run fail(err) (toast otherwise) */
+  UI.run = function (btn, promiseFn, ok, fail) {
+    FE.busy(btn, true);
+    return promiseFn().then(function (d) { FE.busy(btn, false); if (ok) ok(d); }, function (e) { FE.busy(btn, false); if (fail) fail(e); else FE.toast.error("That didn't work", e.message); });
+  };
+  UI.done = function (msg) { FE.flash("success", msg); FE.refresh(); };
 
   // ───────────── project status control ─────────────
   FE.components.statusControl = function (root, props) {

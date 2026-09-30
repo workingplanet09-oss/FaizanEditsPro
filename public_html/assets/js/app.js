@@ -369,7 +369,7 @@
   function fmtLocal(el) {
     var d = new Date(el.getAttribute("datetime")); if (isNaN(d)) return;
     var f = el.getAttribute("data-local");
-    var opt = f === "date" ? { year: "numeric", month: "long", day: "numeric" } : f === "short" ? { month: "short", day: "numeric" } : { year: "numeric", month: "short", day: "numeric", hour: "numeric", minute: "2-digit" };
+    var opt = f === "time" ? { hour: "numeric", minute: "2-digit" } : f === "date" ? { year: "numeric", month: "long", day: "numeric" } : f === "short" ? { month: "short", day: "numeric" } : { year: "numeric", month: "short", day: "numeric", hour: "numeric", minute: "2-digit" };
     el.textContent = d.toLocaleString(undefined, opt);
     el.title = d.toISOString();
   }
