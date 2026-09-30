@@ -186,7 +186,8 @@ final class App
         }
         $c->query = isset($opts['query']) ? $opts['query']->parse($req->query) : $req->query;
         if (isset($opts['body'])) {
-            $c->body = $opts['body']->parse($req->json());
+            // an empty body is only acceptable for schemas that have a default (e.g. "complete upload" with no options)
+            $c->body = $opts['body']->parse($req->raw() === '' ? null : $req->json());
         }
         $result = ($route['fn'])($c);
         if ($result instanceof RawResponse) {
