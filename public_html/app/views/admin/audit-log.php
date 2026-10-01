@@ -1,4 +1,4 @@
-<?php /** Vars: $f, $res */
+<?php defined('FEP') or exit; /** Vars: $f, $res */
 $ents = ['project', 'invoice', 'payment', 'quote', 'contract', 'lead', 'client', 'user', 'video_version', 'asset', 'setting', 'automation']; ?>
 <?= ui_page_header('Audit log', "A permanent record of sensitive actions: sign-ins, status overrides, payments, approvals, deletions and setting changes. Entries can't be edited or removed.") ?>
 <?php ob_start(); ?>

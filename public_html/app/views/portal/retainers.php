@@ -1,4 +1,4 @@
-<?php /** Vars: $list, $canManage */ ?>
+<?php defined('FEP') or exit; /** Vars: $list, $canManage */ ?>
 <?= ui_page_header('Retainers', 'A monthly allowance of edits with a dedicated turnaround. See what you\'ve used and start new work in one click.') ?>
 <?php if (!$list): ?>
   <?= card(ui_empty('No retainer yet', 'Retainers suit teams with regular content: a fixed number of videos or shorts every month at a lower per-video cost.', 'repeat', ui_link('/pricing', 'See retainer plans', ['variant' => 'outline']))) ?>

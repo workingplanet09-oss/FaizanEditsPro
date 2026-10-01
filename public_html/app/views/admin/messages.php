@@ -1,4 +1,4 @@
-<?php /** Vars: $threads, $current, $items */ ?>
+<?php defined('FEP') or exit; /** Vars: $threads, $current, $items */ ?>
 <?= ui_page_header('Messages', 'Client conversations by project. Replies notify the client by email and in their portal.') ?>
 <?php if (!$threads): ?>
   <?= card(ui_empty('No conversations yet', 'When clients message you from their portal, threads appear here.', 'message')) ?>

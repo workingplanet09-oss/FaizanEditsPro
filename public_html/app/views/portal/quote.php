@@ -1,4 +1,4 @@
-<?php /** Var: $q */
+<?php defined('FEP') or exit; /** Var: $q */
 $open = in_array($q['status'], ['SENT', 'VIEWED'], true);
 $expired = $q['validUntil'] && ts_ms($q['validUntil']) < now_ms();
 $contract = array_values(array_filter($q['contracts'] ?? [], fn($c) => $c['status'] !== 'DRAFT'))[0] ?? null;

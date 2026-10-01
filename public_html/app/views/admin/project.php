@@ -1,4 +1,4 @@
-<?php /** Vars: $area, $base, $p, $docs, $versions, $latest, $staff, $tab, $showBilling, $actor + per-tab data */
+<?php defined('FEP') or exit; /** Vars: $area, $base, $p, $docs, $versions, $latest, $staff, $tab, $showBilling, $actor + per-tab data */
 $id = $p['id']; $status = $p['status']; $meta = status_meta($status);
 $canWrite = $actor->can('projects:write');
 $canAssign = $actor->can('projects:assign');

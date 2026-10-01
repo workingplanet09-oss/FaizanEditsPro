@@ -1,4 +1,4 @@
-<?= page_hero('Services', 'Editing for every kind of content.', 'Each service comes with defined deliverables, a clear turnaround and a brief that adapts to your niche.',
+<?php defined('FEP') or exit; ?><?= page_hero('Services', 'Editing for every kind of content.', 'Each service comes with defined deliverables, a clear turnaround and a brief that adapts to your niche.',
     '<div class="flex flex-wrap gap-3">' . ui_link('/start-project', 'Start a project', ['iconRight' => 'arrow']) . ghost_link('/book', 'Talk to us first') . '</div>') ?>
 <?= sec_open() ?>
   <div class="grid grid-cols-1 gap-5 sm:grid-cols-2 lg:grid-cols-3"><?php foreach ($services as $i => $s): ?><div<?= rv(($i % 3) * 60) ?>><?= service_card($s) ?></div><?php endforeach; ?></div>

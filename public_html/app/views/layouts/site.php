@@ -1,4 +1,4 @@
-<?php /** Public website frame. Vars: $content, $meta, $actor? */
+<?php defined('FEP') or exit; /** Public website frame. Vars: $content, $meta, $actor? */
 $site = get_site_context();
 $actor = $actor ?? actor();
 $body = View::capture('partials/site-header', compact('site', 'actor'))

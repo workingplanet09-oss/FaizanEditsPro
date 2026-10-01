@@ -1,4 +1,4 @@
-<?php /** Vars: $view (table|board), $f (filters), $scope (open|all), $res, $staff, $actor */
+<?php defined('FEP') or exit; /** Vars: $view (table|board), $f (filters), $scope (open|all), $res, $staff, $actor */
 $board = $view === 'board';
 $hasFilter = (bool)array_filter($f);
 $viewParams = array_filter($f) + ($scope === 'open' ? [] : ['scope' => $scope]);

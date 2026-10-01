@@ -1,4 +1,4 @@
-<?php /** Vars: $section, $f, $counts, $res, $sources, $staff */
+<?php defined('FEP') or exit; /** Vars: $section, $f, $counts, $res, $sources, $staff */
 $has = (bool)array_filter($f);
 $params = array_filter($f) + ($section === 'leads' ? [] : ['section' => $section]);
 $fields = [

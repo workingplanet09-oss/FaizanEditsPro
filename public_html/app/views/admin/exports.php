@@ -1,4 +1,4 @@
-<?php /** Vars: $list */ ?>
+<?php defined('FEP') or exit; /** Vars: $list */ ?>
 <?= ui_page_header('Exports', 'Download your data as CSV. Files open cleanly in Excel and Google Sheets; formula-like cells are neutralised for safety.') ?>
 <div class="grid grid-cols-1 gap-4 md:grid-cols-2 xl:grid-cols-3"><?php foreach ($list as [$key, $label, $desc, $ic]): ?>
   <div class="<?= e(card_class('flex flex-col p-5')) ?>">

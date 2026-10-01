@@ -1,4 +1,4 @@
-<?php /** Vars: $key, $r, $workload, $profit */
+<?php defined('FEP') or exit; /** Vars: $key, $r, $workload, $profit */
 $cur = $r['defaultCurrency'];
 $m = fn($n) => money((int)$n, $cur, true);
 $ranges = [];

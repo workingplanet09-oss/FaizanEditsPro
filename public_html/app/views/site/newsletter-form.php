@@ -1,4 +1,4 @@
-<form class="mt-3" data-fe-form="/api/newsletter" data-success="You're subscribed." data-refresh="0" data-reset novalidate>
+<?php defined('FEP') or exit; ?><form class="mt-3" data-fe-form="/api/newsletter" data-success="You're subscribed." data-refresh="0" data-reset novalidate>
   <div class="flex gap-2">
     <label class="sr-only" for="nl-email">Email address</label>
     <input id="nl-email" type="email" name="email" required placeholder="you@email.com" class="h-10 min-w-0 flex-1 rounded-xl border border-line-strong bg-surface px-3 text-sm placeholder:text-subtle focus:border-accent focus:outline-none">

@@ -14,6 +14,8 @@
  */
 defined('FEP') or exit;
 
+defined('FEP') or exit;
+
 function fill_vars(string $tpl, array $vars): string
 {
     return preg_replace_callback('/\{\{\s*([a-z0-9_]+)\s*\}\}/i', fn($m) => isset($vars[$m[1]]) ? (string)$vars[$m[1]] : '', $tpl) ?? $tpl;

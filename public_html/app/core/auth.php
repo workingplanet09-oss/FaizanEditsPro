@@ -11,6 +11,8 @@
  */
 defined('FEP') or exit;
 
+defined('FEP') or exit;
+
 final class Actor
 {
     public string $userId;

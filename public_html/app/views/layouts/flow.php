@@ -1,4 +1,4 @@
-<?php /** Distraction-free frame for the wizard and auth screens: logo, a help link, nothing else. */
+<?php defined('FEP') or exit; /** Distraction-free frame for the wizard and auth screens: logo, a help link, nothing else. */
 $site = get_site_context();
 $b = $site['business'];
 $body = '<div class="flex min-h-dvh flex-col"><header class="border-b border-line"><div class="mx-auto flex h-16 max-w-6xl items-center justify-between px-4 sm:px-6">'

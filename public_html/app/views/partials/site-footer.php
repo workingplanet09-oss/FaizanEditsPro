@@ -1,4 +1,4 @@
-<?php /** Public site footer. Var: $site */
+<?php defined('FEP') or exit; /** Public site footer. Var: $site */
 $b = $site['business']; $footer = $site['footer'];
 $socialIcon = ['instagram' => 'camera', 'youtube' => 'play', 'linkedin' => 'briefcase', 'tiktok' => 'music', 'x' => 'message', 'behance' => 'palette'];
 $socials = array_filter((array)($b['socials'] ?? []));

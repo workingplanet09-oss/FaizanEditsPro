@@ -1,4 +1,4 @@
-<?php /** Vars: $site, $reason */
+<?php defined('FEP') or exit; /** Vars: $site, $reason */
 $b = $site['business']; $socials = array_filter((array)($b['socials'] ?? []));
 $reasons = ['GENERAL' => 'General inquiry', 'PROJECT' => 'Project inquiry', 'PARTNERSHIP' => 'Partnership', 'AGENCY' => 'Agency collaboration', 'CAREER' => 'Career / application'];
 $box = 'rounded-[var(--radius-card)] border border-line bg-surface p-6';

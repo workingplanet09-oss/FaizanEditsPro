@@ -1,4 +1,4 @@
-<?php
+<?php defined('FEP') or exit;
 /** The HTML document shell shared by every layout. Vars: $meta (seo_meta), $body (html), $scripts (extra JS files), $bodyClass */
 $site = get_site_context();
 $accent = preg_match('/^#[0-9a-f]{6}$/i', $site['theme']['accent'] ?? '') ? $site['theme']['accent'] : '#ff5b2e';

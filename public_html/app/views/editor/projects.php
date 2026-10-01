@@ -1,4 +1,4 @@
-<?php /** Vars: $scope, $f, $res, $filtered */
+<?php defined('FEP') or exit; /** Vars: $scope, $f, $res, $filtered */
 $params = array_filter($f) + ($scope === 'open' ? [] : ['scope' => $scope]);
 $isLate = fn(array $p) => $p['deadline'] && days_until($p['deadline']) < 0 && !in_array($p['status'], ['DELIVERED', 'APPROVED', 'ARCHIVED', 'CANCELLED'], true); ?>
 <?= ui_page_header('My projects', "Projects you're assigned to. Open one for the brief, files, versions and revisions.") ?>

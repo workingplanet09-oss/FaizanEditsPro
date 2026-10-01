@@ -1,4 +1,4 @@
-<?php /** Vars: $c, $canWrite */
+<?php defined('FEP') or exit; /** Vars: $c, $canWrite */
 $id = $c['id'];
 $actions = ui_link("/api/contracts/{$id}/download", 'Download / print', ['icon' => 'download', 'variant' => 'outline'])
     . ($canWrite && $c['status'] !== 'SIGNED' ? ui_action("/api/contracts/{$id}/send", $c['status'] === 'DRAFT' ? 'Send for signature' : 'Resend', ['icon' => 'send', 'variant' => 'dark', 'success' => 'Contract sent for signature']) : '');

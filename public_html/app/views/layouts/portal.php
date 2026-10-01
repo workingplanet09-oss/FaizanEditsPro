@@ -1,4 +1,4 @@
-<?php
+<?php defined('FEP') or exit;
 /**
  * Sidebar + top bar frame for every signed-in area. Vars: $area (admin|editor|client), $actor, $content, $meta, $bottomNav?
  */

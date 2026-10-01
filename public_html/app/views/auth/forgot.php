@@ -1,4 +1,4 @@
-<?php ob_start(); ?>
+<?php defined('FEP') or exit; ob_start(); ?>
 <div data-fe-component="forgot">
   <form novalidate data-fe-form="/api/auth/forgot-password" data-on-success="forgotSent" class="space-y-4">
     <?= form_error_slot() ?>

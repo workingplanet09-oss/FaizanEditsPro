@@ -10,6 +10,8 @@
  */
 defined('FEP') or exit;
 
+defined('FEP') or exit;
+
 /** clsx: strings, or ['class' => bool] maps; falsy parts are dropped. */
 function cx(...$parts): string
 {

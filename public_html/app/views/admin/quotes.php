@@ -1,4 +1,4 @@
-<?php /** Vars: $f, $res, $actor */
+<?php defined('FEP') or exit; /** Vars: $f, $res, $actor */
 $canWrite = $actor->can('quotes:write'); $has = (bool)array_filter($f); ?>
 <?= ui_page_header('Quotes', 'Proposals from draft to accepted.', $canWrite ? ui_link('/admin/quotes/new', 'New quote', ['icon' => 'plus', 'variant' => 'dark']) : null) ?>
 <?php ob_start(); ?>

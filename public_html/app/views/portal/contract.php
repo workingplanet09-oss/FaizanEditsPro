@@ -1,4 +1,4 @@
-<?php /** Vars: $c, $canSign, $actor */
+<?php defined('FEP') or exit; /** Vars: $c, $canSign, $actor */
 $signable = in_array($c['status'], ['SENT', 'VIEWED'], true);
 $script = "font-family:'Segoe Script','Snell Roundhand','Brush Script MT',cursive";
 ?>

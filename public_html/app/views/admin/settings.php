@@ -1,4 +1,4 @@
-<?php /** Vars: $key, $group, $jobs, $st, $demo, $demoLoaded, $demoCanLoad, $isSuper, [$value] */
+<?php defined('FEP') or exit; /** Vars: $key, $group, $jobs, $st, $demo, $demoLoaded, $demoCanLoad, $isSuper, [$value] */
 $nav = array_merge([['integrations', 'Integrations & system', 'zap']], array_map(fn($g) => [$g[0], $g[1], $g[2]], SETTING_GROUPS));
 $items = [
     ['Database', true, 'MySQL connected.', 'config.php → db'],

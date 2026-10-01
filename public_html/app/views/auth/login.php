@@ -1,4 +1,4 @@
-<?php /** Vars: $next, $google, $demo, $notices [[text,tone]] */ ?>
+<?php defined('FEP') or exit; /** Vars: $next, $google, $demo, $notices [[text,tone]] */ ?>
 <?php ob_start(); ?>
 <?php foreach ($notices as [$text, $tone]): ?><?= ui_notice($text, $tone) ?><?php endforeach; ?>
 <div data-fe-component="login" data-props="<?= json_attr(['next' => $next]) ?>">

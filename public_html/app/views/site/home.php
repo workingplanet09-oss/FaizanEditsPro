@@ -1,4 +1,4 @@
-<?php /** Vars: $site, $hero, $process, $stats, $services, $work, $testimonials, $plans, $faqs */
+<?php defined('FEP') or exit; /** Vars: $site, $hero, $process, $stats, $services, $work, $testimonials, $plans, $faqs */
 $headline = explode("\n", $hero['headline']);
 $portal = [
     ['clipboard', 'Guided briefs', 'A short, adaptive setup instead of endless email threads — the questions change with your niche.'],

@@ -1,4 +1,4 @@
-<?php /** Vars: $secretOk, $canDemo */ ob_start(); ?>
+<?php defined('FEP') or exit; /** Vars: $secretOk, $canDemo */ ob_start(); ?>
 <?php if (!$secretOk): ?>
   <?= ui_notice("Before you continue: open config.php and replace the 'secret' value with a long random text (40 or more characters). It signs your sign-in links and forms. Then reload this page.", 'danger') ?>
 <?php endif; ?>

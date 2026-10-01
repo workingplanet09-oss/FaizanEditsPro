@@ -1,4 +1,4 @@
-<?php /** Vars: $h, $timer, $hello, $first, $actor */
+<?php defined('FEP') or exit; /** Vars: $h, $timer, $hello, $first, $actor */
 $now = now_ms();
 $overdue = count(array_filter($h['tasksToday'], fn($t) => $t['dueDate'] && ts_ms($t['dueDate']) < $now));
 $more = fn($href, $label) => text_link($href, $label);

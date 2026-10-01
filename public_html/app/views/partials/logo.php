@@ -1,4 +1,4 @@
-<?php /** Wordmark. Vars: $name, $logoUrl?, $class?, $href? */
+<?php defined('FEP') or exit; /** Wordmark. Vars: $name, $logoUrl?, $class?, $href? */
 $href = $href ?? '/'; ?>
 <a href="<?= e($href) ?>" aria-label="<?= e($name) ?> — home" class="<?= e(cx('flex min-w-0 items-center gap-2.5 font-display font-extrabold tracking-tight', $class ?? '')) ?>">
   <?php if (!empty($logoUrl)): ?><img src="<?= e($logoUrl) ?>" alt="" class="h-8 w-auto shrink-0">

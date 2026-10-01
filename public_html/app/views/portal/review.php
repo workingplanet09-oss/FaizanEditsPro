@@ -1,4 +1,4 @@
-<?php /** Vars: $base, $data, $projectId, $props, $playback, $actor */
+<?php defined('FEP') or exit; /** Vars: $base, $data, $projectId, $props, $playback, $actor */
 $project = $data['project']; $cur = $data['current']; $perms = $data['perms'];
 $vmap = ['PENDING_CLIENT' => ['Awaiting client review', 'warning'], 'APPROVED' => ['Approved', 'success'], 'CHANGES_REQUESTED' => ['Changes requested', 'info'], 'SUPERSEDED' => ['Replaced by newer version', 'neutral'], 'DRAFT' => ['Team-only draft', 'neutral'], 'INTERNAL_REVIEW' => ['Internal review', 'neutral']];
 ?>

@@ -1,4 +1,4 @@
-<?php /** Vars: $h (admin_home), $report, $hello, $first, $actor */
+<?php defined('FEP') or exit; /** Vars: $h (admin_home), $report, $hello, $first, $actor */
 $perms = $h['perms']; $m = $h['metrics'];
 $total = array_sum(array_column($h['pipeline'], 'count'));
 $revenue = $report ? array_map(fn($r) => ['label' => $r['month'], 'value' => $r['value']], array_slice($report['revenueByMonth'], -6)) : [];

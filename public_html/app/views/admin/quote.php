@@ -1,4 +1,4 @@
-<?php /** Vars: $q, $canWrite, $editable, $edit, [$d, $initial, $defaults when editing] */
+<?php defined('FEP') or exit; /** Vars: $q, $canWrite, $editable, $edit, [$d, $initial, $defaults when editing] */
 $id = $q['id'];
 if ($edit): ?>
 <?= back_link("/admin/quotes/{$id}", $q['number']) ?>

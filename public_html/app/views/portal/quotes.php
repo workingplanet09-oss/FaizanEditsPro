@@ -1,4 +1,4 @@
-<?= ui_page_header('Quotes', 'Review and accept proposals for your projects.') ?>
+<?php defined('FEP') or exit; ?><?= ui_page_header('Quotes', 'Review and accept proposals for your projects.') ?>
 <?php ob_start();
 echo ui_table([
     ['key' => 'n', 'header' => 'Quote', 'primary' => true, 'render' => fn($q) => '<span class="font-bold">' . e($q['number']) . '</span>'],

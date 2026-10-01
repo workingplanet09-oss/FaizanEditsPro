@@ -1,4 +1,4 @@
-<?php /** Vars: $c, $results */
+<?php defined('FEP') or exit; /** Vars: $c, $results */
 $labels = ['views' => 'Views', 'watchTime' => 'Watch time', 'engagement' => 'Engagement', 'ctr' => 'CTR', 'leads' => 'Leads', 'conversions' => 'Conversions'];
 $sections = [['The problem', $c['problem']], ['The objective', $c['objective']], ['Editing strategy', $c['strategy']], ['Creative direction', $c['creativeDirection']]];
 $deliverables = (array)$c['deliverables'];

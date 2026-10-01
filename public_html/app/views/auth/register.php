@@ -1,4 +1,4 @@
-<?php /** Vars: $ref */ ?>
+<?php defined('FEP') or exit; /** Vars: $ref */ ?>
 <?php ob_start(); ?>
 <form novalidate data-fe-form="/api/auth/register" data-redirect="@redirect" data-prepare="registerPrep" data-props="<?= json_attr(['ref' => $ref]) ?>" class="space-y-4">
   <?= form_error_slot() ?>

@@ -1,4 +1,4 @@
-<?php /** Vars: $clients, $services, $types, $templates, $staff, $business, $defaultClient, $actor */
+<?php defined('FEP') or exit; /** Vars: $clients, $services, $types, $templates, $staff, $business, $defaultClient, $actor */
 $clientOpts = array_map(fn($c) => ['value' => $c['id'], 'label' => $c['companyName'] . ' — ' . $c['name']], $clients);
 array_unshift($clientOpts, ['value' => '', 'label' => 'Choose a client…']);
 $cur = array_map(fn($c) => ['value' => $c, 'label' => $c], $business['currencies']);

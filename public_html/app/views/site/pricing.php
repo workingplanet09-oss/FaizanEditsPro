@@ -1,4 +1,4 @@
-<?php /** Vars: $plans, $faqs, $site */
+<?php defined('FEP') or exit; /** Vars: $plans, $faqs, $site */
 $models = [['film', 'One-time project', 'A single video or defined package with one fixed price.', 'Launches, campaigns, one-off content'], ['video', 'Per video', 'A repeatable rate for each long-form video you send.', 'YouTube channels, podcasts'],
     ['smartphone', 'Per short', 'Simple pricing per vertical clip, with volume-friendly batches.', 'Reels, Shorts, TikTok'], ['repeat', 'Monthly retainer', 'A monthly allowance with priority scheduling and usage tracking.', 'Consistent publishing schedules'],
     ['clock', 'Hourly', 'Billed by the hour for flexible or exploratory work.', 'Fixes, re-edits, consulting'], ['clipboard', 'Custom quote', 'Tailored scope and price for complex or large projects.', 'VSLs, brand films, agencies']];

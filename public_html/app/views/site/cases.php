@@ -1,4 +1,4 @@
-<?= page_hero('Case studies', 'The problem, the edit, the result.', 'Each story shows the brief, our approach and the outcomes the client actually saw.') ?>
+<?php defined('FEP') or exit; ?><?= page_hero('Case studies', 'The problem, the edit, the result.', 'Each story shows the brief, our approach and the outcomes the client actually saw.') ?>
 <?= sec_open() ?>
 <?php if ($cases): ?>
   <div class="grid grid-cols-1 gap-6 md:grid-cols-2">

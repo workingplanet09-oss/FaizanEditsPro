@@ -1,4 +1,4 @@
-<?php $cats = array_values(array_unique(array_column($articles, 'category'))); ?>
+<?php defined('FEP') or exit; $cats = array_values(array_unique(array_column($articles, 'category'))); ?>
 <?= page_hero('Help center', 'How do I…?', 'Quick answers about uploading footage, revisions, turnaround, approval and payment.') ?>
 <?= sec_open() ?>
   <div class="mx-auto max-w-3xl space-y-12">

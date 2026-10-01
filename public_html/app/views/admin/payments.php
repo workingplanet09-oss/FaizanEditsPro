@@ -1,4 +1,4 @@
-<?php /** Vars: $res */ ?>
+<?php defined('FEP') or exit; /** Vars: $res */ ?>
 <?= ui_page_header('Payments', 'Every payment received or attempted. Recording is idempotent, so webhook retries never double-count.') ?>
 <?php ob_start(); ?>
 <?= ui_table([

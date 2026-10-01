@@ -1,4 +1,4 @@
-<?php /** Vars: $tab, $client, $role, $user, members?, prefs?, sessions? */ $a = $actor; ?>
+<?php defined('FEP') or exit; /** Vars: $tab, $client, $role, $user, members?, prefs?, sessions? */ $a = $actor; ?>
 <?= ui_page_header('Settings', 'Your profile, company, team and security.') ?>
 <?= ui_tabs([['profile', 'Profile'], ['company', 'Company'], ['team', 'Team'], ['notifications', 'Notifications'], ['security', 'Security']], $tab, '/dashboard/settings') ?>
 <div class="max-w-4xl">

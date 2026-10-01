@@ -1,4 +1,4 @@
-<?php /** Vars: $posts, $cats, $category */
+<?php defined('FEP') or exit; /** Vars: $posts, $cats, $category */
 $pill = fn($on) => cx('rounded-full border px-4 py-2 text-sm font-semibold', $on ? 'border-fg bg-fg text-bg' : 'border-line-strong text-muted hover:text-fg');
 ?>
 <?= page_hero('Resources', 'Editing tips & creator resources.', 'Practical ideas for better video — from hooks and pacing to workflows and marketing.') ?>

@@ -1,4 +1,4 @@
-<?php /** Vars: $all, $key, $def, $lite, $items, $total, $relations, $currency, $icons */
+<?php defined('FEP') or exit; /** Vars: $all, $key, $def, $lite, $items, $total, $relations, $currency, $icons */
 $ICON = ['services' => 'clapperboard', 'pricing-plans' => 'wallet', 'portfolio' => 'film', 'case-studies' => 'book', 'testimonials' => 'quote', 'blog-posts' => 'news', 'blog-categories' => 'folder', 'faqs' => 'help', 'kb-articles' => 'book', 'project-types' => 'layers', 'project-templates' => 'checklist', 'email-templates' => 'mail']; ?>
 <?= ui_page_header('Website content', 'Everything visitors see: services, pricing, portfolio, case studies, testimonials, blog, FAQs and more. Sample entries are labelled and can be removed any time.') ?>
 <div class="grid grid-cols-1 gap-6 lg:grid-cols-[14rem_minmax(0,1fr)]">

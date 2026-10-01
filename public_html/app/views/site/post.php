@@ -1,4 +1,4 @@
-<article>
+<?php defined('FEP') or exit; ?><article>
   <header class="dark-zone grain relative overflow-hidden border-b border-line"><div class="container-page max-w-3xl py-20 sm:py-24">
     <a href="/blog" class="inline-flex items-center gap-1.5 text-sm font-semibold text-muted hover:text-fg"><?= icon('chevron-left', 15) ?> All articles</a>
     <div class="eyebrow mt-6"><?= e($p['category']['name'] ?? 'Article') ?></div><h1 class="display mt-3 text-[clamp(2.1rem,5vw,3.6rem)]"><?= e($p['title']) ?></h1>

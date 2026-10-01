@@ -1,4 +1,4 @@
-<?php /** Vars: $section, $q, $sort, $res, $actor */
+<?php defined('FEP') or exit; /** Vars: $section, $q, $sort, $res, $actor */
 $canWrite = $actor->can('clients:write');
 $params = array_filter(['q' => $q, 'sort' => $sort, 'section' => $section === 'active' ? null : $section]);
 ?>

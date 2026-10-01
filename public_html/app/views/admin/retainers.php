@@ -1,4 +1,4 @@
-<?php /** Vars: $list, $manage, $clients, $business, $plans */
+<?php defined('FEP') or exit; /** Vars: $list, $manage, $clients, $business, $plans */
 $mrr = [];
 foreach ($list as $r) { if ($r['status'] === 'ACTIVE') { $mrr[$r['currency']] = ($mrr[$r['currency']] ?? 0) + (int)$r['monthlyPrice']; } }
 $desc = $mrr ? 'Monthly recurring: ' . implode(' · ', array_map(fn($c, $v) => money($v, $c), array_keys($mrr), $mrr)) : 'Monthly allowances for recurring clients.';

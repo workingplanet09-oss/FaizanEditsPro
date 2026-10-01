@@ -1,4 +1,4 @@
-<?php /** Every error surface answers two questions: what happened, and what can I do next. Vars: $code, $icon, $title, $description, $actions [[label, href, primary]] */ ?>
+<?php defined('FEP') or exit; /** Every error surface answers two questions: what happened, and what can I do next. Vars: $code, $icon, $title, $description, $actions [[label, href, primary]] */ ?>
 <div class="flex min-h-[70dvh] flex-col items-center justify-center px-6 py-16 text-center">
   <div class="mb-5 flex h-16 w-16 items-center justify-center rounded-2xl bg-accent-soft"><?= icon($icon ?? 'alert', 28) ?></div>
   <?php if (!empty($code)): ?><div class="eyebrow mb-2"><?= e($code) ?></div><?php endif; ?>

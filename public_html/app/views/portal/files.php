@@ -1,4 +1,4 @@
-<?php /** Vars: $q, $res */ ?>
+<?php defined('FEP') or exit; /** Vars: $q, $res */ ?>
 <?= ui_page_header('Files', "Everything you've uploaded and every draft and deliverable across your projects. Add files to a specific project from its Files tab.") ?>
 <?= card(ui_filter_bar('/dashboard/files', [['name' => 'q', 'label' => 'Search files', 'placeholder' => 'Search by file name…']], ['q' => $q]), 'mb-5 overflow-visible') ?>
 <?= file_manager($res['items'], ['showProject' => true]) ?>

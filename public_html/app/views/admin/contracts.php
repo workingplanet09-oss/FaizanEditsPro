@@ -1,4 +1,4 @@
-<?php /** Vars: $f, $res */ $has = (bool)array_filter($f); ?>
+<?php defined('FEP') or exit; /** Vars: $f, $res */ $has = (bool)array_filter($f); ?>
 <?= ui_page_header('Contracts', 'Agreements are drafted automatically when a quote is accepted. Review, send and track signatures here.') ?>
 <?php ob_start(); ?>
 <?= ui_filter_bar('/admin/contracts', [['name' => 'q', 'label' => 'Search contracts', 'placeholder' => 'Search number, title, client…'], ['name' => 'status', 'label' => 'Status', 'type' => 'select', 'options' => enum_options('CONTRACT_STATUS')]], $f) ?>

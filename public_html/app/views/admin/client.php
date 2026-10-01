@@ -1,4 +1,4 @@
-<?php /** Vars: $c, $tab, $life, $staff, $projects, $actor + per-tab: $checklist, $invoices, $quotes, $retainers, $kit, $assets, $messages, $notes */
+<?php defined('FEP') or exit; /** Vars: $c, $tab, $life, $staff, $projects, $actor + per-tab: $checklist, $invoices, $quotes, $retainers, $kit, $assets, $messages, $notes */
 $id = $c['id']; $canWrite = $actor->can('clients:write'); $here = "/admin/clients/{$id}";
 $desc = implode(' · ', array_filter([$c['name'], $c['email'], $c['phone']]));
 $actions = ($actor->can('projects:write') ? ui_link("/admin/projects/new?clientId={$id}", 'New project', ['icon' => 'plus', 'variant' => 'dark']) : '')

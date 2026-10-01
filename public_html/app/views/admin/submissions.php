@@ -1,4 +1,4 @@
-<?php /** Vars: $tab, $res, $actor */ ?>
+<?php defined('FEP') or exit; /** Vars: $tab, $res, $actor */ ?>
 <?= ui_page_header('Contact submissions', 'Messages from the website contact form. Turn any of them into a lead in one click.') ?>
 <?= ui_tabs([['no', 'To handle'], ['yes', 'Handled'], ['all', 'All']], $tab, '/admin/submissions') ?>
 <?php if (!$res['items']): ?>

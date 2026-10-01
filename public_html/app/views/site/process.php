@@ -1,4 +1,4 @@
-<?= page_hero('Process', $process['heading'], $process['intro'], ui_link('/start-project', 'Start step one', ['size' => 'lg', 'iconRight' => 'arrow'])) ?>
+<?php defined('FEP') or exit; ?><?= page_hero('Process', $process['heading'], $process['intro'], ui_link('/start-project', 'Start step one', ['size' => 'lg', 'iconRight' => 'arrow'])) ?>
 <?= sec_open() ?>
   <ol class="relative mx-auto max-w-4xl space-y-6 before:absolute before:bottom-6 before:left-[27px] before:top-6 before:w-px before:bg-line max-sm:before:hidden">
     <?php foreach ($process['steps'] as $i => $s): ?>

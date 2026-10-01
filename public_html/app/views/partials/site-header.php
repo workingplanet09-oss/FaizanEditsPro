@@ -1,4 +1,4 @@
-<?php /** Public site header. Vars: $site, $actor (?Actor) */
+<?php defined('FEP') or exit; /** Public site header. Vars: $site, $actor (?Actor) */
 $b = $site['business']; $nav = $site['nav']; $path = req_path();
 $portal = $actor ? home_for_roles($actor->roleKeys, $actor->permissions) : null;
 ?>

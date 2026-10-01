@@ -1,4 +1,4 @@
-<?php /** Vars: $type, $token */
+<?php defined('FEP') or exit; /** Vars: $type, $token */
 $label = ['magic' => 'Sign me in', 'verify' => 'Confirm my email', 'invite' => 'Set password & continue', 'reset' => 'Save new password'][$type];
 $copy = ['magic' => ['Sign in to your portal', 'Confirm to finish signing in on this device.'], 'verify' => ['Confirm your email', 'One click and your account is verified.'], 'invite' => ['Welcome — set up your account', 'Choose a password to open your client portal.'], 'reset' => ['Choose a new password', "You'll be signed out everywhere else once it's saved."]][$type];
 $needsPassword = in_array($type, ['invite', 'reset'], true);

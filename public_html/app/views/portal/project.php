@@ -1,4 +1,4 @@
-<?php /** Vars: $p, $docs, $versions, $latest, $tab, $can, $delivered, $production, $fileRequests, + per-tab data, $actor */
+<?php defined('FEP') or exit; /** Vars: $p, $docs, $versions, $latest, $tab, $can, $delivered, $production, $fileRequests, + per-tab data, $actor */
 $id = $p['id']; $status = $p['status']; $meta = status_meta($status);
 $base = "/dashboard/projects/{$id}";
 $open = fn(array $rows, array $statuses) => array_values(array_filter($rows, fn($r) => in_array($r['status'], $statuses, true)))[0] ?? null;

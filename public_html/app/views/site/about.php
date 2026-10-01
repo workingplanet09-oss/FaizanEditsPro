@@ -1,4 +1,4 @@
-<?= page_hero('About ' . $site['business']['name'], $about['headline']) ?>
+<?php defined('FEP') or exit; ?><?= page_hero('About ' . $site['business']['name'], $about['headline']) ?>
 <?= sec_open() ?>
   <div class="grid grid-cols-1 gap-12 lg:grid-cols-[minmax(0,1.1fr)_minmax(0,0.9fr)]">
     <div<?= rv(0, 'space-y-5 text-lg leading-relaxed text-muted') ?>><?php foreach (preg_split('/\n{2,}/', $about['story']) as $p): ?><p><?= e($p) ?></p><?php endforeach; ?></div>

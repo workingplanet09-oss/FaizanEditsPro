@@ -1,4 +1,4 @@
-<?php /** Vars: $active, $threads, $projects, $items */
+<?php defined('FEP') or exit; /** Vars: $active, $threads, $projects, $items */
 $byKey = [];
 foreach ($threads as $t) {
     $byKey[$t['projectId'] ?? 'general'] = $t;

@@ -1,4 +1,4 @@
-<?php /** Vars: $home, $hello, $first */
+<?php defined('FEP') or exit; /** Vars: $home, $hello, $first */
 $open = array_values(array_filter($home['projects'], fn($p) => $p['status'] !== 'DELIVERED'));
 $delivered = array_values(array_filter($home['projects'], fn($p) => $p['status'] === 'DELIVERED'));
 $inReview = count(array_filter($home['projects'], fn($p) => in_array($p['status'], ['CLIENT_REVIEW', 'FINAL_REVIEW'], true)));

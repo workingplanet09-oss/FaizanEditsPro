@@ -1,4 +1,4 @@
-<?php /** Var: $types [key => {label, minutes, description}] */ $first = array_key_first($types); ?>
+<?php defined('FEP') or exit; /** Var: $types [key => {label, minutes, description}] */ $first = array_key_first($types); ?>
 <?= page_hero('Book a call', 'Pick a time that works for you.', 'A relaxed conversation about your content, your goals and what the right setup looks like — no pressure.') ?>
 <?= sec_open() ?>
   <div data-fe-component="booking" class="mx-auto max-w-3xl rounded-[var(--radius-card)] border border-line bg-surface p-6 shadow-soft sm:p-10">

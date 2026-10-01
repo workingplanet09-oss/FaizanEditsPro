@@ -1,4 +1,4 @@
-<?php /** Vars: $tab, $active, $delivered, $all */
+<?php defined('FEP') or exit; /** Vars: $tab, $active, $delivered, $all */
 $rows = ['delivered' => $delivered, 'all' => $all][$tab] ?? $active;
 ?>
 <?= ui_page_header('Projects', "Every video you've commissioned, from first quote to final delivery.", ui_link('/start-project', 'New project', ['variant' => 'dark', 'icon' => 'plus'])) ?>

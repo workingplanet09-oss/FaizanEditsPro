@@ -1,4 +1,4 @@
-<?php /** Vars: $inv, $business, $invoiceSettings, $online, $canPay, $demoCheckout, $paid, $cancelled */
+<?php defined('FEP') or exit; /** Vars: $inv, $business, $invoiceSettings, $online, $canPay, $demoCheckout, $paid, $cancelled */
 $due = $inv['total'] - $inv['amountPaid'];
 $payable = in_array($inv['status'], ['SENT', 'VIEWED', 'PARTIALLY_PAID', 'OVERDUE'], true);
 ?>

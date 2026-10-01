@@ -1,4 +1,4 @@
-<?= ui_page_header('Contracts', 'Your signed agreements are stored here for good.') ?>
+<?php defined('FEP') or exit; ?><?= ui_page_header('Contracts', 'Your signed agreements are stored here for good.') ?>
 <?php ob_start();
 echo ui_table([
     ['key' => 'n', 'header' => 'Contract', 'primary' => true, 'render' => fn($c) => '<span class="font-bold">' . e($c['number']) . '</span>'],

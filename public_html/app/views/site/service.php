@@ -1,4 +1,4 @@
-<?php /** Vars: $s, $site, $faqs, $work, $startHref */
+<?php defined('FEP') or exit; /** Vars: $s, $site, $faqs, $work, $startHref */
 $included = (array)$s['included']; $whoFor = (array)$s['whoFor']; $platforms = (array)$s['platforms']; $deliverables = (array)$s['deliverables']; $examples = (array)$s['exampleDeliverables'];
 $addOns = array_map('strval', array_values((array)($s['addOns'] ?? []))); $workflow = array_map('strval', array_values((array)($s['workflow'] ?? [])));
 if (!$workflow) { $workflow = ['Tell us what you need', 'Receive a quote', 'Onboard & upload', 'Review & revise', 'Approve & download']; }

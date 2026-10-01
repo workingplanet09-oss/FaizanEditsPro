@@ -1,4 +1,4 @@
-<?php /** Vars: $inv, $notes, $actor */
+<?php defined('FEP') or exit; /** Vars: $inv, $notes, $actor */
 $id = $inv['id']; $due = (int)$inv['total'] - (int)$inv['amountPaid'];
 $desc = e($inv['client']['companyName']) . ($inv['project'] ? ' · <a class="font-semibold text-fg hover:underline" href="/admin/projects/' . e($inv['project']['id']) . '">' . e($inv['project']['code'] . ' ' . $inv['project']['name']) . '</a>' : '')
     . ($inv['quote'] ? ' · from <a class="font-semibold text-fg hover:underline" href="/admin/quotes/' . e($inv['quote']['id']) . '">' . e($inv['quote']['number']) . '</a>' : '');

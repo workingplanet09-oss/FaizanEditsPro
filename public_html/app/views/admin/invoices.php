@@ -1,4 +1,4 @@
-<?php /** Vars: $f, $res, $actor */
+<?php defined('FEP') or exit; /** Vars: $f, $res, $actor */
 $canWrite = $actor->can('invoices:write'); $has = (bool)array_filter($f); ?>
 <?= ui_page_header('Invoices', "Track what's been billed and what's been paid.", $canWrite ? ui_link('/admin/invoices/new', 'New invoice', ['icon' => 'plus', 'variant' => 'dark']) : null) ?>
 <?php ob_start(); ?>

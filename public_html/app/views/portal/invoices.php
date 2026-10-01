@@ -1,4 +1,4 @@
-<?php /** Vars: $tab, $res */
+<?php defined('FEP') or exit; /** Vars: $tab, $res */
 $due = fn($i) => in_array($i['status'], ['SENT', 'VIEWED', 'PARTIALLY_PAID', 'OVERDUE'], true);
 $rows = $tab === 'due' ? array_values(array_filter($res['items'], $due)) : $res['items'];
 $outstanding = array_sum(array_map(fn($i) => $i['total'] - $i['amountPaid'], array_filter($res['items'], $due)));

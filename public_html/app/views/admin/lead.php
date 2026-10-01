@@ -1,4 +1,4 @@
-<?php /** Vars: $lead, $notes, $staff, $actor */
+<?php defined('FEP') or exit; /** Vars: $lead, $notes, $staff, $actor */
 $ICON = ['inquiry_submitted' => 'inbox', 'status_changed' => 'refresh', 'note' => 'pencil', 'contacted' => 'phone', 'email_sent' => 'mail', 'call_made' => 'phone', 'call_scheduled' => 'calendar', 'meeting' => 'users', 'quote_sent' => 'clipboard', 'quote_viewed' => 'eye', 'quote_accepted' => 'check-circle', 'contract_sent' => 'sign', 'contract_signed' => 'sign', 'payment_received' => 'wallet', 'project_started' => 'rocket', 'project_created' => 'film', 'converted' => 'check-circle'];
 $sections = array_values(array_unique(array_column($lead['answers'], 'section')));
 $breakdown = [];

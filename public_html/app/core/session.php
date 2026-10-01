@@ -12,6 +12,8 @@
  */
 defined('FEP') or exit;
 
+defined('FEP') or exit;
+
 final class FepSessionHandler implements SessionHandlerInterface, SessionUpdateTimestampHandlerInterface
 {
     public function open(string $path, string $name): bool { return true; }
