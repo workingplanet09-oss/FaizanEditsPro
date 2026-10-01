@@ -2,12 +2,12 @@
 
 **How to read this.** *Old* = the feature in the previous version. *PHP* = where it lives now. *Verified by* names the automated run that exercised it on this machine (PHP 8.4 + MariaDB 10.11 behind PHP's built-in web server, Chromium for the browser runs). **PASS** is written only where such a run really exercised the feature and passed. Anything that could not be exercised here says **NOT VERIFIED** or **CHANGED**, with the reason. Nothing in this file was tested on a real cPanel account.
 
-Run counts are from the last full run (`bash php-tests/run-all.sh --full`); the numbers in brackets are checks per suite.
+Run counts are from the last full run (`bash php-tests/run-all.sh`, **0 suites failed**, on PHP 8.4.19 and again on PHP 8.3.6); the slow sweeps (`qa:layout` light + dark, `qa:axe` light + dark) were run on the final code one by one and are clean. Numbers in brackets are checks per suite.
 
 | Short name | What it is |
 | --- | --- |
 | **e2e** | `php-tests/e2e-workflow.php` — the 32-step project workflow over HTTP + attacks [164] |
-| **audit** | `php-tests/security-audit.php` — every API route attacked from signed-out / client / editor / second workspace [≈4,000] |
+| **audit** | `php-tests/security-audit.php` — every API route attacked from signed-out / client / editor / second workspace [4,353] |
 | **attacks** | `php-tests/attacks.php` — SQL injection, sessions, tampering, headers, e-mail links, error leakage, uploads, rate limits [174] |
 | **pay** | `php-tests/payments.php` — webhook + demo-checkout safety [37] |
 | **smtp** | `php-tests/email-smtp.php` — mail driver against a local SMTP sink [14] |
@@ -126,7 +126,7 @@ Run counts are from the last full run (`bash php-tests/run-all.sh --full`); the 
 
 | Feature | Verified by | Result |
 | --- | --- | --- |
-| Chunked uploads, resumable pieces, version numbering (`_V3` → v3) | e2e, b:wizard | PASS |
+| Chunked uploads (4 MB pieces, declared size enforced), version numbering (`_V3` → v3) | e2e, b:wizard | PASS |
 | Dangerous types refused (`.exe .php .phtml .sh .bat .dll .jar …`, double extensions) | e2e, audit, attacks | PASS |
 | Disguised files rejected after upload (EXE as `.mp4`, HTML as `.png`, PHP as `.mp4`) and removed | e2e, audit | PASS |
 | Stored under opaque names; SVG / HTML / `.htaccess` served as download with `nosniff` + sandbox CSP | audit | PASS |
@@ -192,7 +192,7 @@ Run counts are from the last full run (`bash php-tests/run-all.sh --full`); the 
 | Accessibility — axe-core WCAG 2.1 A + AA, light and dark, desktop and 390 px | qa:axe | PASS |
 | Keyboard: skip link, focus rings, dialog focus trap and return, Esc, menu, errors announced and linked (`aria-describedby`) | qa:keyboard [19] | PASS |
 | Every page renders on an **empty** database | qa:empty | PASS |
-| Time zones Asia/Karachi, America/Los_Angeles, Pacific/Kiritimati (+14), Pacific/Pago_Pago (−11), UTC: `<time>` converted in the browser, every other date identical everywhere; booking hours in the studio's zone, slots under the visitor's own day; scheduled calls stored as exact instants; calendar files events under the viewer's day; e-mail names the visitor's zone and UTC | qa:timezone [335] | PASS |
+| Time zones Asia/Karachi, America/Los_Angeles, Pacific/Kiritimati (+14), Pacific/Pago_Pago (−11), UTC: `<time>` converted in the browser, every other date identical everywhere; booking hours in the studio's zone, slots under the visitor's own day; scheduled calls stored as exact instants; calendar files events under the viewer's day; e-mail names the visitor's zone and UTC | qa:timezone [325] | PASS |
 | Browsers other than Chromium (Safari, Firefox, old mobile browsers) | — | **NOT VERIFIED** |
 
 ## 12. Data and installation
@@ -203,5 +203,5 @@ Run counts are from the last full run (`bash php-tests/run-all.sh --full`); the 
 | `database-demo.sql` (optional sample studio) + one-click removal | demo-cycle | PASS |
 | Old PostgreSQL → MySQL copy with the shipped tools, then value-by-value comparison | verify-migration: **2,806 rows in 85 tables identical** on the development data | PASS |
 | Old uploaded files copied by key | MIGRATION.md | documented; **NOT VERIFIED** with an S3 bucket |
-| Runs on PHP 8.4 and 8.3 | full runs on both | PASS (PHP **8.2 itself NOT VERIFIED**; no 8.3+-only syntax found by search) |
+| Runs on PHP 8.4.19 and 8.3.6 | every suite run on both; every file lints under 8.3 | PASS (PHP **8.2 itself NOT VERIFIED**; a search found no 8.3+-only syntax or functions) |
 | Runs on cPanel / Apache / LiteSpeed | — | **NOT VERIFIED** — see README "If something goes wrong" |
