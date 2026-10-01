@@ -51,7 +51,7 @@ Save. Everything else in the file can stay as it is for now.
 cPanel → **phpMyAdmin** → click your database in the left column → **Import** → choose `database.sql` from your computer (it is in the same `public_html` folder) → **Go**.
 It must say the import finished successfully.
 
-*Optional:* to look around with example clients, projects and invoices, import `database-demo.sql` the same way afterwards. You can remove the sample data later with one button (Admin → Settings → Integrations & system → **Remove demo data**). Skip this for a real website.
+*Optional:* to look around with example clients, projects and invoices, tick **Also load the sample studio** on the setup page in the next step (it uses `database-demo.sql`, which is already in the folder). You can remove the sample data later with one button (Admin → Settings → Integrations & system → **Remove demo data**). Skip this for a real website.
 
 ### 5. Open your website
 
@@ -60,10 +60,11 @@ Visit your address. The first time, you land on **Set up your studio**:
 1. Enter your studio name, your name, email and a password (10+ characters).
 2. Enter the **installation code** — the first 6 characters of the `secret` you put in `config.php`.
 3. Press **Create my account**. You are signed in as the owner and taken to Admin → Settings.
+   (Do not import `database-demo.sql` by hand — it contains sample accounts and would skip this page.)
 
 That page disappears once your account exists. That's it — the site is live.
 
-> **Security tip:** after the import you may delete `database.sql` and `database-demo.sql` from the server (keep a copy on your computer). They can't be downloaded from the web in any case.
+> **Security tip:** once the site is set up you may delete `database.sql` from the server (keep a copy on your computer); keep `database-demo.sql` if you might want the sample studio later. Neither can be downloaded from the web.
 
 ---
 
@@ -95,7 +96,7 @@ First put any long random text in `config.php` → `'cron_key'` and use the same
 
 ### Large video uploads
 
-Files are sent in 4 MB pieces, so big videos work on small hosting plans. Two things on the host can still limit it: the storage space of your plan, and `post_max_size` / `upload_max_filesize` — keep both at 8M or more (cPanel → **Select PHP Version → Options**).
+Files are sent in small pieces (4 MB each), so big videos work even on modest hosting plans. What can still limit them is the **storage space** of your plan, and a host that refuses request bodies of 4 MB or more. If uploads stop part-way, ask your host to allow request bodies of at least 8 MB, or change `'chunk_mb' => 4` in `config.php` to `1`.
 
 ### Sign in with Google, spam protection (optional)
 
@@ -135,7 +136,7 @@ Follow [`MIGRATION.md`](MIGRATION.md). The table-by-table mapping is in [`MIGRAT
 | Blank page or "500" | Set `'debug' => true` in `config.php`, reload to read the message, then set it back to `false`. Confirm PHP is 8.2 or newer. |
 | The setup page rejects the installation code | It is the first 6 characters of the `'secret'` in `config.php`, exactly as written (capitals count). |
 | "Before you continue: replace the 'secret'…" | Put a long random text (40+ characters) into `'secret'` in `config.php`. |
-| Uploads stop or fail for large files | Check free disk space and `post_max_size` (see above). |
+| Uploads stop or fail for large files | Check free disk space; lower `'chunk_mb'` in `config.php` (see above). |
 | Emails do not arrive | Set the email `'driver'` (see above) and look in Admin → **Emails** for the error. Also check the spam folder. |
 | You forgot the owner password | Use **Forgot your password?** on the sign-in page (needs working email, see above). |
 

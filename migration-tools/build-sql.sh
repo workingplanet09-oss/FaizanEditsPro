@@ -1,6 +1,7 @@
 #!/usr/bin/env bash
 # Regenerates public_html/database.sql and public_html/database-demo.sql from the previous (PostgreSQL/Prisma) application.
-# DEVELOPER TOOL — needs the old Node project, PostgreSQL and a MySQL/MariaDB server. The hosting account never runs this.
+# HISTORICAL DEVELOPER TOOL — needs the old Node project (git commit 00c185d checked out next to this folder), PostgreSQL and a MySQL/MariaDB server.
+# The hosting account never runs this, and it no longer works from this tree (the Node source has been removed; see DEVELOPMENT.md).
 #
 #   PG_ADMIN_URL=postgresql://user:pass@127.0.0.1:5432/postgres  MYSQL_USER=user MYSQL_PASS=pass  bash migration-tools/build-sql.sh
 #

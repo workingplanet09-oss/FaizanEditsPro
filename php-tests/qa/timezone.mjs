@@ -34,8 +34,8 @@ const api = async (c, method, path, data) => {
 // ───────────── 1. <time> elements and zone-independent text ─────────────
 console.log("1. Times on pages");
 const PAGES = {
-  admin: ["/admin", "/admin/leads", "/admin/clients", "/admin/projects", "/admin/quotes", "/admin/invoices", "/admin/payments", "/admin/contracts", "/admin/retainers", "/admin/calendar?view=month&date=2026-10-15", "/admin/tasks", "/admin/messages", "/admin/audit-log", "/admin/emails", "/admin/analytics", "/admin/submissions"],
-  client: ["/dashboard", "/dashboard/projects", "/dashboard/quotes", "/dashboard/invoices", "/dashboard/contracts", "/dashboard/messages", "/dashboard/retainers", "/dashboard/files"],
+  admin: ["/admin", "/admin/leads", "/admin/clients", "/admin/projects", "/admin/quotes", "/admin/invoices", "/admin/payments", "/admin/contracts", "/admin/retainers", "/admin/calendar?view=month&date=2026-10-15", "/admin/tasks", "/admin/audit-log", "/admin/emails", "/admin/analytics", "/admin/submissions"],
+  client: ["/dashboard", "/dashboard/projects", "/dashboard/quotes", "/dashboard/invoices", "/dashboard/contracts", "/dashboard/retainers", "/dashboard/files"],
   editor: ["/editor", "/editor/projects", "/editor/tasks", "/editor/revisions"],
 };
 const masked = {}; // page → zone → text with <time> elements masked
@@ -72,7 +72,7 @@ for (const who of Object.keys(PAGES)) {
     await c.ctx.close();
   }
 }
-// greetings follow the viewer's clock on purpose; message lists change as the unread markers are cleared by viewing them
+// greetings follow the viewer's clock on purpose (the message inboxes are not opened here: viewing them marks messages read and would change the home pages between runs)
 for (const [page, byZone] of Object.entries(masked)) {
   if (/\/messages$|\/calendar/.test(page)) continue; // the calendar files events under the viewer's own day (section 4)
   const ref = byZone["UTC"];

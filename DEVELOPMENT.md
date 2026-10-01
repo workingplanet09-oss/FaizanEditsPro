@@ -40,12 +40,23 @@ FEP_STRICT=1 FEP_DISABLE_RATE_LIMIT=1 FEP_NO_PSEUDO_CRON=1 \
 
 ## Tests
 
-| Command | What it covers |
+Everything below needs only PHP, a MySQL/MariaDB user that may create `fep_*` databases, and (for the browser suites) Node + Chromium. Nothing is deployed to the hosting account.
+
+```bash
+bash php-tests/run-all.sh            # (add --full for the slow layout + axe sweeps) builds throw-away databases + local servers, runs every suite, prints one summary (logs in /tmp/fep-run-all)
+bash php-tests/run-attacks.sh        # only the hostile-input suites (starts 6 servers: demo, live, fresh install, database down, Stripe, Turnstile)
+```
+
+| Suite | What it covers |
 | --- | --- |
-| `php php-tests/e2e-workflow.php` | The 32-step project workflow over HTTP, then attacks: cross-client access, RBAC, CSRF, illegal status changes, payment gating. |
-| `php php-tests/demo-cycle.php` | Load sample data → use it → remove it → database is clean again → load again. |
-| `node php-tests/browser/<name>.mjs` | Real-browser flows (Chromium via `playwright-core`): `public`, `wizard`, `portal-client`, `review`, `admin`, `admin-studio`, `editor`, `setup`. |
-| `node php-tests/smoke-pages.mjs admin /admin /admin/projects …` | Signs in and fetches pages, flags non-200 answers and any PHP error text. |
+| `php-tests/e2e-workflow.php` | The 32-step project workflow over HTTP, then attacks: cross-client access, RBAC, CSRF, illegal status changes, payment gating. |
+| `php-tests/security-audit.php` | Reads the route table and attacks **every** API route: signed-out access, CSRF (4 variants), second workspace, client/editor role exposure, id probes with foreign ids, ~80 cross-client mutations (database verified unchanged), page access, upload pipeline, request size. |
+| `php-tests/attacks.php` | SQL injection (login, search, ids, writes), sessions (fixation, logout, expiry, suspension, password change/reset, token abuse, 2FA), mass assignment and tampering, verbs/CORS/headers/cookies, e-mail links vs forged `Host`, live-mode error pages, upload-token abuse, downloads/deletes by the wrong person, stored-script payloads at HTML level, rate limits, Turnstile wiring. |
+| `php-tests/payments.php` | Webhook signature/freshness/tamper/replay, amounts and currencies, the demo checkout outside demo mode, "no provider configured". |
+| `php-tests/email-smtp.php` | The SMTP driver against `php-tests/smtp-sink.py`: auth, MIME, UTF-8, header/recipient smuggling, the queue → worker → SMTP path. |
+| `php-tests/demo-cycle.php` | Load sample data → use it → remove it → database is clean again → load again. |
+| `php-tests/browser/<name>.mjs` | Real-browser flows (Chromium via `playwright-core`): `public`, `wizard`, `portal-client`, `review`, `admin`, `admin-studio`, `editor`, `setup`, `xss` (payloads in every user-controlled field, nothing may execute and the CSP may not have to block anything). |
+| `php-tests/qa/*.mjs` | `links` (every notification link opens in the recipient's own area), `seo` (robots, sitemap, titles, descriptions, canonical, Open Graph, alt text, JSON-LD, no loopback URLs with `PUBLIC_ORIGIN`), `layout` (8 viewports from 320 px to 1920 px, light and `--dark`: overflow, labels, headings, landmarks), `axe` (WCAG 2.1 A/AA), `keyboard` (skip link, focus rings, dialog focus), `timezone` (Karachi / Los Angeles / Kiritimati / Pago Pago), `empty` (every page on an empty database). |
 | `php migration-tools/verify-migration.php …` | Value-by-value comparison of an old PostgreSQL database and the new MySQL one. |
 
 ## Styles and icons
@@ -57,6 +68,8 @@ npm install            # dev tools only (tailwind, postcss, playwright-core, pg)
 node migration-tools/build-css.mjs
 ```
 
-## Regenerating `database.sql` / `database-demo.sql`
+## Where `database.sql` / `database-demo.sql` came from
 
-They were generated from the previous PostgreSQL/Prisma schema (git commit `00c185d`) with `migration-tools/build-sql.sh`, which needs that old project, PostgreSQL and MySQL. If you change the schema from now on, edit the tables in `database.sql` directly and ship a small `upgrade-YYYY-MM-DD.sql` with the release notes.
+They were generated once from the previous PostgreSQL/Prisma application (git commit `00c185d`, which still contains the Next.js source) with `migration-tools/build-sql.sh`. That script needs that old project checked out, PostgreSQL and MySQL — it cannot run from this tree any more, and nothing on the hosting account uses it. From now on edit `database.sql` directly when the schema changes, and ship a small `upgrade-YYYY-MM-DD.sql` with the release notes.
+
+`migration-tools/pg-to-mysql.mjs` (structure and rows of an *existing* old installation → MySQL) and `verify-migration.php` are still current: see `MIGRATION.md`.
