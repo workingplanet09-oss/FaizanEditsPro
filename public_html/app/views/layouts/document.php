@@ -5,7 +5,6 @@ $accent = preg_match('/^#[0-9a-f]{6}$/i', $site['theme']['accent'] ?? '') ? $sit
 $name = $site['business']['name'];
 $scripts = array_merge(['js/icons.js', 'js/app.js'], $scripts ?? []);
 $favicon = !empty($site['business']['faviconUrl']) ? $site['business']['faviconUrl'] : '/favicon.svg';
-$themeScript = "(function(){try{var t=localStorage.getItem('fe-theme')||'system';var d=t==='dark'||(t==='system'&&window.matchMedia('(prefers-color-scheme: dark)').matches);document.documentElement.classList.toggle('dark',d);}catch(e){}try{document.cookie='fe_tz='+encodeURIComponent(Intl.DateTimeFormat().resolvedOptions().timeZone)+';path=/;max-age=31536000;samesite=lax';}catch(e){}})();";
 ?><!doctype html>
 <html lang="en">
 <head>
@@ -41,7 +40,7 @@ $themeScript = "(function(){try{var t=localStorage.getItem('fe-theme')||'system'
 <link rel="manifest" href="/manifest.webmanifest">
 <link rel="preload" href="/assets/fonts/inter-latin-wght-normal.woff2" as="font" type="font/woff2" crossorigin>
 <link rel="stylesheet" href="<?= e(asset('css/app.css')) ?>">
-<script><?= $themeScript ?></script>
+<script src="<?= e(asset('js/theme.js')) ?>"></script>
 <style>:root{--accent:<?= e($accent) ?>;--accent-fg:<?= e(contrast_on($accent)) ?>;--accent-text:<?= e(accent_for_text($accent, '#efeee8', 'black')) ?>}.dark,.dark-zone{--accent-text:<?= e(accent_for_text($accent, '#18181c', 'white')) ?>}</style>
 <?php foreach ($meta['jsonLd'] as $ld) { echo json_ld($ld), "\n"; } ?>
 </head>

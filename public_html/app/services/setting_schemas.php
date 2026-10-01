@@ -73,6 +73,7 @@ function integration_status(): array
     $payments = payment_provider_name();
     $emailDriver = (string)cfg('email.driver', 'log');
     return [
+        'siteUrl' => ['source' => site_url_source(), 'url' => app_url()],
         'storage' => ['provider' => 'local', 'configured' => true],
         'payments' => ['provider' => $payments, 'configured' => $payments === 'demo' || (bool)cfg('payments.secret_key')],
         'email' => ['provider' => $emailDriver, 'configured' => in_array($emailDriver, ['log', 'mail'], true) || ($emailDriver === 'smtp' ? (bool)cfg('email.smtp.user') : (bool)cfg('email.api_key'))],

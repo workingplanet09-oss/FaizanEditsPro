@@ -21,7 +21,8 @@ return [
 
     // ── Website ────────────────────────────────────────────────────────────────────────────────────────
     // Your public address, e.g. 'https://www.example.com'. Used in emails, canonical links and the sitemap.
-    // If you leave it empty the address of the current request is used.
+    // Please set it: links in emails (password reset, sign-in, invoices) must point to your site and never to whatever address a
+    // request claims. If you leave it empty, the setup wizard remembers the address you used when you created the owner account.
     'app_url' => '',
 
     // A long random string used to sign links and protect forms. Change it once, before the first visit.

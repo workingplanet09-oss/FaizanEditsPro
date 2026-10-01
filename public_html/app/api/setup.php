@@ -46,6 +46,10 @@ api_public('POST', '/api/setup', function (Ctx $c) {
         if ($name !== '') {
             Db::update('workspaces', ['id' => $ws['id']], ['name' => $name]);
         }
+        // remember the address the owner is using (they proved ownership with the installation code) so links in emails never depend on a request header
+        if (trim((string)cfg('app_url', '')) === '') {
+            Db::upsert('settings', ['workspaceId' => $ws['id'], 'key' => 'site', 'value' => ['url' => request_origin()], 'updatedById' => $u['id']], ['value' => ['url' => request_origin()], 'updatedById' => $u['id'], 'updatedAt' => db_dt()]);
+        }
         audit(null, ['workspaceId' => $ws['id'], 'action' => 'setup.completed', 'entityType' => 'user', 'entityId' => $u['id'], 'message' => "{$u['name']} completed the first-run setup"]);
         return $u;
     });

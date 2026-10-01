@@ -40,7 +40,7 @@ In File Manager, right-click `config.php` → **Edit**. Change only these lines:
 | Setting | What to put |
 | --- | --- |
 | `'name'`, `'user'`, `'password'` (inside `'db'`) | The database name, user and password from step 1. Leave `'host'` as `localhost`. |
-| `'app_url'` | Your address, e.g. `'https://example.com'` (no slash at the end). |
+| `'app_url'` | Your address, e.g. `'https://example.com'` (no slash at the end). Links in emails use it. |
 | `'secret'` | Any long random text, 40 characters or more. Change it **once, now** — the setup page asks for its first 6 characters. |
 | `'mode'` | Leave `'live'` for a real website. Use `'demo'` only for a trial. |
 

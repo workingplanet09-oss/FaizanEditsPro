@@ -96,8 +96,7 @@ final class Pages
                     self::error(429, '429', 'clock', 'Too many requests', $e->getMessage(), [['Go to homepage', '/', true]]);
             }
         }
-        if ($e instanceof PDOException || ($e instanceof AppError && str_contains($e->getMessage(), 'database'))) {
-            app_log('DB error on page: ' . $e->getMessage());
+        if ($e instanceof AppError && $e->errorCode === 'UNAVAILABLE') {
             self::error(503, '503', 'warning', 'The site is starting up', "We can't reach the database right now. If you are the site owner, check the database details in config.php and make sure database.sql was imported.", [['Try again', $req->path, true]]);
         }
         app_log('Unhandled ' . get_class($e) . ': ' . $e->getMessage() . ' @ ' . basename($e->getFile()) . ':' . $e->getLine());

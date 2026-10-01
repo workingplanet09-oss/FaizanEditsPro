@@ -244,7 +244,7 @@ function csp_header(): string
     $join = fn(string ...$p) => implode(' ', array_filter($p));
     return implode('; ', [
         "default-src 'self'",
-        $join("script-src 'self' 'unsafe-inline'", $turnstile),
+        $join("script-src 'self'", $turnstile),
         "style-src 'self' 'unsafe-inline'",
         "img-src 'self' data: blob: https:",
         "media-src 'self' blob: https:",

@@ -139,7 +139,7 @@ final class App
                 if ($allowed) {
                     header('Allow: ' . implode(', ', $allowed));
                     if ($isApi) {
-                        Res::error(new AppError('BAD_REQUEST', 'Method not allowed.'));
+                        Res::error(new AppError('METHOD_NOT_ALLOWED', 'Method not allowed.'));
                     }
                     http_response_code(405);
                     exit;

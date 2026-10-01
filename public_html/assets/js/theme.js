@@ -1,0 +1,2 @@
+/* Runs before first paint: applies the saved light/dark choice and remembers the visitor's time zone. */
+(function(){try{var t=localStorage.getItem('fe-theme')||'system';var d=t==='dark'||(t==='system'&&window.matchMedia('(prefers-color-scheme: dark)').matches);document.documentElement.classList.toggle('dark',d);}catch(e){}try{document.cookie='fe_tz='+encodeURIComponent(Intl.DateTimeFormat().resolvedOptions().timeZone)+';path=/;max-age=31536000;samesite=lax';}catch(e){}})();

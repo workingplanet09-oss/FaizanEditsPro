@@ -2,6 +2,7 @@
 $nav = array_merge([['integrations', 'Integrations & system', 'zap']], array_map(fn($g) => [$g[0], $g[1], $g[2]], SETTING_GROUPS));
 $items = [
     ['Database', true, 'MySQL connected.', 'config.php → db'],
+    ['Site address', $st['siteUrl']['source'] !== 'none', $st['siteUrl']['source'] === 'none' ? 'Not set. Links in emails and the sitemap then use the address of whoever makes the request — set app_url in config.php to your https:// address.' : 'Links in emails and the sitemap use ' . $st['siteUrl']['url'] . ($st['siteUrl']['source'] === 'setup' ? ' (remembered from the first-run setup; set app_url in config.php to change it).' : '.'), 'config.php → app_url'],
     ['File storage', $st['storage']['configured'], 'Files are stored in the private storage folder on your hosting and handed out through signed, expiring links.', 'config.php → storage'],
     ['Payments', $st['payments']['configured'], $st['payments']['provider'] === 'demo' ? 'Demo checkout — no card is charged. Set the payment provider to "stripe" for live payments.' : 'Provider: ' . $st['payments']['provider'] . '.', 'config.php → payments'],
     ['Email', $st['email']['configured'], $st['email']['provider'] === 'log' ? 'Emails are written to the outbox instead of being delivered.' : 'Driver: ' . $st['email']['provider'] . '.', 'config.php → email'],

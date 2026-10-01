@@ -7,7 +7,7 @@ final class AppError extends Exception
     private const STATUS = [
         'BAD_REQUEST' => 400, 'UNAUTHENTICATED' => 401, 'FORBIDDEN' => 403, 'NOT_FOUND' => 404, 'CONFLICT' => 409,
         'VALIDATION' => 422, 'RATE_LIMITED' => 429, 'INVALID_TRANSITION' => 409, 'PAYMENT_REQUIRED' => 402, 'GATED' => 423,
-        'UNSUPPORTED' => 415, 'TOO_LARGE' => 413, 'NOT_CONFIGURED' => 501, 'INTERNAL' => 500,
+        'UNSUPPORTED' => 415, 'TOO_LARGE' => 413, 'NOT_CONFIGURED' => 501, 'INTERNAL' => 500, 'METHOD_NOT_ALLOWED' => 405, 'UNAVAILABLE' => 503,
     ];
 
     public string $errorCode;

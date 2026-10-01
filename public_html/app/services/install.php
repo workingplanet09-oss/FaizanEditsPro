@@ -7,7 +7,7 @@ defined('FEP') or exit;
 
 const FEP_DEMO_EMAIL = 'admin@demo.faizaneditspro.test';
 
-/** 'ready' · 'needs_admin' (database imported, no staff account yet) · 'no_database' (not reachable / database.sql not imported). */
+/** 'ready' · 'needs_admin' (database imported, no staff account yet) · 'no_database' (database.sql not imported) · 'unreachable' (cannot connect — wrong details or server down). */
 function install_state(bool $fresh = false): string
 {
     static $state = null;
@@ -26,7 +26,7 @@ function install_state(bool $fresh = false): string
         return $state = 'needs_admin';
     } catch (Throwable $e) {
         app_log('install_state: ' . $e->getMessage());
-        return $state = 'no_database';
+        return $state = ($e instanceof AppError && $e->errorCode === 'UNAVAILABLE') ? 'unreachable' : 'no_database';
     }
 }
 
@@ -41,8 +41,11 @@ function install_gate(Req $req, bool $isApi): void
     if ($state === 'ready') {
         return;
     }
+    if ($state === 'unreachable') {
+        throw new AppError('UNAVAILABLE', 'The database is not reachable right now.');
+    }
     if ($isApi) {
-        Res::error(new AppError('NOT_CONFIGURED', 'This site has not finished setup yet.'));
+        Res::error(new AppError('UNAVAILABLE', 'This site has not finished setup yet.'));
     }
     if ($state === 'needs_admin') {
         Res::redirect('/setup');

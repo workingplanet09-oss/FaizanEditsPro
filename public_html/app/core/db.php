@@ -50,7 +50,7 @@ final class Db
         } catch (PDOException $e) {
             // Never leak the host, user or password — log the detail, show a neutral message.
             app_log('Database connection failed: ' . $e->getMessage());
-            throw new AppError('INTERNAL', 'The database is not reachable. Please check config.php.');
+            throw new AppError('UNAVAILABLE', 'The database is not reachable right now. Please try again in a moment.');
         }
         return self::$pdo;
     }

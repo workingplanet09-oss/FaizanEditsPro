@@ -42,13 +42,50 @@ function is_https(): bool
     return (int)cfg('trusted_proxy_hops', 0) > 0 && strtolower((string)($_SERVER['HTTP_X_FORWARDED_PROTO'] ?? '')) === 'https';
 }
 
-/** The public address of the site, without a trailing slash. */
+/**
+ * The public address of the site, without a trailing slash.
+ * Order of trust: 'app_url' in config.php → the address remembered by the first-run setup → (last resort) the Host header of the current
+ * request. Links that are e-mailed or stored (password reset, sign-in links, invoices…) must never depend on a header a visitor can forge,
+ * which is why the setup wizard remembers the address the owner used and why the admin Settings page warns while neither is known.
+ */
 function app_url(): string
 {
-    $configured = trim((string)cfg('app_url', ''));
-    if ($configured !== '') {
-        return rtrim($configured, '/');
+    static $trusted = null;
+    if ($trusted === null) {
+        $trusted = site_url_source() === 'none' ? '' : (site_url_source() === 'config' ? rtrim(trim((string)cfg('app_url', '')), '/') : stored_site_url());
     }
+    return $trusted !== '' ? $trusted : request_origin();
+}
+
+/** 'config' · 'setup' (remembered by the first-run wizard) · 'none' (falling back to the request's Host header) */
+function site_url_source(): string
+{
+    if (trim((string)cfg('app_url', '')) !== '') {
+        return 'config';
+    }
+    return stored_site_url() !== '' ? 'setup' : 'none';
+}
+
+function stored_site_url(): string
+{
+    static $url = null;
+    if ($url === null) {
+        $url = '';
+        try {
+            $raw = Db::val("SELECT `value` FROM settings WHERE `key` = 'site' LIMIT 1");
+            $v = is_string($raw) ? json_decode($raw, true) : (is_array($raw) ? $raw : null);
+            $u = is_array($v) ? (string)($v['url'] ?? '') : '';
+            $url = preg_match('#^https?://[a-z0-9.\-]+(:\d{1,5})?$#i', $u) ? $u : '';
+        } catch (Throwable) {
+            $url = '';
+        }
+    }
+    return $url;
+}
+
+/** scheme://host[:port] of the current request (the Host header is validated, never trusted for anything that is stored or e-mailed) */
+function request_origin(): string
+{
     $host = (string)($_SERVER['HTTP_HOST'] ?? 'localhost');
     if (!preg_match('/^[a-z0-9.\-]+(:\d{1,5})?$/i', $host)) {
         $host = 'localhost';
