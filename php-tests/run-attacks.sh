@@ -18,10 +18,13 @@ trap 'kill "${pids[@]}" 2>/dev/null' EXIT
 start 8092 fep_attack FEP_DISABLE_RATE_LIMIT=1                                                       # demo mode, debug, no rate limits
 start 8093 fep_attack FEP_TEST_MODE=live FEP_TEST_DEBUG=0 FEP_TEST_NO_APP_URL=1 FEP_TEST_HOPS=1      # live mode, debug off, real rate limits, no app_url
 start 8094 fep_attack_setup FEP_TEST_MODE=live FEP_TEST_DEBUG=0 FEP_TEST_NO_APP_URL=1                # fresh install for the first-run wizard
+start 8097 fep_attack FEP_TEST_MODE=live FEP_TEST_DEBUG=0 FEP_TEST_STRIPE=whsec_test_0123456789abcdef                                # live mode with Stripe configured
+start 8098 fep_attack FEP_TEST_MODE=live FEP_TEST_DEBUG=0 FEP_TEST_TURNSTILE=1                                                    # spam challenge configured
 start 8095 fep_does_not_exist FEP_TEST_MODE=live FEP_TEST_DEBUG=0                                    # database unreachable
-for port in 8092 8093 8094 8095; do curl -s -o /dev/null --retry 30 --retry-connrefused --retry-delay 1 http://127.0.0.1:$port/api/health; done
+for port in 8092 8093 8094 8095 8097 8098; do curl -s -o /dev/null --retry 30 --retry-connrefused --retry-delay 1 http://127.0.0.1:$port/api/health; done
 export FEP_TEST_DB=fep_attack FEP_TEST_URL=http://127.0.0.1:8092 BASE=http://127.0.0.1:8092
 rc=0
 php php-tests/attacks.php || rc=1
+php php-tests/payments.php || rc=1
 node php-tests/browser/xss.mjs || rc=1
 exit $rc

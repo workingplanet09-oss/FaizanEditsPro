@@ -603,4 +603,19 @@ check('honeypot: a filled hidden field is rejected silently', (new Http())->call
 check('timing trap: a form posted instantly is rejected', (new Http())->call('POST', "{$S2}/api/contact", ['name' => 'Bot Person', 'email' => 'fast@example.test', 'reason' => 'GENERAL', 'message' => 'spam spam spam spam spam', 't' => t_ms()])['status'] === 400);
 Db::exec('DELETE FROM rate_limits');
 
+// ═════════════════════════════════════ J. spam challenge wiring ═════════════════════════════════════
+step('J', 'Cloudflare Turnstile wiring (8098: keys configured; the verdict itself needs Cloudflare)');
+$TS = 'http://127.0.0.1:8098';
+$contact = (new Http())->call('GET', "{$TS}/contact");
+check('the contact page carries the challenge widget with the site key and a token field', str_contains($contact['text'], 'data-fe-component="turnstile"') && str_contains($contact['text'], '1x00000000000000000000AA') && str_contains($contact['text'], 'name="turnstile"'), 'widget missing');
+check('the widget script comes from Cloudflare only (loaded on demand by the page script)', substr_count((string)file_get_contents(FEP_ROOT . '/assets/js/site.js'), 'https://challenges.cloudflare.com/turnstile/v0/api.js') === 1);
+check('the CSP allows the challenge origin for scripts, frames and connections', (function () use ($contact) { $c = $contact['headers']['content-security-policy'][0] ?? ''; foreach (['script-src', 'frame-src', 'connect-src'] as $d) { if (!preg_match("/{$d}[^;]*challenges\.cloudflare\.com/", $c)) { return false; } } return true; })());
+$noTok = (new Http())->call('POST', "{$TS}/api/contact", ['name' => 'Spam Bot', 'email' => 'bot@example.test', 'reason' => 'GENERAL', 'message' => 'a message with enough characters', 't' => t_ms() - 10000]);
+check("a submission without a challenge token is refused ({$noTok['status']})", $noTok['status'] >= 400 && $noTok['status'] < 500, $noTok['text']);
+$badTok = (new Http())->call('POST', "{$TS}/api/contact", ['name' => 'Spam Bot', 'email' => 'bot2@example.test', 'reason' => 'GENERAL', 'message' => 'a message with enough characters', 't' => t_ms() - 10000, 'turnstile' => 'forged-token']);
+check("a forged token is refused — the check fails closed even if Cloudflare cannot be reached ({$badTok['status']})", $badTok['status'] >= 400 && !Db::rows("SELECT 1 FROM contact_submissions WHERE email = 'bot2@example.test'"), $badTok['text']);
+check('the other public forms are protected the same way (leads, booking, register)', (function () use ($TS) { foreach (['/api/leads' => ['answers' => (object)[], 't' => t_ms() - 10000], '/api/booking' => ['type' => 'DISCOVERY_CALL', 'startsAt' => gmdate('c', time() + 86400 * 3), 'name' => 'Bot', 'email' => 'bot3@example.test', 't' => t_ms() - 10000]] as $path => $body) { $r = (new Http())->call('POST', $TS . $path, $body); if ($r['status'] < 400 || $r['status'] >= 500) { return false; } } return true; })());
+$plain = (new Http())->call('GET', "{$S2}/contact");
+check('without keys there is no widget and no token field', !str_contains($plain['text'], 'data-fe-component="turnstile"') && !str_contains($plain['text'], 'name="turnstile"'));
+
 exit(summary());
