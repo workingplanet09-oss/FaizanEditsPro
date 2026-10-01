@@ -115,7 +115,7 @@
       linesEl.innerHTML = lines.map(function (l, i) {
         var lab = function (t) { return i === 0 ? '<span class="text-sm font-semibold">' + t + "</span>" : '<span class="sr-only">' + t + "</span>"; };
         var cls = "w-full rounded-xl border border-line-strong bg-surface px-3.5 text-sm h-11 focus:border-accent focus:outline-none focus:ring-4 focus:ring-accent/20";
-        return '<div class="grid grid-cols-[1fr_5rem_7rem_auto] items-end gap-2 max-sm:grid-cols-2" data-row="' + i + '">'
+        return '<div class="grid grid-cols-[minmax(0,1fr)_5rem_7rem_auto] items-end gap-2 max-sm:grid-cols-2" data-row="' + i + '">'
           + '<label class="space-y-1.5 max-sm:col-span-2">' + lab("Description") + '<input data-k="description" ' + (mode === "quote" ? 'list="svc-list" ' : "") + 'class="' + cls + '" value="' + FE.esc(l.description) + '" placeholder="e.g. YouTube video edit (up to 10 min)" aria-label="Description"></label>'
           + '<label class="space-y-1.5">' + lab("Qty") + '<input data-k="quantity" inputmode="decimal" class="' + cls + '" value="' + FE.esc(l.quantity) + '" aria-label="Quantity"></label>'
           + '<label class="space-y-1.5">' + lab("Unit price") + '<input data-k="price" inputmode="decimal" class="' + cls + '" value="' + FE.esc(l.price) + '" placeholder="0.00" aria-label="Unit price"></label>'

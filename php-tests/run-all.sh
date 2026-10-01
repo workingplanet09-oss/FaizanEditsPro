@@ -25,6 +25,7 @@ run e2e-workflow      $E1 php php-tests/e2e-workflow.php
 run security-audit    $E1 php php-tests/security-audit.php
 for t in public wizard portal-client review admin admin-studio editor; do run "browser-$t" $E1 node php-tests/browser/$t.mjs; done
 run browser-setup     FEP_TEST_DB=fep_fresh FEP_TEST_URL=http://127.0.0.1:8082 BASE=http://127.0.0.1:8082 SAMPLE=1 node php-tests/browser/setup.mjs
+run email-smtp        FEP_TEST_DB=fep_regress FEP_TEST_URL=http://127.0.0.1:8081 php php-tests/email-smtp.php
 run demo-cycle        FEP_TEST_DB=fep_cycle FEP_TEST_URL=http://127.0.0.1:8083 php php-tests/demo-cycle.php
 if [ "${1:-}" != "--skip-attacks" ]; then
   kill "${pids[@]}" 2>/dev/null; pids=()

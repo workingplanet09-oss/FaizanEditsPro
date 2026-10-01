@@ -18,7 +18,7 @@ $actions = ($actor->can('quotes:write') && $lead['client'] ? ui_link('/admin/quo
 </div>
 <div class="mb-6"><?= lead_decisions($lead, $actor->can('leads:convert') && $actor->can('clients:write'), $actor->can('leads:write')) ?></div>
 
-<div class="grid grid-cols-1 gap-6 xl:grid-cols-[1fr_24rem]">
+<div class="grid grid-cols-1 gap-6 xl:grid-cols-[minmax(0,1fr)_24rem]">
   <div class="space-y-6">
     <?php if ($lead['client'] || $lead['project']): ?>
       <?php ob_start(); ?><div class="flex flex-wrap items-center gap-x-6 gap-y-3 p-5">

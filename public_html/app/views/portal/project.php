@@ -34,7 +34,7 @@ if ($production) { $tabs[] = ['changes', 'Change requests']; }
 
 <?php if ($tab === 'overview'): $gate = $p['gate'];
   $steps = [['Quote accepted', $gate['quoteAccepted']], ['Contract signed', $gate['contractSigned']], ['Deposit paid', $gate['depositPaid']], ['Final payment', $gate['allPaid'] && count($docs['invoices']) > 0]]; ?>
-  <div class="grid grid-cols-1 gap-6 lg:grid-cols-[1fr_22rem]">
+  <div class="grid grid-cols-1 gap-6 lg:grid-cols-[minmax(0,1fr)_22rem]">
     <div class="space-y-6">
       <?php ob_start(); ?><ol class="px-5 pb-5"><?php foreach ($milestones as $i => $m): ?>
         <li class="relative flex gap-4 pb-5 last:pb-0"><?= $i < count($milestones) - 1 ? '<span aria-hidden="true" class="absolute left-[13px] top-7 h-[calc(100%-1.5rem)] w-px ' . ($m['done'] ? 'bg-fg/25' : 'bg-line') . '"></span>' : '' ?>
@@ -134,7 +134,7 @@ if ($production) { $tabs[] = ['changes', 'Change requests']; }
 <?php elseif ($tab === 'changes' && $production):
   $cls = ['PENDING' => ['In review', 'info'], 'INCLUDED' => ['Included', 'success'], 'OUT_OF_SCOPE' => ['Out of scope', 'neutral'], 'ADDITIONAL_COST' => ['Needs a quote', 'warning']];
   $locked = ($p['brief']['status'] ?? null) === 'LOCKED'; ?>
-  <div class="grid grid-cols-1 gap-6 lg:grid-cols-[1fr_26rem]">
+  <div class="grid grid-cols-1 gap-6 lg:grid-cols-[minmax(0,1fr)_26rem]">
     <div>
       <?php if ($changes): ?><ul class="space-y-3"><?php foreach ($changes as $c): $cm = $cls[$c['classification']] ?? [$c['classification'], 'neutral']; ?>
         <li class="rounded-[var(--radius-card)] border border-line bg-surface p-5 shadow-soft"><div class="flex items-start justify-between gap-3"><p class="text-sm font-semibold"><?= e($c['whatChanged']) ?></p><?= ui_badge($cm[0], $cm[1]) ?></div>

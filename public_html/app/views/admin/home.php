@@ -28,7 +28,7 @@ $more = fn(string $href, string $label) => text_link($href, $label);
   <?= $perms['invoices'] ? ui_stat('Retainer revenue / mo', money_map($m['retainerRevenue'], true), null, null, 'repeat', '/admin/retainers') : '' ?>
 </div>
 
-<div class="grid grid-cols-1 gap-6 xl:grid-cols-[1fr_24rem]">
+<div class="grid grid-cols-1 gap-6 xl:grid-cols-[minmax(0,1fr)_24rem]">
   <div class="space-y-6">
     <?php if ($perms['projects']): ?>
       <?php ob_start(); ?><div class="grid grid-cols-2 gap-3 px-5 pb-5 sm:grid-cols-3 lg:grid-cols-6"><?php foreach ($h['pipeline'] as $st): ?>

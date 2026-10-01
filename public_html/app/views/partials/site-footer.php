@@ -4,7 +4,7 @@ $socialIcon = ['instagram' => 'camera', 'youtube' => 'play', 'linkedin' => 'brie
 $socials = array_filter((array)($b['socials'] ?? []));
 ?>
 <footer class="dark-zone relative border-t border-line">
-  <div class="container-page grid grid-cols-1 gap-12 py-16 lg:grid-cols-[1.4fr_2fr]">
+  <div class="container-page grid grid-cols-1 gap-12 py-16 lg:grid-cols-[minmax(0,1.4fr)_minmax(0,2fr)]">
     <div>
       <?php partial('partials/logo', ['name' => $b['name'], 'logoUrl' => $b['logoUrl'] ?: null]); ?>
       <p class="mt-4 max-w-sm text-sm leading-relaxed text-muted"><?= e($footer['description']) ?></p>

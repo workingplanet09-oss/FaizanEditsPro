@@ -113,6 +113,9 @@
     root.__tz = tz || "UTC";
     if (tz) tzLabel.textContent = " (" + tz + ")";
     var fmtDay = function (d) { return new Date(d + "T12:00:00Z").toLocaleDateString(undefined, { weekday: "short", month: "short", day: "numeric", timeZone: "UTC" }); };
+    // slots are exact instants; they are filed under the visitor's OWN calendar day so the day and the time always agree
+    var pad2 = function (n) { return (n < 10 ? "0" : "") + n; };
+    var dayKey = function (iso) { var x = new Date(iso); return x.getFullYear() + "-" + pad2(x.getMonth() + 1) + "-" + pad2(x.getDate()); };
     var fmtTime = function (iso) { return new Date(iso).toLocaleTimeString(undefined, { hour: "numeric", minute: "2-digit" }); };
 
     function paintTypes() {
@@ -142,7 +145,7 @@
       startsAt.value = ""; submit.disabled = true; state = { byDay: {}, day: null };
       dayBox.innerHTML = ""; slotBox.innerHTML = '<div role="status" class="skeleton col-span-full h-12"></div>';
       FE.api("/api/booking/slots?type=" + encodeURIComponent(type)).then(function (r) {
-        (r.slots || []).forEach(function (s) { var d = s.slice(0, 10); (state.byDay[d] = state.byDay[d] || []).push(s); });
+        (r.slots || []).forEach(function (s) { var d = dayKey(s); (state.byDay[d] = state.byDay[d] || []).push(s); });
         var days = Object.keys(state.byDay);
         if (!days.length) { slotBox.innerHTML = '<p class="col-span-full rounded-xl bg-surface-2 p-5 text-sm text-muted">No open slots in the next few weeks. Please send us a message and we\'ll find a time.</p>'; return; }
         state.day = days[0]; paintDays(); paintSlots();

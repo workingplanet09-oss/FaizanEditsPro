@@ -3,7 +3,7 @@
 <?php if (!$threads): ?>
   <?= card(ui_empty('No conversations yet', 'When clients message you from their portal, threads appear here.', 'message')) ?>
 <?php else: ?>
-  <div class="grid grid-cols-1 gap-5 lg:grid-cols-[22rem_1fr]">
+  <div class="grid grid-cols-1 gap-5 lg:grid-cols-[22rem_minmax(0,1fr)]">
     <?php ob_start(); ?><ul class="divide-y divide-line" aria-label="Conversations"><?php foreach ($threads as $t): $on = $current && $current['key'] === $t['key']; ?>
       <li><a href="/admin/messages?thread=<?= e(rawurlencode($t['key'])) ?>"<?= $on ? ' aria-current="page"' : '' ?> class="flex items-start gap-3 px-4 py-3.5 transition hover:bg-surface-2/60 <?= $on ? 'bg-surface-2' : '' ?>">
         <span class="mt-0.5 flex h-9 w-9 shrink-0 items-center justify-center rounded-xl bg-surface-2"><?= icon($t['projectId'] ? 'film' : 'help', 16) ?></span>

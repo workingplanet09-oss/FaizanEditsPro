@@ -1,6 +1,6 @@
 <?= page_hero('About ' . $site['business']['name'], $about['headline']) ?>
 <?= sec_open() ?>
-  <div class="grid grid-cols-1 gap-12 lg:grid-cols-[1.1fr_0.9fr]">
+  <div class="grid grid-cols-1 gap-12 lg:grid-cols-[minmax(0,1.1fr)_minmax(0,0.9fr)]">
     <div<?= rv(0, 'space-y-5 text-lg leading-relaxed text-muted') ?>><?php foreach (preg_split('/\n{2,}/', $about['story']) as $p): ?><p><?= e($p) ?></p><?php endforeach; ?></div>
     <div<?= rv(100, 'space-y-4') ?>><?php foreach ($about['values'] as $v): ?><div class="rounded-[var(--radius-card)] border border-line bg-surface p-6"><h3 class="font-extrabold"><?= e($v['title']) ?></h3><p class="mt-1.5 text-sm text-muted"><?= e($v['body']) ?></p></div><?php endforeach; ?></div>
   </div>

@@ -11,7 +11,7 @@ $more = fn($href, $label) => text_link($href, $label);
   <?= ui_stat('Deadlines in 10 days', (string)count($h['deadlines']), null, null, 'clock', '/editor/projects?sort=deadline') ?>
 </div>
 <?= $actor->can('time:track') ? '<div class="mb-6 max-w-xl">' . timer_widget($timer, '/editor') . '</div>' : '' ?>
-<div class="grid grid-cols-1 gap-6 lg:grid-cols-[1.3fr_1fr]">
+<div class="grid grid-cols-1 gap-6 lg:grid-cols-[minmax(0,1.3fr)_minmax(0,1fr)]">
   <div class="space-y-6">
     <?php ob_start(); if ($h['tasksToday']): ?><ul class="divide-y divide-line"><?php foreach ($h['tasksToday'] as $t): $late = $t['dueDate'] && ts_ms($t['dueDate']) < $now; $pr = meta_for('PRIORITY', $t['priority']); ?>
       <li class="flex items-center gap-3 px-5 py-3"><span class="h-2 w-2 shrink-0 rounded-full <?= $t['status'] === 'IN_PROGRESS' ? 'bg-info' : ($t['status'] === 'BLOCKED' ? 'bg-danger' : 'bg-line-strong') ?>" aria-hidden="true"></span>

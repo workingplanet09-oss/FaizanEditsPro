@@ -9,7 +9,7 @@ $actions = ui_link("/api/contracts/{$id}/download", 'Download / print', ['icon' 
     <p class="mt-1.5 text-sm text-muted sm:text-[15px]"><?= e($c['title'] . ' · ' . $c['client']['companyName']) ?> · <a class="font-semibold text-fg hover:underline" href="/admin/projects/<?= e($c['project']['id']) ?>"><?= e($c['project']['code']) ?></a> · version <?= (int)$c['currentVersion'] ?></p></div>
   <div class="flex flex-wrap items-center gap-2"><?= $actions ?></div>
 </div>
-<div class="grid grid-cols-1 gap-6 lg:grid-cols-[1fr_22rem]">
+<div class="grid grid-cols-1 gap-6 lg:grid-cols-[minmax(0,1fr)_22rem]">
   <div class="space-y-6">
     <?php ob_start(); ?><div class="space-y-7"><?php foreach ($c['sections'] as $s): ?><section><h2 class="text-base font-extrabold"><?= e($s['title']) ?></h2><div class="prose-lite mt-2 text-sm leading-relaxed text-muted"><?= render_markdown($s['body']) ?></div></section><?php endforeach; ?></div>
     <?= card(ob_get_clean(), 'p-6 sm:p-10') ?>

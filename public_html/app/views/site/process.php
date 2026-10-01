@@ -2,7 +2,7 @@
 <?= sec_open() ?>
   <ol class="relative mx-auto max-w-4xl space-y-6 before:absolute before:bottom-6 before:left-[27px] before:top-6 before:w-px before:bg-line max-sm:before:hidden">
     <?php foreach ($process['steps'] as $i => $s): ?>
-      <li<?= rv(40, 'relative grid grid-cols-1 gap-5 sm:grid-cols-[56px_1fr]') ?>>
+      <li<?= rv(40, 'relative grid grid-cols-1 gap-5 sm:grid-cols-[56px_minmax(0,1fr)]') ?>>
         <span class="relative z-10 flex h-14 w-14 items-center justify-center rounded-full border border-line-strong bg-bg font-display text-xl font-extrabold"><?= $i + 1 ?></span>
         <div class="rounded-[var(--radius-card)] border border-line bg-surface p-7 shadow-soft">
           <h2 class="text-xl font-extrabold tracking-tight sm:text-2xl"><?= e($s['title']) ?></h2><p class="mt-1 text-sm font-semibold text-accent-text"><?= e($s['summary']) ?></p><p class="mt-4 leading-relaxed text-muted"><?= e($s['detail']) ?></p>

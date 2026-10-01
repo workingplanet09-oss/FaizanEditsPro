@@ -6,7 +6,7 @@ $n = count($home['attention']);
 ?>
 <?php if (!$home['hasProjects']): ?>
   <?= ui_page_header("{$hello}, {$first}", "Welcome to your client portal. This is where you'll follow your project from quote to final delivery.") ?>
-  <div class="grid grid-cols-1 gap-6 lg:grid-cols-[1fr_22rem]">
+  <div class="grid grid-cols-1 gap-6 lg:grid-cols-[minmax(0,1fr)_22rem]">
     <?= card(ui_empty('No projects yet', "Tell us about your video and we'll send a quote. Once you approve it, your project shows up here with a live progress tracker, files, messages and a review player.", 'film', ui_link('/start-project', 'Start your first project', ['size' => 'lg', 'iconRight' => 'arrow'])), 'p-2') ?>
     <?= $home['checklist'] ? checklist_card($home['checklist']) : '' ?>
   </div>
@@ -22,7 +22,7 @@ $n = count($home['attention']);
     <?= ui_stat('Unread messages', e((string)$home['unreadMessages']), null, $home['unreadMessages'] ? 'accent' : null, 'message', '/dashboard/messages') ?>
     <?= ui_stat('Delivered', e((string)count($delivered)), 'Completed projects', 'success', 'check-circle', '/dashboard/projects?tab=delivered') ?>
   </div>
-  <div class="grid grid-cols-1 gap-6 xl:grid-cols-[1fr_24rem]">
+  <div class="grid grid-cols-1 gap-6 xl:grid-cols-[minmax(0,1fr)_24rem]">
     <section aria-labelledby="proj">
       <div class="mb-3 flex items-center justify-between"><h2 id="proj" class="text-lg font-extrabold tracking-tight">Your projects</h2><a href="/dashboard/projects" class="text-sm font-semibold text-accent-text hover:underline">View all</a></div>
       <div class="grid grid-cols-1 gap-4 md:grid-cols-2">

@@ -12,7 +12,7 @@ $portal = [
 <section class="dark-zone grain relative isolate overflow-hidden">
   <div aria-hidden="true" class="pointer-events-none absolute inset-0 -z-10 bg-[radial-gradient(60%_50%_at_85%_0%,color-mix(in_srgb,var(--accent)_26%,transparent),transparent_70%),radial-gradient(50%_45%_at_0%_100%,color-mix(in_srgb,var(--accent)_10%,transparent),transparent_70%)]"></div>
   <div aria-hidden="true" class="pointer-events-none absolute inset-0 -z-10 opacity-[0.35] [background-image:linear-gradient(to_right,rgb(255_255_255/0.05)_1px,transparent_1px),linear-gradient(to_bottom,rgb(255_255_255/0.05)_1px,transparent_1px)] [background-size:64px_64px] [mask-image:radial-gradient(70%_60%_at_50%_30%,#000,transparent)]"></div>
-  <div class="container-page grid grid-cols-1 items-center gap-14 py-16 sm:py-24 lg:grid-cols-[1.05fr_0.95fr] lg:gap-10 lg:py-32">
+  <div class="container-page grid grid-cols-1 items-center gap-14 py-16 sm:py-24 lg:grid-cols-[minmax(0,1.05fr)_minmax(0,0.95fr)] lg:gap-10 lg:py-32">
     <div>
       <div<?= rv(0, 'mb-6 inline-flex items-center gap-2 rounded-full border border-white/10 bg-white/5 py-1.5 pl-2 pr-4 text-xs font-semibold text-muted backdrop-blur') ?>>
         <span class="flex h-5 w-5 items-center justify-center rounded-full bg-accent text-accent-fg"><?= icon('clapperboard', 12) ?></span><?= e($hero['eyebrow']) ?>
@@ -93,7 +93,7 @@ $portal = [
 <?= sec_close() ?>
 
 <?= sec_open(['tone' => 'alt']) ?>
-  <div class="grid grid-cols-1 gap-12 lg:grid-cols-[0.8fr_1.2fr]">
+  <div class="grid grid-cols-1 gap-12 lg:grid-cols-[minmax(0,0.8fr)_minmax(0,1.2fr)]">
     <?= section_heading('FAQ', 'Questions, answered.', "Can't find yours? Ask us anything — we reply within one business day.", ['class' => 'mb-0']) ?>
     <div><?= faq_list(array_slice($faqs, 0, 7)) ?><a href="/faq" class="mt-5 inline-flex items-center gap-2 text-sm font-bold text-accent-text hover:underline">Read all FAQs <?= icon('arrow', 15) ?></a></div>
   </div>

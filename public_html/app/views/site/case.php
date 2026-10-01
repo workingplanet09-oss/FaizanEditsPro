@@ -5,7 +5,7 @@ $deliverables = (array)$c['deliverables'];
 ?>
 <?= page_hero('Case study · ' . implode(' · ', array_filter([$c['clientName'], $c['industry']])), $c['title'], $c['summary'] ?: null) ?>
 <?= sec_open() ?>
-  <div class="grid grid-cols-1 gap-12 lg:grid-cols-[1.4fr_0.6fr]">
+  <div class="grid grid-cols-1 gap-12 lg:grid-cols-[minmax(0,1.4fr)_minmax(0,0.6fr)]">
     <div class="space-y-12">
       <?php if ($c['beforeVideoUrl'] && $c['afterVideoUrl']): ?><div<?= rv() ?>><h2 class="mb-4 text-2xl font-extrabold">Before &amp; after</h2><?= before_after($c['beforeVideoUrl'], $c['afterVideoUrl']) ?></div>
       <?php elseif ($c['heroImage']): ?><img src="<?= e($c['heroImage']) ?>" alt="" class="w-full rounded-[var(--radius-card)] border border-line"><?php endif; ?>

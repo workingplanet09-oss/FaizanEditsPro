@@ -10,7 +10,7 @@ foreach ($projects as $p) {
 $current = array_values(array_filter($rows, fn($r) => $r['id'] === $active))[0] ?? $rows[0];
 ?>
 <?= ui_page_header('Messages', 'One conversation per project, plus a general thread. Replies also reach you by email.') ?>
-<div class="grid grid-cols-1 gap-5 lg:grid-cols-[20rem_1fr]">
+<div class="grid grid-cols-1 gap-5 lg:grid-cols-[20rem_minmax(0,1fr)]">
   <?php ob_start(); ?>
   <ul class="divide-y divide-line" aria-label="Conversations">
     <?php foreach ($rows as $r): ?>

@@ -200,7 +200,7 @@
           qs.map(function (q) {
             var v = answers[q.key], lab = function (x) { var o = q.options.filter(function (o) { return o.value === String(x); })[0]; return o ? o.label : String(x); };
             var shown = q.type === "FILE" ? (uploadedNames[q.key] || []).join(", ") || "Files attached" : Array.isArray(v) ? v.map(lab).join(", ") : typeof v === "boolean" ? (v ? "Yes" : "No") : lab(v);
-            return '<div class="grid grid-cols-1 gap-0.5 sm:grid-cols-[38%_1fr] sm:gap-4"><dt class="text-xs text-subtle">' + esc(q.text) + '</dt><dd class="whitespace-pre-line break-words text-sm font-medium">' + esc(shown) + "</dd></div>";
+            return '<div class="grid grid-cols-1 gap-0.5 sm:grid-cols-[38%_minmax(0,1fr)] sm:gap-4"><dt class="text-xs text-subtle">' + esc(q.text) + '</dt><dd class="whitespace-pre-line break-words text-sm font-medium">' + esc(shown) + "</dd></div>";
           }).join("") + "</dl></section>";
       }).join("");
       var box = document.createElement("div");

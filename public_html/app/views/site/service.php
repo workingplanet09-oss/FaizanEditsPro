@@ -11,7 +11,7 @@ $panel = 'rounded-[var(--radius-card)] border border-line bg-surface';
     . '<div><dt class="text-muted">Revisions</dt><dd class="mt-0.5 text-lg font-extrabold">Included in every quote</dd></div></dl>') ?>
 
 <?= sec_open() ?>
-  <div class="grid grid-cols-1 gap-12 lg:grid-cols-[1.2fr_0.8fr]">
+  <div class="grid grid-cols-1 gap-12 lg:grid-cols-[minmax(0,1.2fr)_minmax(0,0.8fr)]">
     <div<?= rv() ?>>
       <h2 class="text-2xl font-extrabold tracking-tight sm:text-3xl">What you get</h2>
       <?php if ($s['description']): ?><div class="prose-lite mt-5 text-muted"><?= render_markdown($s['description']) ?></div><?php endif; ?>
@@ -44,7 +44,7 @@ $panel = 'rounded-[var(--radius-card)] border border-line bg-surface';
 
 <?php if ($work): ?><?= sec_open(['tone' => 'alt']) ?><?= section_heading('Examples', 'Recent work in this style.') ?><?= work_grid($work, []) ?><?= sec_close() ?><?php endif; ?>
 
-<?php if ($faqs): ?><?= sec_open() ?><div class="grid grid-cols-1 gap-12 lg:grid-cols-[0.7fr_1.3fr]"><?= section_heading('FAQ', $s['title'] . ': common questions', null, ['class' => 'mb-0']) ?><?= faq_list($faqs) ?></div><?= sec_close() ?><?php endif; ?>
+<?php if ($faqs): ?><?= sec_open() ?><div class="grid grid-cols-1 gap-12 lg:grid-cols-[minmax(0,0.7fr)_minmax(0,1.3fr)]"><?= section_heading('FAQ', $s['title'] . ': common questions', null, ['class' => 'mb-0']) ?><?= faq_list($faqs) ?></div><?= sec_close() ?><?php endif; ?>
 
 <section class="dark-zone grain relative overflow-hidden"><div class="container-page flex flex-col items-start justify-between gap-6 py-16 sm:flex-row sm:items-center">
   <div><h2 class="text-2xl font-extrabold sm:text-3xl">Let's talk about your <?= e(mb_strtolower($s['title'])) ?> project.</h2><p class="mt-2 text-muted">A short guided form — you'll get a fixed-scope quote.</p></div>

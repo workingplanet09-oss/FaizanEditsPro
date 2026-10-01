@@ -13,7 +13,7 @@ $items = [
 ];
 ?>
 <?= ui_page_header('Settings', 'Everything about your studio, site and workflow. Changes go live immediately.') ?>
-<div class="grid grid-cols-1 gap-6 lg:grid-cols-[15rem_1fr]">
+<div class="grid grid-cols-1 gap-6 lg:grid-cols-[15rem_minmax(0,1fr)]">
   <nav aria-label="Settings sections" class="thin-scroll -mx-4 flex gap-1 overflow-x-auto px-4 lg:mx-0 lg:block lg:space-y-0.5 lg:overflow-visible lg:px-0"><?php foreach ($nav as [$k, $l, $ic]): $on = $k === $key; ?>
     <a href="/admin/settings?g=<?= e($k) ?>"<?= $on ? ' aria-current="page"' : '' ?> class="flex shrink-0 items-center gap-2.5 whitespace-nowrap rounded-xl px-3 py-2 text-sm font-semibold transition <?= $on ? 'bg-fg text-bg' : 'text-muted hover:bg-surface-2 hover:text-fg' ?>"><?= icon($ic, 16, $on ? 'text-accent-text' : 'text-subtle') ?><?= e($l) ?></a><?php endforeach; ?></nav>
   <div class="min-w-0">

@@ -249,8 +249,18 @@
     $$("[data-switch]", form).forEach(function (b) { setPath(out, b.getAttribute("data-switch"), b.getAttribute("aria-checked") === "true"); });
     return out;
   };
+  // keeps the visible error message tied to its input for screen readers (aria-describedby), and removes it again when the error clears
+  function describe(input, id, on) {
+    if (!id) return;
+    var cur = (input.getAttribute("aria-describedby") || "").split(/\s+/).filter(function (x) { return x && x !== id; });
+    if (on) cur.push(id);
+    if (cur.length) input.setAttribute("aria-describedby", cur.join(" ")); else input.removeAttribute("aria-describedby");
+  }
   FE.showFieldErrors = function (form, fields, message) {
-    $$("[data-error-for]", form).forEach(function (p) { p.classList.add("hidden"); p.classList.remove("flex"); p.textContent = ""; });
+    $$("[data-error-for]", form).forEach(function (p) {
+      var inp = form.querySelector('[name="' + p.getAttribute("data-error-for") + '"]'); if (inp) describe(inp, p.id, false);
+      p.classList.add("hidden"); p.classList.remove("flex"); p.textContent = "";
+    });
     $$("[aria-invalid]", form).forEach(function (i) { i.removeAttribute("aria-invalid"); });
     var top = form.querySelector("[data-form-error]");
     if (top) { top.classList.add("hidden"); top.textContent = ""; }
@@ -259,7 +269,7 @@
       var holder = form.querySelector('[data-error-for="' + k + '"]');
       var input = form.querySelector('[name="' + k + '"]');
       if (holder) { holder.textContent = fields[k]; holder.classList.remove("hidden"); holder.classList.add("flex"); }
-      if (input) { input.setAttribute("aria-invalid", "true"); if (!first) first = input; }
+      if (input) { input.setAttribute("aria-invalid", "true"); if (holder) describe(input, holder.id, true); if (!first) first = input; }
       if (!holder && !input && top) message = message || fields[k];
     });
     if (message && top) { top.textContent = message; top.classList.remove("hidden"); }

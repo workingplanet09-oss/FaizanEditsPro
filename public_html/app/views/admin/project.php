@@ -36,7 +36,7 @@ $actions = ($latest ? ui_link("{$here}/review/{$latest['id']}", 'Open review · 
 <?= ui_tabs($tabs, $tab, $here) ?>
 
 <?php if ($tab === 'overview'): $g = $p['gate']; ?>
-  <div class="grid grid-cols-1 gap-6 xl:grid-cols-[1fr_26rem]">
+  <div class="grid grid-cols-1 gap-6 xl:grid-cols-[minmax(0,1fr)_26rem]">
     <div class="space-y-6">
       <?= ($actor->can('projects:transition') || $actor->can('versions:upload')) ? status_control($p, $actor->can('deliverables:override')) : '' ?>
       <?php ob_start(); ?><ol class="grid grid-cols-1 gap-x-8 gap-y-3 px-5 pb-5 sm:grid-cols-2"><?php foreach ($milestones as $ms): ?>
@@ -78,7 +78,7 @@ $actions = ($latest ? ui_link("{$here}/review/{$latest['id']}", 'Open review · 
   <?= file_manager($files['items'], ['projectId' => $id, 'folders' => $folders, 'activeFolder' => $folder, 'basePath' => $here, 'extraParams' => ['tab' => 'files'], 'canUpload' => $actor->can('files:write'), 'canDelete' => $actor->can('files:delete'), 'canShare' => true, 'fileRequests' => $fileRequests]) ?>
 
 <?php elseif ($tab === 'videos'): $canUpload = $actor->can('versions:upload'); $rmap = ['APPROVED' => 'success', 'PENDING_CLIENT' => 'warning']; ?>
-  <div class="grid grid-cols-1 gap-6 xl:grid-cols-[1fr_28rem]">
+  <div class="grid grid-cols-1 gap-6 xl:grid-cols-[minmax(0,1fr)_28rem]">
     <div>
       <?php if ($versions): ?><div class="grid grid-cols-1 gap-4 sm:grid-cols-2"><?php foreach ($versions as $i => $v): ?>
         <a href="<?= e("{$here}/review/{$v['id']}") ?>" class="group overflow-hidden rounded-[var(--radius-card)] border border-line bg-surface shadow-soft transition hover:-translate-y-0.5 hover:shadow-lift">
@@ -130,7 +130,7 @@ $actions = ($latest ? ui_link("{$here}/review/{$latest['id']}", 'Open review · 
   </div>
 
 <?php elseif ($tab === 'delivery'): $unpublished = count(array_filter($delivery['items'], fn($i) => empty($i['visibleToClient']))); ?>
-  <div class="grid grid-cols-1 gap-6 xl:grid-cols-[1fr_28rem]">
+  <div class="grid grid-cols-1 gap-6 xl:grid-cols-[minmax(0,1fr)_28rem]">
     <?= delivery_list($delivery, $status, $id, true) ?>
     <?= deliverables_admin_card($id, $unpublished, $actor->can('files:write')) ?>
   </div>

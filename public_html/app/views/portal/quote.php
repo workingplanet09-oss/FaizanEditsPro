@@ -5,7 +5,7 @@ $contract = array_values(array_filter($q['contracts'] ?? [], fn($c) => $c['statu
 ?>
 <div class="mb-2"><a href="/dashboard/quotes" class="inline-flex items-center gap-1 text-sm font-semibold text-muted hover:text-fg"><?= icon('chevron-left', 14) ?> Quotes</a></div>
 <?= ui_page_header($q['number'], $q['project'] ? 'For ' . $q['project']['name'] : (string)$q['title'], meta_badge('QUOTE_STATUS', $q['status'])) ?>
-<div class="grid grid-cols-1 gap-6 lg:grid-cols-[1fr_20rem]">
+<div class="grid grid-cols-1 gap-6 lg:grid-cols-[minmax(0,1fr)_20rem]">
   <?php ob_start(); ?>
     <div class="mb-6 flex flex-wrap justify-between gap-4 border-b border-line pb-6 text-sm">
       <div><div class="text-xs font-bold uppercase tracking-wider text-subtle">Prepared for</div><div class="mt-1 font-bold"><?= e($q['client']['companyName']) ?></div><div class="text-muted"><?= e($q['client']['name']) ?></div></div>

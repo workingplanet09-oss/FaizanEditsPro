@@ -6,7 +6,7 @@ $payable = in_array($inv['status'], ['SENT', 'VIEWED', 'PARTIALLY_PAID', 'OVERDU
 <?= ui_page_header($inv['number'], $inv['project'] ? 'For ' . $inv['project']['name'] : null, meta_badge('INVOICE_STATUS', $inv['status']) . ui_button('Print / save PDF', ['variant' => 'outline', 'icon' => 'download', 'class' => 'print:hidden', 'attrs' => ['data-print' => true]])) ?>
 <?php if ($paid && $inv['status'] === 'PAID'): ?><p role="status" class="mb-5 flex items-center gap-2 rounded-2xl bg-success-soft px-5 py-3.5 text-sm font-semibold text-success"><?= icon('check-circle', 18) ?> Payment received — thank you! Your project is moving forward.</p><?php endif; ?>
 <?php if ($cancelled): ?><p role="status" class="mb-5 rounded-2xl bg-warning-soft px-5 py-3.5 text-sm font-semibold text-warning">Checkout was cancelled. You haven't been charged.</p><?php endif; ?>
-<div class="grid grid-cols-1 gap-6 lg:grid-cols-[1fr_22rem]">
+<div class="grid grid-cols-1 gap-6 lg:grid-cols-[minmax(0,1fr)_22rem]">
   <?php ob_start(); ?>
     <div class="mb-6 flex flex-wrap justify-between gap-6 border-b border-line pb-6 text-sm">
       <div><div class="text-xs font-bold uppercase tracking-wider text-subtle">From</div><div class="mt-1 font-bold"><?= e($business['name']) ?></div><?= $business['legalName'] ? '<div class="text-muted">' . e($business['legalName']) . '</div>' : '' ?><?= $business['address'] ? '<div class="whitespace-pre-line text-muted">' . e($business['address']) . '</div>' : '' ?><?= $business['taxId'] ? '<div class="text-muted">Tax ID: ' . e($business['taxId']) . '</div>' : '' ?></div>

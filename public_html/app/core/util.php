@@ -338,6 +338,23 @@ function fmt_date_short(mixed $d): string
     return $ms === null ? '—' : gmdate('M j', intdiv($ms, 1000));
 }
 
+/** "Mon, Oct 5, 8:00 PM (Asia/Karachi)" — an instant written in a named time zone; null when the zone is unknown. */
+function fmt_in_tz(mixed $d, string $tzName): ?string
+{
+    $ms = ts_ms($d);
+    if ($ms === null || !valid_timezone($tzName)) {
+        return null;
+    }
+    return (new DateTimeImmutable('@' . intdiv($ms, 1000)))->setTimezone(new DateTimeZone($tzName))->format('D, M j, g:i A') . " ({$tzName})";
+}
+
+function valid_timezone(?string $name): bool
+{
+    static $ids = null;
+    $ids ??= array_flip(DateTimeZone::listIdentifiers());
+    return is_string($name) && $name !== '' && isset($ids[$name]);
+}
+
 /** "Oct 5, 3:00 PM UTC" */
 function fmt_datetime(mixed $d): string
 {

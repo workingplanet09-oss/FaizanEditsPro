@@ -15,7 +15,7 @@ $row = fn($l, $v, $cls = '') => '<li class="flex justify-between ' . $cls . '"><
   <div class="min-w-0"><h1 class="flex flex-wrap items-center gap-3 text-2xl font-extrabold tracking-tight sm:text-3xl"><?= e($q['number']) ?><?= meta_badge('QUOTE_STATUS', $q['status']) ?></h1><p class="mt-1.5 text-sm text-muted sm:text-[15px]"><?= $desc ?></p></div>
   <div class="flex flex-wrap items-center gap-2"><?= $actions ?></div>
 </div>
-<div class="grid grid-cols-1 gap-6 lg:grid-cols-[1fr_22rem]">
+<div class="grid grid-cols-1 gap-6 lg:grid-cols-[minmax(0,1fr)_22rem]">
   <?= card(doc_lines($q) . ($q['notes'] ? '<p class="mt-6 whitespace-pre-wrap text-sm">' . e($q['notes']) . '</p>' : '') . ($q['terms'] ? '<p class="mt-4 whitespace-pre-wrap text-sm text-muted">' . e($q['terms']) . '</p>' : ''), 'p-6 sm:p-8') ?>
   <aside class="space-y-4">
     <?php ob_start(); ?><ul class="space-y-2.5 px-5 pb-5 text-sm">

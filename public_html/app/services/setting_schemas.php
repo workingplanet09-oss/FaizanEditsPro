@@ -60,6 +60,9 @@ function setting_schema(string $key): ?V
 /** Post-validation normalisation that zod did with transforms (currency codes are upper-case). */
 function setting_normalize(string $key, array $value): array
 {
+    if (in_array($key, ['booking', 'business'], true) && isset($value['timezone']) && $value['timezone'] !== '' && !valid_timezone($value['timezone'])) {
+        throw new AppError('VALIDATION', 'Choose a valid time zone, for example "America/Los_Angeles", "Asia/Karachi" or "UTC".', ['timezone' => 'Unknown time zone. Use a name like Asia/Karachi.']);
+    }
     if ($key === 'business') {
         $value['defaultCurrency'] = strtoupper($value['defaultCurrency']);
         $value['currencies'] = array_map('strtoupper', $value['currencies']);

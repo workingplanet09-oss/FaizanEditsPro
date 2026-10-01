@@ -263,7 +263,7 @@
           label.addEventListener("input", function () { var auto = !o.value || slug(o.label) === o.value; o.label = label.value; if (auto) { o.value = slug(label.value); value.value = o.value; } });
           value.addEventListener("input", function () { o.value = slug(value.value); value.value = o.value; });
           grp.addEventListener("change", function () { o.categoryKeys = grp.value ? [grp.value] : []; });
-          optsList.appendChild(h("div", { class: "grid grid-cols-1 gap-2 rounded-xl border border-line p-3 sm:grid-cols-[1fr_1fr_1fr_auto]" }, label, value, grp, UI.iconBtn("trash", "Remove option", function () { opts.splice(i, 1); drawOpts(); }, true)));
+          optsList.appendChild(h("div", { class: "grid grid-cols-1 gap-2 rounded-xl border border-line p-3 sm:grid-cols-[minmax(0,1fr)_minmax(0,1fr)_minmax(0,1fr)_auto]" }, label, value, grp, UI.iconBtn("trash", "Remove option", function () { opts.splice(i, 1); drawOpts(); }, true)));
         });
       }
       optsBox.appendChild(h("h3", { class: "mb-1 text-sm font-extrabold" }, "Options"));
@@ -292,7 +292,7 @@
           val.hidden = NO_VALUE.indexOf(c.op) >= 0;
           f.addEventListener("change", function () { c.field = f.value; }); val.addEventListener("input", function () { c.value = val.value; });
           op.addEventListener("change", function () { c.op = op.value; val.hidden = NO_VALUE.indexOf(c.op) >= 0; val.placeholder = ["in", "nin"].indexOf(c.op) >= 0 ? "a, b, c" : "value"; });
-          condList.appendChild(h("div", { class: "grid grid-cols-1 gap-2 sm:grid-cols-[1.4fr_1fr_1.2fr_auto]" }, f, op, val, UI.iconBtn("trash", "Remove condition", function () { conds.splice(i, 1); drawConds(); }, true)));
+          condList.appendChild(h("div", { class: "grid grid-cols-1 gap-2 sm:grid-cols-[minmax(0,1.4fr)_minmax(0,1fr)_minmax(0,1.2fr)_auto]" }, f, op, val, UI.iconBtn("trash", "Remove condition", function () { conds.splice(i, 1); drawConds(); }, true)));
         });
         addCond.hidden = conds.length >= 10;
       }
@@ -374,7 +374,7 @@
         conds.forEach(function (c, i) {
           var f = UI.input(c.field, { placeholder: "field (e.g. toStatus)", "aria-label": "Field", class: "font-mono" }), op = UI.select(AOPS.map(function (o) { return { value: o[0], label: o[1] }; }), c.op, { "aria-label": "Operator" }), v = UI.input(c.value, { placeholder: "value", "aria-label": "Value" });
           v.hidden = c.op === "exists"; f.addEventListener("input", function () { c.field = f.value; }); v.addEventListener("input", function () { c.value = v.value; }); op.addEventListener("change", function () { c.op = op.value; v.hidden = c.op === "exists"; });
-          condList.appendChild(h("div", { class: "grid grid-cols-1 gap-2 sm:grid-cols-[1fr_9rem_1fr_auto]" }, f, op, v, UI.iconBtn("trash", "Remove condition", function () { conds.splice(i, 1); drawConds(); }, true)));
+          condList.appendChild(h("div", { class: "grid grid-cols-1 gap-2 sm:grid-cols-[minmax(0,1fr)_9rem_minmax(0,1fr)_auto]" }, f, op, v, UI.iconBtn("trash", "Remove condition", function () { conds.splice(i, 1); drawConds(); }, true)));
         });
       }
       function actionFields(a) {

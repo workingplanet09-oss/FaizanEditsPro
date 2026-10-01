@@ -28,13 +28,16 @@ function available_slots(array $in): array
     $booked = Db::rows("SELECT `startsAt`, `endsAt` FROM `meetings` WHERE `workspaceId` = ? AND `status` = 'SCHEDULED' AND `startsAt` < ? AND `endsAt` > ?", [$ws, db_dt($end), db_dt($start)]);
     $booked = array_map(fn($b) => [(int)ts_ms($b['startsAt']), (int)ts_ms($b['endsAt'])], $booked);
     $slots = [];
-    $day0 = intdiv($start, 86400000) * 86400000;
-    for ($d = $day0; $d < $end; $d += 86400000) {
-        if (!in_array((int)gmdate('w', intdiv($d, 1000)), $cfg['days'], true)) {
+    // Opening days and hours are the studio's own: they are read in the configured business time zone (DST included) and
+    // handed out as exact instants, which each visitor's browser then shows in their own zone.
+    $tz = new DateTimeZone(valid_timezone($cfg['timezone'] ?? null) ? $cfg['timezone'] : 'UTC');
+    $day = (new DateTimeImmutable('@' . intdiv($start, 1000)))->setTimezone($tz)->setTime(0, 0);
+    for (; $day->getTimestamp() * 1000 < $end; $day = $day->modify('+1 day')->setTime(0, 0)) {
+        if (!in_array((int)$day->format('w'), $cfg['days'], true)) {
             continue;
         }
         for ($m = $cfg['startHour'] * 60; $m + $minutes <= $cfg['endHour'] * 60; $m += $cfg['slotMinutes']) {
-            $s = $d + $m * 60000;
+            $s = $day->setTime(intdiv($m, 60), $m % 60)->getTimestamp() * 1000;
             $e = $s + $minutes * 60000;
             if ($s < $earliest) {
                 continue;
@@ -47,6 +50,7 @@ function available_slots(array $in): array
             $slots[] = iso_dt($s);
         }
     }
+    $slots = array_values(array_unique($slots));
     return ['enabled' => true, 'slots' => $slots, 'timezone' => $cfg['timezone'], 'minutes' => $minutes];
 }
 
@@ -91,14 +95,16 @@ function book_meeting(array $in): array
         'workspaceId' => $ws, 'type' => $in['type'], 'title' => "{$typeCfg['label']} — {$name}", 'name' => $name, 'email' => $email, 'startsAt' => $startsAt, 'endsAt' => $endsAt,
         'timezone' => $in['timezone'] ?? null, 'meetingUrl' => $url, 'notes' => $in['notes'] ?? null, 'clientId' => $client['id'] ?? null, 'leadId' => $lead['id'] ?? null, 'status' => 'SCHEDULED',
     ]);
-    $when = fmt_datetime($startsAt) . ' UTC';
+    $when = fmt_datetime($startsAt);                                  // staff always see UTC
+    $visitorWhen = fmt_in_tz($startsAt, (string)($in['timezone'] ?? ''));  // the visitor also gets their own zone
+    $whenForVisitor = $visitorWhen ? "{$visitorWhen} — {$when}" : $when;
     if ($lead) {
         Db::insert('lead_activities', ['leadId' => $lead['id'], 'type' => 'call_scheduled', 'title' => "{$typeCfg['label']} scheduled for {$when}", 'metadata' => ['meetingId' => $meeting['id']]], false);
         if (in_array($lead['status'], ['NEW', 'CONTACTED'], true)) {
             Db::update('leads', ['id' => $lead['id']], ['status' => 'CALL_SCHEDULED']);
         }
     }
-    queue_email(['workspaceId' => $ws, 'toEmail' => $email, 'templateKey' => 'meeting_booked', 'vars' => ['client_name' => $name, 'meeting_type' => $typeCfg['label'], 'meeting_time' => $when, 'meeting_url' => $url ?? absolute_url('/contact'), 'dashboard_url' => absolute_url('/dashboard')]]);
+    queue_email(['workspaceId' => $ws, 'toEmail' => $email, 'templateKey' => 'meeting_booked', 'vars' => ['client_name' => $name, 'meeting_type' => $typeCfg['label'], 'meeting_time' => $whenForVisitor, 'meeting_url' => $url ?? absolute_url('/contact'), 'dashboard_url' => absolute_url('/dashboard')]]);
     $staff = Db::col("SELECT u.`id` FROM `users` u WHERE u.`workspaceId` = ? AND u.`isStaff` = 1 AND EXISTS (SELECT 1 FROM `user_roles` ur JOIN `roles` r ON r.`id` = ur.`roleId` WHERE ur.`userId` = u.`id` AND r.`key` IN ('super_admin','admin','project_manager'))", [$ws]);
     notify(['workspaceId' => $ws, 'userIds' => $staff, 'category' => 'SYSTEM', 'type' => 'meeting.booked', 'title' => "{$typeCfg['label']} booked: {$name}", 'message' => $when, 'link' => '/admin/calendar', 'email' => false]);
     if ($leadCreated && $lead) {

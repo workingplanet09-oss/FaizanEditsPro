@@ -250,7 +250,7 @@ function ui_field(string $id, ?string $label, string $controlHtml, array $o = []
     $foot = !empty($o['error'])
         ? '<p id="' . e($id) . '-err" role="alert" class="flex items-center gap-1.5 text-xs font-medium text-danger">' . icon('alert', 13) . e($o['error']) . '</p>'
         : (!empty($o['hint']) ? '<p id="' . e($id) . '-hint" class="text-xs text-subtle">' . e($o['hint']) . '</p>' : '');
-    return '<div class="' . e(cx('space-y-1.5', $o['class'] ?? '')) . '" data-field="' . e($o['name'] ?? $id) . '">' . $l . $controlHtml . '<p data-error-for="' . e($o['name'] ?? $id) . '" role="alert" class="hidden items-center gap-1.5 text-xs font-medium text-danger"></p>' . $foot . '</div>';
+    return '<div class="' . e(cx('space-y-1.5', $o['class'] ?? '')) . '" data-field="' . e($o['name'] ?? $id) . '">' . $l . $controlHtml . '<p id="' . e($id) . '-error" data-error-for="' . e($o['name'] ?? $id) . '" role="alert" class="hidden items-center gap-1.5 text-xs font-medium text-danger"></p>' . $foot . '</div>';
 }
 
 /** Convenience: a labelled text-like field. $o: type, placeholder, required, hint, autocomplete, maxlength, class, attrs[] */

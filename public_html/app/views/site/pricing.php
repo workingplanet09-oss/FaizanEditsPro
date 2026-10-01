@@ -20,4 +20,4 @@ $models = [['film', 'One-time project', 'A single video or defined package with 
   </div>
 <?= sec_close() ?>
 <?= sec_open() ?><?= icon_cards([['shield', 'No surprises', 'Your quote lists deliverables, quantity, revisions, turnaround and total before you commit.'], ['layers', 'Revisions built in', $site['business']['revisionPolicy']], ['globe', 'Your currency', 'Quotes and invoices can be issued in USD, EUR, GBP, AED, PKR, CAD, AUD and more.']]) ?><?= sec_close() ?>
-<?php if ($faqs): ?><?= sec_open(['tone' => 'alt']) ?><div class="grid grid-cols-1 gap-12 lg:grid-cols-[0.7fr_1.3fr]"><?= section_heading('Pricing FAQ', 'Before you ask.', null, ['class' => 'mb-0']) ?><?= faq_list($faqs) ?></div><?= sec_close() ?><?php endif; ?>
+<?php if ($faqs): ?><?= sec_open(['tone' => 'alt']) ?><div class="grid grid-cols-1 gap-12 lg:grid-cols-[minmax(0,0.7fr)_minmax(0,1.3fr)]"><?= section_heading('Pricing FAQ', 'Before you ask.', null, ['class' => 'mb-0']) ?><?= faq_list($faqs) ?></div><?= sec_close() ?><?php endif; ?>

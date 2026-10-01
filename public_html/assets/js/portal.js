@@ -180,7 +180,7 @@
           FE.busy(gb, true);
           FE.api("/api/auth/2fa/enable", { body: { code: code.value.trim() } }).then(function (res) { recovery(res.recoveryCodes); }, function (e) { FE.busy(gb, false); errLine(er, e.message); });
         });
-        var wrap = FE.h("div", { class: "grid grid-cols-1 gap-6 sm:grid-cols-[220px_1fr]" }, FE.h("img", { src: r.qrDataUrl, alt: "QR code to scan with your authenticator app", width: 220, height: 220, class: "rounded-2xl border border-line bg-white" }),
+        var wrap = FE.h("div", { class: "grid grid-cols-1 gap-6 sm:grid-cols-[220px_minmax(0,1fr)]" }, FE.h("img", { src: r.qrDataUrl, alt: "QR code to scan with your authenticator app", width: 220, height: 220, class: "rounded-2xl border border-line bg-white" }),
           FE.h("div", { class: "space-y-3" }, FE.h("p", { class: "text-sm" }, "1. Scan the code with Google Authenticator, 1Password, Authy or similar."), FE.h("p", { class: "text-sm" }, "2. Enter the 6-digit code it shows."),
             FE.h("p", { class: "text-xs text-subtle" }, "Can't scan? Enter this key manually: ", FE.h("span", { class: "select-all font-mono" }, r.secret)), er, FE.h("div", { class: "flex max-w-xs gap-2" }, code, go)));
         show(wrap);

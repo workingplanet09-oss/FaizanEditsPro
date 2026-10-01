@@ -18,11 +18,11 @@ function notification_prefs(array $prefs): string
     $rows = '';
     foreach ($prefs as $r) {
         $l = $label[$r['category']] ?? $r['category'];
-        $rows .= '<li data-cat="' . e($r['category']) . '" class="grid grid-cols-1 items-center gap-3 py-3.5 sm:grid-cols-[1fr_6rem_6rem]"><span class="text-sm font-semibold">' . e($l) . '</span>'
+        $rows .= '<li data-cat="' . e($r['category']) . '" class="grid grid-cols-1 items-center gap-3 py-3.5 sm:grid-cols-[minmax(0,1fr)_6rem_6rem]"><span class="text-sm font-semibold">' . e($l) . '</span>'
             . '<span class="flex items-center justify-between sm:justify-center"><span class="text-xs text-subtle sm:hidden">In-app</span>' . ui_switch('inApp', !empty($r['inApp']), null) . '</span>'
             . '<span class="flex items-center justify-between sm:justify-center"><span class="text-xs text-subtle sm:hidden">Email</span>' . ui_switch('email', !empty($r['email']), null) . '</span></li>';
     }
-    return card('<div class="px-5 pb-5" data-fe-component="prefs"><div class="hidden grid-cols-[1fr_6rem_6rem] items-center gap-3 border-b border-line pb-2 text-xs font-semibold text-subtle sm:grid"><span>Type</span><span class="text-center">In-app</span><span class="text-center">Email</span></div><ul class="divide-y divide-line">' . $rows . '</ul></div>', '', 'Notifications', 'Choose how you hear about each type of update.');
+    return card('<div class="px-5 pb-5" data-fe-component="prefs"><div class="hidden grid-cols-[minmax(0,1fr)_6rem_6rem] items-center gap-3 border-b border-line pb-2 text-xs font-semibold text-subtle sm:grid"><span>Type</span><span class="text-center">In-app</span><span class="text-center">Email</span></div><ul class="divide-y divide-line">' . $rows . '</ul></div>', '', 'Notifications', 'Choose how you hear about each type of update.');
 }
 
 /** Password, two-factor and active sessions. */

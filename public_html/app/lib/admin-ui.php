@@ -334,7 +334,7 @@ function time_panel(string $projectId, array $entries, ?array $running, bool $ca
     $here = $running && $running['project']['id'] === $projectId;
     $h = '';
     if ($canTrack) {
-        $h .= '<div class="grid grid-cols-1 gap-3 px-5 pb-4 sm:grid-cols-[1fr_auto_auto]">'
+        $h .= '<div class="grid grid-cols-1 gap-3 px-5 pb-4 sm:grid-cols-[minmax(0,1fr)_auto_auto]">'
             . '<form novalidate data-fe-form="/api/time" data-success="Timer started" class="contents"><input type="hidden" name="projectId" value="' . e($projectId) . '"><div class="space-y-1.5">' . field_input('note', 'Note', '', ['optional' => false, 'placeholder' => 'What are you working on?']) . '</div>'
             . '<div class="flex items-end gap-2">' . ($here
                 ? ui_action('/api/time/stop', 'Stop', ['variant' => 'danger', 'icon' => 'pause', 'success' => 'Timer stopped'])
@@ -409,7 +409,7 @@ function lead_controls(array $lead, array $staff, bool $canWrite): string
 function lead_activity_form(string $leadId): string
 {
     $types = [['value' => 'note', 'label' => 'Note'], ['value' => 'contacted', 'label' => 'Contacted'], ['value' => 'email_sent', 'label' => 'Email sent'], ['value' => 'call_made', 'label' => 'Call made'], ['value' => 'call_scheduled', 'label' => 'Call scheduled'], ['value' => 'meeting', 'label' => 'Meeting']];
-    $form = '<form novalidate data-fe-form="/api/leads/' . e($leadId) . '/activities" data-success="Activity logged" class="grid grid-cols-1 gap-3 px-5 pb-5 sm:grid-cols-[10rem_1fr]">' . form_error_slot()
+    $form = '<form novalidate data-fe-form="/api/leads/' . e($leadId) . '/activities" data-success="Activity logged" class="grid grid-cols-1 gap-3 px-5 pb-5 sm:grid-cols-[10rem_minmax(0,1fr)]">' . form_error_slot()
         . field_select('type', 'Type', $types, 'note', ['optional' => false]) . field_input('title', 'Summary', '', ['required' => true, 'placeholder' => 'e.g. Called — wants a quote by Friday', 'attrs' => ['data-trim' => true]])
         . field_textarea('note', 'Details', '', ['rows' => 2, 'class' => 'sm:col-span-2']) . field_input('nextFollowUpAt', 'Set follow-up', '', ['type' => 'date'])
         . '<div class="flex items-end justify-end">' . ui_button('Log activity', ['type' => 'submit']) . '</div></form>';
@@ -512,7 +512,7 @@ function doc_builder(string $mode, array $d, array $initial, array $defaults): s
         . ($quote ? field_input('validUntil', 'Valid until', '', ['optional' => false, 'type' => 'date', 'attrs' => ['data-doc' => 'validUntil']]) : '')
         . field_textarea('notes', 'Notes to the client', '', ['rows' => 3, 'class' => 'sm:col-span-3', 'attrs' => ['data-doc' => 'notes']])
         . ($quote ? field_textarea('terms', 'Terms', '', ['rows' => 3, 'class' => 'sm:col-span-3', 'attrs' => ['data-doc' => 'terms']]) : '') . '</div>';
-    return '<div data-fe-component="doc-builder" data-props="' . json_attr($props) . '" class="grid grid-cols-1 gap-6 xl:grid-cols-[1fr_26rem]"><div class="space-y-6">'
+    return '<div data-fe-component="doc-builder" data-props="' . json_attr($props) . '" class="grid grid-cols-1 gap-6 xl:grid-cols-[minmax(0,1fr)_26rem]"><div class="space-y-6">'
         . card($details, '', $quote ? 'Quote details' : 'Invoice details') . card($lines, '', 'Line items', 'Prices are in the document currency.') . card($pricing, '', 'Pricing & terms')
         . '</div><aside class="space-y-4 xl:sticky xl:top-24 xl:self-start">'
         . card('<div class="p-5"><h3 class="mb-4 text-base font-extrabold">Preview</h3><div data-preview></div></div>')

@@ -4,7 +4,7 @@ $script = "font-family:'Segoe Script','Snell Roundhand','Brush Script MT',cursiv
 ?>
 <div class="mb-2"><a href="/dashboard/contracts" class="inline-flex items-center gap-1 text-sm font-semibold text-muted hover:text-fg"><?= icon('chevron-left', 14) ?> Contracts</a></div>
 <?= ui_page_header($c['number'], $c['title'] . ' · ' . $c['project']['name'], meta_badge('CONTRACT_STATUS', $c['status']) . ui_link('/api/contracts/' . $c['id'] . '/download', 'Download / print', ['variant' => 'outline', 'icon' => 'download', 'attrs' => ['target' => '_blank', 'rel' => 'noopener']])) ?>
-<div class="grid grid-cols-1 gap-6 lg:grid-cols-[1fr_22rem]">
+<div class="grid grid-cols-1 gap-6 lg:grid-cols-[minmax(0,1fr)_22rem]">
   <div class="space-y-6">
     <?php ob_start(); ?><div class="space-y-7"><?php foreach ($c['sections'] as $s): ?>
       <section><h2 class="text-base font-extrabold"><?= e($s['title']) ?></h2><div class="prose-lite mt-2 text-sm leading-relaxed text-muted"><?= render_markdown($s['body']) ?></div></section>

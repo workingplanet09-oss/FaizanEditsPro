@@ -16,7 +16,7 @@ if ($actor->can('notes:read')) { $tabs[] = ['notes', 'Notes']; }
 <?= ui_tabs($tabs, $tab, $here) ?>
 
 <?php if ($tab === 'overview'): ?>
-  <div class="grid grid-cols-1 gap-6 xl:grid-cols-[1fr_24rem]">
+  <div class="grid grid-cols-1 gap-6 xl:grid-cols-[minmax(0,1fr)_24rem]">
     <div class="space-y-6">
       <div class="grid grid-cols-1 gap-3 sm:grid-cols-3">
         <?= card('<div class="p-4"><div class="text-xs font-medium text-muted">Lifetime revenue</div><div class="mt-1.5 text-2xl font-extrabold tabular-nums">' . money_map($life['revenue']) . '</div></div>') ?>

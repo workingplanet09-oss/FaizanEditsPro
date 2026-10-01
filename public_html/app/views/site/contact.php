@@ -5,7 +5,7 @@ $box = 'rounded-[var(--radius-card)] border border-line bg-surface p-6';
 ?>
 <?= page_hero('Contact', $site['contactInfo']['heading'], $site['contactInfo']['intro']) ?>
 <?= sec_open() ?>
-  <div class="grid grid-cols-1 gap-12 lg:grid-cols-[1.3fr_0.7fr]">
+  <div class="grid grid-cols-1 gap-12 lg:grid-cols-[minmax(0,1.3fr)_minmax(0,0.7fr)]">
     <div class="rounded-[var(--radius-card)] border border-line bg-surface p-6 shadow-soft sm:p-9" data-contact>
       <form novalidate data-contact-form data-fe-form="/api/contact" data-prepare="contactPrep" data-on-success="contactDone" data-on-error="contactFailed" class="relative space-y-5">
         <?= form_error_slot() ?>
