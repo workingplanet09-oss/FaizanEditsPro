@@ -72,7 +72,7 @@ That page disappears once your account exists. That's it — the site is live.
 
 ### Make it yours (brand details)
 
-Admin → **Settings** → *Business* and *Brand*: add your **portrait** (until then the About page and home page show the FA monogram), your **contact e-mail**, and the **verified links** to your social profiles. Publish only real testimonials and results (Admin → Content). Nothing on the site is invented: empty fields stay out of sight.
+Admin → **Settings** → *Business* and *Brand*: check your **portrait** (your photo is already in place; replace `assets/img/faizan-ali.jpg` or change *Portrait URL* to use another), add your **contact e-mail**, and the **verified links** to your social profiles. Add your portfolio under Admin → Content → Portfolio: paste a YouTube, Vimeo or Google Drive link for each video (Drive files must be shared as *Anyone with the link → Viewer*). Publish only real testimonials and results. Nothing on the site is invented: empty fields stay out of sight.
 
 ### Turn on email (so clients receive notifications)
 

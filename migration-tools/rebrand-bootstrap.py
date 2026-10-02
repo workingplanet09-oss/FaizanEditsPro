@@ -28,7 +28,7 @@ d = json.loads(p.read_text(encoding="utf8"))
 sd = d["SETTING_DEFAULTS"]
 
 sd["business"].update({
-    "name": NAME, "legalName": NAME, "descriptor": DESCRIPTOR, "tagline": LINE, "handle": "faizaneditspro", "portraitUrl": "",
+    "name": NAME, "legalName": NAME, "descriptor": DESCRIPTOR, "tagline": LINE, "handle": "faizaneditspro", "portraitUrl": "/assets/img/faizan-ali.jpg",
     "email": "", "website": "",
 })
 # keep the key order readable: name, legalName, descriptor, tagline, handle, portraitUrl first

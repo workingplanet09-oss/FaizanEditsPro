@@ -100,6 +100,13 @@ console.log("Palette and typography (desktop home)");
   ok("no 'we' or 'our' in my own home page copy (first-person voice)", !/\b(we|our|we'll|we're)\b/i.test(own), (own.match(/.{20}\b(we|our)\b.{20}/i) || [""])[0]);
   ok("no unverified award/ranking claims", !/\b(award|#1|best in|top-rated|guarantee)/i.test(text));
 
+  console.log("Portrait");
+  const pic = page.locator("main img[src*='faizan-ali']").first();
+  ok("the home hero shows the portrait photo", (await pic.count()) === 1);
+  const picInfo = await pic.evaluate((el) => new Promise((res) => { const done = () => { const r = el.getBoundingClientRect(), f = el.parentElement.getBoundingClientRect(); res({ w: el.naturalWidth, alt: el.alt, ratio: f.width / f.height, pos: getComputedStyle(el).objectPosition, fit: getComputedStyle(el).objectFit, dims: [el.getAttribute("width"), el.getAttribute("height")], radius: getComputedStyle(el.parentElement).borderRadius }); }; el.complete ? done() : el.addEventListener("load", done); }));
+  ok("the photo loads and has descriptive alt text", picInfo.w >= 800 && /Faizan Ali/.test(picInfo.alt), JSON.stringify(picInfo));
+  ok("it sits in a 4:5 frame with 16 px corners, cropped from the top so the face stays in view", Math.abs(picInfo.ratio - 0.8) < 0.02 && picInfo.radius === "16px" && picInfo.fit === "cover" && /^50% [0-9]{1,2}(\.\d+)?%$/.test(picInfo.pos) && parseFloat(picInfo.pos.split(" ")[1]) <= 15, JSON.stringify(picInfo));
+  ok("width/height are set so the page does not jump while it loads", picInfo.dims[0] && picInfo.dims[1], JSON.stringify(picInfo.dims));
   console.log("Contrast of the main pairs");
   const mutedC = await page.locator("main p").first().evaluate((el) => getComputedStyle(el).color);
   ok("muted text on Paper ≥ 4.5:1", ratio(rgb(mutedC), hex(P.paper)) >= 4.5, mutedC);

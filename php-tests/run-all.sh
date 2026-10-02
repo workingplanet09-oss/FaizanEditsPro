@@ -27,6 +27,7 @@ run security-audit    $E1 php php-tests/security-audit.php
 for t in public wizard portal-client review admin admin-studio editor; do run "browser-$t" $E1 node php-tests/browser/$t.mjs; done
 run browser-setup     FEP_TEST_DB=fep_fresh FEP_TEST_URL=http://127.0.0.1:$P2 BASE=http://127.0.0.1:$P2 SAMPLE=1 node php-tests/browser/setup.mjs
 run email-smtp        FEP_TEST_DB=fep_regress FEP_TEST_URL=http://127.0.0.1:$P1 php php-tests/email-smtp.php
+run embed-url        php php-tests/embed.php
 run demo-cycle        FEP_TEST_DB=fep_cycle FEP_TEST_URL=http://127.0.0.1:$P3 php php-tests/demo-cycle.php
 # quick QA sweeps against the regression server (the slow ones — 8 viewports × every page, and axe — only with --full)
 Q="FEP_TEST_DB=fep_regress FEP_TEST_URL=http://127.0.0.1:$P1 BASE=http://127.0.0.1:$P1"

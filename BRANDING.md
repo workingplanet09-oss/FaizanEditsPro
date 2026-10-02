@@ -29,12 +29,22 @@ Call-to-action wording used everywhere: **Discuss your project** (primary), **Vi
 
 The specification asks for accurate claims only, so these start empty or neutral and the owner fills them in (Admin → Settings):
 
-* **Portrait.** The About page and home hero show the FA monogram card until a real portrait is uploaded (`business.portraitUrl`). No stock photo is used.
+* **Portrait.** Your photo (`assets/img/faizan-ali.jpg`, resized to 900 px wide, otherwise untouched) is the default `business.portraitUrl`. It appears in the home hero (4:5 frame, cropped from the top so the face stays in view), on the About page, in the share image (`og.png`) and in the search-engine markup. To change it, replace the file or set a new address in Admin → Settings → Business → Portrait URL. With no portrait set, the FA monogram card is shown instead.
 * **Logo files.** The wordmark is live text in Manrope; if a finished logo file exists, set `business.logoUrl`.
 * **Contact e-mail, phone and social links** start empty (`business.email`, `business.socials`) and appear in the footer and contact page only once set. The handle `faizaneditspro` is stored as `business.handle` (supporting use only).
 * **Testimonials, results and case studies** shown in the demo are *sample* content and are marked "Sample". On a live site only entries the owner publishes appear; results are shown with their source/timeframe when provided.
 * **Prices, turnarounds** default to "Custom quote" and "Confirmed in your quote".
 * **Services** are the three in the specification (short-form; long-form and podcast; motion graphics). Real estate, podcast and business are *portfolio categories*, not services. The older service rows stay in the database, unpublished.
+
+## Portfolio videos
+
+Admin → Content → Portfolio. For each project fill *Title*, *Category*, *Client goal / Description*, *Video URL* and, ideally, *Thumbnail URL*. The video link can be:
+
+* **YouTube** (unlisted is fine) or **Vimeo**: best playback quality and speed; shown with the privacy-friendly player.
+* **Google Drive**: share the file as *Anyone with the link → Viewer* and paste the link. It plays in Drive's own player inside the project dialog; if no thumbnail is entered, Drive's generated poster is used. Drive folders cannot be embedded; they appear as an "Open on Google Drive" button. Drive limits heavy traffic on popular files and its player shows Drive's controls, so for a showcase page YouTube or Vimeo is the better home for the final videos.
+* A direct `.mp4` link.
+
+The site only frames `youtube-nocookie.com`, `youtube.com`, `player.vimeo.com` and `drive.google.com` (Content-Security-Policy `frame-src`). Not verified against a real Drive file from this machine (it has no access to Google); `php-tests/embed.php` checks the link handling.
 
 ## Deliberate deviations (with reasons)
 

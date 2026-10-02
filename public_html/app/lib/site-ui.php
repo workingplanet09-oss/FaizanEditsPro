@@ -64,7 +64,8 @@ function brand_portrait(array $b, string $class = ''): string
 {
     $frame = cx('crop-frame relative mx-auto aspect-[4/5] w-full max-w-md overflow-hidden rounded-[var(--radius-card)] bg-surface-2', $class);
     if (!empty($b['portraitUrl'])) {
-        return '<div class="' . e($frame) . '"><img src="' . e($b['portraitUrl']) . '" alt="Portrait of ' . e($b['name']) . '" class="h-full w-full object-cover" decoding="async" fetchpriority="high"></div>';
+        // the photo is tall (9:16); the 4:5 frame keeps the head and shoulders to the waist
+        return '<div class="' . e($frame) . '"><img src="' . e($b['portraitUrl']) . '" alt="' . e($b['name'] . ($b['descriptor'] ?? '' ? ', ' . strtolower($b['descriptor'][0]) . substr($b['descriptor'], 1) : '')) . '" width="900" height="1599" class="h-full w-full object-cover object-[50%_8%]" decoding="async" fetchpriority="high"></div>';
     }
     return '<div class="' . e($frame) . '" role="img" aria-label="' . e($b['name'] . ', ' . ($b['descriptor'] ?? '')) . '"><div class="flex h-full flex-col items-center justify-center gap-5 p-8 text-center">'
         . '<div class="w-28 sm:w-32">' . monogram_svg(128) . '</div><div><div class="font-display text-3xl font-extrabold tracking-tight">' . e($b['name']) . '</div><div class="mt-1 text-base text-muted">' . e($b['descriptor'] ?? '') . '</div></div></div></div>';
@@ -165,9 +166,31 @@ function faq_list(array $items): string
     return $h . '</div>';
 }
 
-/** YouTube / Vimeo page URL → privacy-friendly embed URL, or null for a direct video file. */
+/** File id of a shared Google Drive / Docs file link (…/file/d/ID/view, open?id=ID, uc?id=ID), or null. Folder links have no id here. */
+function drive_file_id(string $url): ?string
+{
+    if (!preg_match('#^https?://(?:drive|docs)\.google\.com/#i', $url)) {
+        return null;
+    }
+    if (preg_match('#/file/d/([A-Za-z0-9_-]{10,})#', $url, $m) || preg_match('#[?&]id=([A-Za-z0-9_-]{10,})#', $url, $m)) {
+        return $m[1];
+    }
+    return null;
+}
+
+/** Poster image Drive generates for a shared video; used only when no thumbnail was entered. */
+function drive_thumbnail(string $url): ?string
+{
+    $id = drive_file_id($url);
+    return $id ? 'https://drive.google.com/thumbnail?id=' . $id . '&sz=w1280' : null;
+}
+
+/** YouTube / Vimeo / Google Drive page URL → embed URL, or null for a direct video file (or a link that cannot be embedded). */
 function embed_url(string $url): ?string
 {
+    if (($id = drive_file_id($url)) !== null) {
+        return 'https://drive.google.com/file/d/' . $id . '/preview';
+    }
     if (preg_match('#(?:youtube\.com/(?:watch\?(?:.*&)?v=|embed/|shorts/)|youtu\.be/)([A-Za-z0-9_-]{6,20})#', $url, $m)) {
         return 'https://www.youtube-nocookie.com/embed/' . $m[1] . '?rel=0';
     }
@@ -228,7 +251,7 @@ function work_item(array $w): array
     $published = $cs && $cs['status'] === 'PUBLISHED';
     return [
         'id' => $w['id'], 'slug' => $w['slug'], 'title' => $w['title'], 'clientName' => $w['clientName'], 'industry' => $w['industry'], 'category' => $w['category'], 'projectType' => $w['projectType'],
-        'platforms' => (array)$w['platforms'], 'thumbnailUrl' => $w['thumbnailUrl'], 'videoUrl' => $w['videoUrl'], 'beforeVideoUrl' => $w['beforeVideoUrl'], 'afterVideoUrl' => $w['afterVideoUrl'],
+        'platforms' => (array)$w['platforms'], 'thumbnailUrl' => $w['thumbnailUrl'] ?: (drive_thumbnail((string)$w['videoUrl']) ?: $w['thumbnailUrl']), 'videoUrl' => $w['videoUrl'], 'beforeVideoUrl' => $w['beforeVideoUrl'], 'afterVideoUrl' => $w['afterVideoUrl'],
         'description' => $w['description'], 'caseStudySlug' => $published ? $cs['slug'] : null, 'isDemo' => !empty($w['isDemo']), 'featured' => !empty($w['featured']),
         'goal' => $published ? ($cs['objective'] ?? null) : null, 'role' => $published ? ($cs['strategy'] ?? null) : null, 'deliverables' => $published ? array_values((array)($cs['deliverables'] ?? [])) : [],
         'timeline' => $published ? ($cs['timeline'] ?? null) : null, 'results' => public_results($published && !empty($cs['results']) ? $cs['results'] : ($w['results'] ?? null)),
@@ -266,6 +289,8 @@ function work_grid(array $items, array $categories): string
             $emb = embed_url($w['videoUrl']);
             $media = $emb ? '<iframe data-src="' . e($emb) . '" title="' . e($w['title']) . '" allow="fullscreen; picture-in-picture" class="aspect-video w-full rounded-xl"></iframe>'
                 : '<video data-src="' . e($w['videoUrl']) . '" controls playsinline preload="none"' . ($w['thumbnailUrl'] ? ' poster="' . e($w['thumbnailUrl']) . '"' : '') . ' class="aspect-video w-full rounded-xl bg-brand-navy"></video>';
+        } elseif (preg_match('#^https?://(?:drive|docs)\.google\.com/#i', (string)$w['videoUrl'])) {
+            $media = '<div class="rounded-xl bg-surface-2 p-6 text-center"><p class="text-base text-muted">These files are shared on Google Drive.</p><a href="' . e($w['videoUrl']) . '" target="_blank" rel="noopener noreferrer" class="mt-4 inline-flex h-12 items-center rounded-xl bg-accent px-6 text-base font-semibold text-accent-fg transition-colors duration-150 hover:bg-accent-hover">Open on Google Drive <span class="sr-only">(opens in a new tab)</span></a></div>';
         } else {
             $media = '<p class="rounded-xl bg-surface-2 p-6 text-center text-base text-muted">No video preview is available for this project yet.</p>';
         }

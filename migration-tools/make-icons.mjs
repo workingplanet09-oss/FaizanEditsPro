@@ -21,13 +21,19 @@ const svg = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64">${mark(
 writeFileSync(join(pub, "favicon.svg"), svg);
 writeFileSync(join(root, "favicon.svg"), svg);
 
-const og = `<style>${face}*{box-sizing:border-box;margin:0}body{width:1200px;height:630px;background:${NAVY};color:${WHITE};font-family:I,Arial,sans-serif;padding:72px;display:flex;flex-direction:column;justify-content:space-between}
+const portrait = readFileSync(join(root, "faizan-ali.jpg")).toString("base64");
+const og = `<style>${face}*{box-sizing:border-box;margin:0}body{width:1200px;height:630px;background:${NAVY};color:${WHITE};font-family:I,Arial,sans-serif;padding:64px 72px;display:flex;gap:56px;align-items:stretch}
+.left{flex:1;min-width:0;display:flex;flex-direction:column;justify-content:space-between}
 .brand{display:flex;align-items:center;gap:20px}.brand svg{width:64px;height:64px}.name{font-family:M,Arial,sans-serif;font-size:36px;font-weight:800;letter-spacing:-.5px;line-height:1}.desc{margin-top:6px;font-size:22px;color:${MIST}}
-h1{font-family:M,Arial,sans-serif;font-size:76px;line-height:1.08;letter-spacing:-2px;max-width:1000px;font-weight:800}
-.foot{display:flex;align-items:center;gap:28px;font-size:26px;color:${MIST}}.pill{padding:16px 30px;border-radius:12px;background:${BLUE};color:#fff;font-weight:600;font-size:26px}</style>
-<div class="brand"><svg viewBox="0 0 64 64">${mark("#fff").replace(/stroke="#fff"/, `stroke="${NAVY}"`)}</svg><div><div class="name">Faizan Ali</div><div class="desc">Video Editor and Content Creator</div></div></div>
+h1{font-family:M,Arial,sans-serif;font-size:62px;line-height:1.1;letter-spacing:-1.5px;font-weight:800}
+.foot{display:flex;align-items:center;gap:18px;font-size:20px;color:${MIST}}.pill{padding:14px 26px;border-radius:12px;background:${BLUE};color:#fff;font-weight:600;font-size:24px;white-space:nowrap}
+.photo{width:410px;height:502px;margin-top:2px;border-radius:16px;overflow:hidden;position:relative;flex:none;align-self:center}
+.photo img{width:100%;height:100%;object-fit:cover;object-position:50% 8%;display:block}
+.photo:after{content:"";position:absolute;right:14px;bottom:14px;width:34px;height:34px;border-right:4px solid #fff;border-bottom:4px solid #fff;border-radius:0 0 8px 0;opacity:.9}</style>
+<div class="left"><div class="brand"><svg viewBox="0 0 64 64">${mark("#fff").replace(/stroke="#fff"/, `stroke="${NAVY}"`)}</svg><div><div class="name">Faizan Ali</div><div class="desc">Video Editor and Content Creator</div></div></div>
 <h1>Video editing that brings your message into focus.</h1>
-<div class="foot"><div class="pill">Discuss your project</div><div>Short-form · Long-form and podcast · Motion graphics</div></div>`;
+<div class="foot"><div class="pill">Discuss your project</div><div style="white-space:nowrap">Short-form · Podcast · Motion</div></div></div>
+<div class="photo"><img alt="" src="data:image/jpeg;base64,${portrait}"></div>`;
 
 const icon = (size, maskable = false) => `<style>*{margin:0}body{width:${size}px;height:${size}px;background:${NAVY}}svg{width:${size}px;height:${size}px;display:block}</style><svg viewBox="${maskable ? "-10 -10 84 84" : "0 0 64 64"}">${mark()}</svg>`;
 

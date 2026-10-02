@@ -250,7 +250,7 @@ function csp_header(): string
         "media-src 'self' blob: https:",
         $join("connect-src 'self'", $turnstile),
         "font-src 'self' data:",
-        $join('frame-src https://www.youtube-nocookie.com https://www.youtube.com https://player.vimeo.com', $turnstile),
+        $join('frame-src https://www.youtube-nocookie.com https://www.youtube.com https://player.vimeo.com https://drive.google.com', $turnstile),
         "frame-ancestors 'none'",
         "base-uri 'self'",
         "form-action 'self'",
