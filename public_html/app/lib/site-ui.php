@@ -8,6 +8,12 @@ function rv(int $delay = 0, string $class = ''): string
     return ($class !== '' ? ' class="' . e($class) . '"' : '') . ' data-reveal' . ($delay ? ' style="animation-delay:' . $delay . 'ms"' : '');
 }
 
+/** Entrance for what is already on screen at load (hero, page titles): a CSS animation, so it starts at first paint and never waits for JavaScript. */
+function rv_now(int $delay = 0, string $class = ''): string
+{
+    return ' class="' . e(trim('animate-fade-up ' . $class)) . '"' . ($delay ? ' style="animation-delay:' . $delay . 'ms"' : '');
+}
+
 /** <section> + container. $o: id, tone (default|alt|dark), class */
 function sec_open(array $o = []): string
 {
@@ -30,7 +36,7 @@ function section_heading(?string $eyebrow, string $title, ?string $description =
 /** Interior page hero: light, quiet, navy headline. $childrenHtml is trusted markup (buttons etc). */
 function page_hero(?string $eyebrow, string $title, ?string $description = null, ?string $childrenHtml = null): string
 {
-    return '<div class="border-b border-line bg-bg"><div class="container-page py-14 sm:py-20"><div' . rv(0, 'max-w-3xl') . '>'
+    return '<div class="border-b border-line bg-bg"><div class="container-page py-14 sm:py-20"><div' . rv_now(0, 'max-w-3xl') . '>'
         . ($eyebrow ? '<div class="eyebrow mb-4">' . e($eyebrow) . '</div>' : '')
         . '<h1 class="display-sm">' . e($title) . '</h1>'
         . ($description ? '<p class="measure mt-5 text-lg leading-relaxed text-muted">' . e($description) . '</p>' : '')

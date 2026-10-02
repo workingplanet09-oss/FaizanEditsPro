@@ -16,3 +16,4 @@ public_html/storage/secret.key
 !public_html/storage/logs/.gitkeep
 !public_html/storage/tmp/.gitkeep
 __pycache__/
+dist/

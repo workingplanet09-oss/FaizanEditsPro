@@ -36,10 +36,16 @@ run qa-seo            $Q node php-tests/qa/seo.mjs
 run qa-keyboard       $Q node php-tests/qa/keyboard.mjs
 run qa-timezone       $Q node php-tests/qa/timezone.mjs
 run qa-brand          $Q node php-tests/qa/brand.mjs
+run qa-glitch         $Q node php-tests/qa/glitch.mjs --quick
+run qa-preview        node php-tests/qa/preview.mjs
 if [[ " $* " == *" --full "* ]]; then
   run qa-layout         $Q node php-tests/qa/layout.mjs
   run qa-layout-dark    $Q node php-tests/qa/layout.mjs --dark
   run qa-axe            $Q node php-tests/qa/axe.mjs
+  run qa-glitch-full    $Q node php-tests/qa/glitch.mjs
+  run qa-glitch-phone   $Q node php-tests/qa/glitch.mjs --phone
+  run qa-glitch-dark    $Q node php-tests/qa/glitch.mjs --dark --quick
+  run qa-glitch-phonedark $Q node php-tests/qa/glitch.mjs --phone --dark --quick
 fi
 if [[ " $* " != *" --skip-attacks "* ]]; then
   kill "${pids[@]}" 2>/dev/null; pids=()

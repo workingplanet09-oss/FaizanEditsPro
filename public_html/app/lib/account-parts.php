@@ -90,6 +90,12 @@ function members_manager(string $organizationId, array $members, bool $canManage
 }
 
 /** Brand kit editor: a form that JS (portal.js "brand-kit") serialises into the PUT body. */
+/** Height in px of an editable list once its rows are drawn by JavaScript: rows of 40, 12 gaps, then the 36 px "add" button. */
+function kit_list_height(int $rows): int
+{
+    return ($rows > 0 ? $rows * 52 - 12 + 12 : 0) + 36 + 24; // + the card's bottom padding
+}
+
 function brand_kit_editor(string $clientId, array $kit, array $assets, bool $canEdit): string
 {
     $roles = ['none' => 'Unassigned', 'logo' => 'Primary logo', 'alt' => 'Alternate logo', 'guidelines' => 'Brand guidelines', 'intro' => 'Intro', 'outro' => 'Outro', 'watermark' => 'Watermark', 'lower' => 'Lower third'];
@@ -122,8 +128,8 @@ function brand_kit_editor(string $clientId, array $kit, array $assets, bool $can
     }
     return '<form novalidate data-fe-component="brand-kit" data-fe-form="/api/clients/' . e($clientId) . '/brand-kit" data-method="PUT" data-prepare="brandKitPrep" data-success="Brand kit saved — editors will use it on every project." data-refresh="0" class="space-y-6">'
         . card($files, '', 'Brand files', 'Upload once — every project uses them automatically. Assign a role so editors know what each file is for.')
-        . card('<div class="space-y-3 px-6 pb-6" data-list="colors" data-props="' . json_attr($kit['colors'] ?? []) . '"></div>', '', 'Colours', 'Hex values editors can copy straight into titles and graphics.')
-        . card('<div class="space-y-3 px-6 pb-6"><div data-list="fonts" data-props="' . json_attr($kit['fonts'] ?? []) . '" class="space-y-3"></div>' . field_textarea('typographyRules', 'Typography rules', $kit['typographyRules'] ?? '', ['rows' => 2, 'placeholder' => 'e.g. Titles in sentence case, never all-caps.', 'disabled' => !$canEdit]) . '</div>', '', 'Typography')
+        . card('<div class="space-y-3 px-6 pb-6" data-list="colors" data-props="' . json_attr($kit['colors'] ?? []) . '" style="min-height:' . kit_list_height(count((array)($kit['colors'] ?? []))) . 'px"></div>', '', 'Colours', 'Hex values editors can copy straight into titles and graphics.')
+        . card('<div class="space-y-3 px-6 pb-6"><div data-list="fonts" data-props="' . json_attr($kit['fonts'] ?? []) . '" class="space-y-3" style="min-height:' . (kit_list_height(count((array)($kit['fonts'] ?? []))) - 24) . 'px"></div>' . field_textarea('typographyRules', 'Typography rules', $kit['typographyRules'] ?? '', ['rows' => 2, 'placeholder' => 'e.g. Titles in sentence case, never all-caps.', 'disabled' => !$canEdit]) . '</div>', '', 'Typography')
         . card('<div class="grid grid-cols-1 gap-4 px-6 pb-6 md:grid-cols-2">' . field_textarea('musicPreference', 'Music preferences', $kit['musicPreference'] ?? '', ['rows' => 2, 'class' => 'md:col-span-2', 'placeholder' => 'Genres, artists, licensing libraries you already pay for…', 'disabled' => !$canEdit])
             . field_input('websiteUrl', 'Website', $kit['websiteUrl'] ?? '', ['type' => 'url', 'class' => 'md:col-span-2', 'placeholder' => 'https://', 'disabled' => !$canEdit]) . $socials . '</div>', '', 'Style & links')
         . '<div data-edit="' . ($canEdit ? '1' : '0') . '">' . ($canEdit ? '<div class="sticky bottom-20 z-10 flex justify-end lg:bottom-4">' . form_error_slot() . submit_button('Save brand kit', ['icon' => 'check', 'class' => 'shadow-lift']) . '</div>' : '<p class="text-sm text-muted">Only account owners and managers can edit the brand kit.</p>') . '</div></form>';

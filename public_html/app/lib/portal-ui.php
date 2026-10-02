@@ -56,7 +56,7 @@ function project_card(array $p, string $base = '/dashboard'): string
     $late = $left !== null && $left < 0 && !in_array($p['status'], ['DELIVERED', 'ARCHIVED', 'CANCELLED', 'APPROVED'], true);
     $reviewable = !empty($p['latestVersion']) && in_array($p['status'], ['CLIENT_REVIEW', 'FINAL_REVIEW'], true);
     $deadline = $p['deadline'] ? (in_array($p['status'], ['DELIVERED', 'ARCHIVED'], true) ? 'Delivered' : relative_deadline($p['deadline'])) : 'No deadline yet';
-    return '<div class="group relative flex flex-col rounded-[var(--radius-card)] border border-line bg-surface p-6 shadow-soft transition duration-300 hover:-translate-y-0.5 hover:border-line-strong hover:shadow-lift">'
+    return '<div class="group relative flex flex-col rounded-[var(--radius-card)] border border-line bg-surface p-6 shadow-soft transition-[border-color,box-shadow] duration-150 hover:border-line-strong hover:shadow-lift">'
         . '<div class="flex items-start justify-between gap-3"><div class="min-w-0"><div class="text-xs font-bold text-subtle">' . e($p['code'] . (!empty($p['service']) ? ' · ' . $p['service'] : '')) . '</div>'
         . '<h3 class="mt-1 text-[17px] font-bold leading-snug tracking-tight"><a href="' . e($base . '/projects/' . $p['id']) . '" class="after:absolute after:inset-0 after:rounded-[inherit] focus-visible:outline-offset-4">' . e($p['name']) . '</a></h3></div>' . status_badge($p['status'], 'STATUS', true) . '</div>'
         . '<p class="mt-2 line-clamp-2 min-h-[2.5rem] text-sm text-muted">' . e($meta['clientNow']) . '</p><div class="mt-4">' . client_stepper($p['status'], true) . '</div>'
@@ -90,7 +90,7 @@ function attention_list(array $items): string
     $tone = ['warning' => 'border-warning/30 bg-warning-soft/60', 'success' => 'border-success/30 bg-success-soft/60', 'accent' => 'border-accent/40 bg-accent-soft/60'];
     $h = '<ul class="grid grid-cols-1 gap-3 md:grid-cols-2 xl:grid-cols-3">';
     foreach ($items as $a) {
-        $h .= '<li><a href="' . e($a['href']) . '" class="group flex h-full items-start gap-3.5 rounded-2xl border p-4 transition hover:-translate-y-0.5 hover:shadow-lift ' . ($tone[$a['tone']] ?? $tone['accent']) . '">'
+        $h .= '<li><a href="' . e($a['href']) . '" class="group flex h-full items-start gap-3.5 rounded-2xl border p-4 transition-[border-color,box-shadow] duration-150 hover:shadow-lift ' . ($tone[$a['tone']] ?? $tone['accent']) . '">'
             . '<span class="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-surface shadow-soft">' . icon(ATTN_ICON[$a['kind']] ?? 'bell', 18) . '</span><span class="min-w-0 flex-1"><span class="block text-sm font-bold leading-snug">' . e($a['title']) . '</span>'
             . '<span class="mt-0.5 block truncate text-xs text-muted">' . e($a['detail']) . '</span><span class="mt-2 inline-flex items-center gap-1 text-xs font-bold group-hover:underline">' . e($a['cta']) . ' ' . icon('arrow', 12) . '</span></span></a></li>';
     }

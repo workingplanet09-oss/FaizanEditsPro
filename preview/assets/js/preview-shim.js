@@ -34,8 +34,10 @@
   document.addEventListener("DOMContentLoaded", function () {
     var b = document.createElement("button"); b.type = "button"; b.textContent = "Preview menu"; b.setAttribute("aria-expanded", "false");
     b.style.cssText = "position:fixed;right:16px;bottom:16px;z-index:9998;height:44px;padding:0 18px;border-radius:12px;border:0;background:#2457E6;color:#fff;font:600 16px Inter,Arial,sans-serif;cursor:pointer;box-shadow:0 8px 24px rgba(16,33,61,.2)";
+    var lift = document.querySelector('nav[aria-label="Quick navigation"]') && innerWidth < 1024 ? 84 : 16; // keep clear of the portal's bottom tab bar on phones
+    b.style.bottom = lift + "px";
     var p = document.createElement("div"); p.hidden = true; p.setAttribute("role", "dialog"); p.setAttribute("aria-label", "Preview pages");
-    p.style.cssText = "position:fixed;right:16px;bottom:68px;z-index:9998;width:min(360px,calc(100vw - 32px));max-height:70vh;overflow:auto;background:#fff;color:#10213D;border:1px solid #D9E2EF;border-radius:16px;padding:16px;box-shadow:0 8px 24px rgba(16,33,61,.2);font:16px/1.5 Inter,Arial,sans-serif";
+    p.style.cssText = "position:fixed;right:16px;bottom:" + (lift + 52) + "px;z-index:9998;width:min(360px,calc(100vw - 32px));max-height:70vh;overflow:auto;background:#fff;color:#10213D;border:1px solid #D9E2EF;border-radius:16px;padding:16px;box-shadow:0 8px 24px rgba(16,33,61,.2);font:16px/1.5 Inter,Arial,sans-serif";
     b.onclick = function () { p.hidden = !p.hidden; b.setAttribute("aria-expanded", String(!p.hidden)); };
     fetch(root + "preview-pages.json").then(function (r) { return r.json(); }).then(function (d) {
       var h = '<p style="margin:0 0 12px;color:#526078;font-size:14px">Static copy of the site. Buttons that save or send are switched off.</p>';

@@ -50,7 +50,7 @@ return [
     // 'resend' | 'postmark' | 'sendgrid'   provider APIs (set 'api_key')
     'email' => [
         'driver'   => 'log',
-        'from'     => 'Studio <hello@example.com>',
+        'from'     => 'Faizan Ali <hello@example.com>',
         'api_key'  => '',
         'smtp'     => ['host' => 'localhost', 'port' => 465, 'encryption' => 'ssl', 'user' => '', 'password' => ''],
     ],

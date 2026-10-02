@@ -12,16 +12,16 @@ $portalFeatures = [
 <section class="bg-bg">
   <div class="container-page grid grid-cols-1 items-center gap-12 py-12 sm:py-16 lg:grid-cols-[minmax(0,1.15fr)_minmax(0,0.85fr)] lg:gap-16 lg:py-24">
     <div>
-      <div<?= rv(0, 'eyebrow mb-5') ?>><?= e($hero['eyebrow']) ?></div>
-      <div<?= rv(60) ?>><h1 class="display"><?= e($hero['headline']) ?></h1></div>
-      <div<?= rv(120) ?>><p class="site-copy measure mt-6 text-muted"><?= e($hero['subheadline']) ?></p></div>
-      <div<?= rv(180, 'mt-8 flex flex-wrap gap-3') ?>>
+      <div<?= rv_now(0, 'eyebrow mb-5') ?>><?= e($hero['eyebrow']) ?></div>
+      <div<?= rv_now(60) ?>><h1 class="display"><?= e($hero['headline']) ?></h1></div>
+      <div<?= rv_now(120) ?>><p class="site-copy measure mt-6 text-muted"><?= e($hero['subheadline']) ?></p></div>
+      <div<?= rv_now(180, 'mt-8 flex flex-wrap gap-3') ?>>
         <?= ui_link($hero['primaryCta']['href'], $hero['primaryCta']['label'], ['size' => 'lg', 'iconRight' => 'arrow']) ?>
         <?= ui_link($hero['secondaryCta']['href'], $hero['secondaryCta']['label'], ['size' => 'lg', 'variant' => 'outline']) ?>
       </div>
-      <?php if ($hero['trustPoints']): ?><div<?= rv(240) ?>><ul class="mt-8 flex flex-wrap gap-x-6 gap-y-2 text-base text-muted"><?php foreach ($hero['trustPoints'] as $t): ?><li class="flex items-center gap-2"><?= icon('check-circle', 18, 'shrink-0 text-accent-text') ?><?= e($t) ?></li><?php endforeach; ?></ul></div><?php endif; ?>
+      <?php if ($hero['trustPoints']): ?><div<?= rv_now(240) ?>><ul class="mt-8 flex flex-wrap gap-x-6 gap-y-2 text-base text-muted"><?php foreach ($hero['trustPoints'] as $t): ?><li class="flex items-center gap-2"><?= icon('check-circle', 18, 'shrink-0 text-accent-text') ?><?= e($t) ?></li><?php endforeach; ?></ul></div><?php endif; ?>
     </div>
-    <div<?= rv(120) ?>><?= hero_visual($b, $hero['showreelUrl'] ?: null, $hero['posterUrl'] ?: null) ?></div>
+    <div<?= rv_now(120) ?>><?= hero_visual($b, $hero['showreelUrl'] ?: null, $hero['posterUrl'] ?: null) ?></div>
   </div>
   <?php if ($stats): ?>
   <div class="border-t border-line bg-surface"><div class="container-page py-8">

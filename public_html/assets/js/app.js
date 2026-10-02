@@ -392,7 +392,12 @@
   // ───────────── theme ─────────────
   function applyTheme(mode) {
     var dark = mode === "dark" || (mode === "system" && window.matchMedia("(prefers-color-scheme: dark)").matches);
-    document.documentElement.classList.toggle("dark", dark);
+    var root = document.documentElement;
+    if (root.classList.contains("dark") === dark) return;
+    root.classList.add("no-transitions"); // every colour changes at once instead of fading at different speeds
+    root.classList.toggle("dark", dark);
+    void root.offsetWidth;
+    requestAnimationFrame(function () { requestAnimationFrame(function () { root.classList.remove("no-transitions"); }); });
   }
   function themeButton(btn) {
     var mode = "system";
@@ -432,7 +437,10 @@
     var d = document.getElementById(id); if (!d) return;
     d.classList.toggle("hidden", !open);
     document.body.style.overflow = open ? "hidden" : "";
-    $$('[data-drawer-toggle="' + id + '"]').forEach(function (b) { b.setAttribute("aria-expanded", open ? "true" : "false"); });
+    $$('[data-drawer-toggle="' + id + '"]').forEach(function (b) {
+      b.setAttribute("aria-expanded", open ? "true" : "false");
+      if (b.hasAttribute("data-menu-icon")) { b.setAttribute("aria-label", open ? "Close menu" : "Open menu"); b.innerHTML = FE.icon(open ? "x" : "menu", 22); } // the button shows what it will do
+    });
   }
   document.addEventListener("click", function (e) {
     var t = e.target.closest("[data-drawer-toggle]");
@@ -456,9 +464,13 @@
     if (!els.length) return;
     if (typeof IntersectionObserver === "undefined") { els.forEach(function (el) { el.classList.add("animate-fade-up"); }); return; }
     var io = new IntersectionObserver(function (entries) {
-      entries.forEach(function (en) { if (en.isIntersecting) { en.target.classList.add("animate-fade-up"); io.unobserve(en.target); } });
+      entries.forEach(function (en) {
+        if (en.isIntersecting) { en.target.classList.add("animate-fade-up"); io.unobserve(en.target); }
+        else if (en.boundingClientRect.bottom <= 0) { en.target.classList.add("revealed"); io.unobserve(en.target); } // already scrolled past: show without animating
+      });
     }, { rootMargin: "0px 0px -8% 0px", threshold: 0.05 });
     els.forEach(function (el) { io.observe(el); });
+    window.addEventListener("beforeprint", function () { document.documentElement.classList.add("reveal-all"); });
   }
 
   // ───────────── offline banner ─────────────
@@ -611,6 +623,18 @@
     });
   };
 
+  // ───────────── images that fail to load ─────────────
+  // A thumbnail that cannot load (corrupt upload, expired link) shows a quiet placeholder icon instead of the browser's broken-image symbol.
+  FE.imgFallback = function (img) {
+    if (!img || img.tagName !== "IMG" || img.__broke || img.hasAttribute("data-no-fallback")) return;
+    img.__broke = true; img.style.visibility = "hidden";
+    var holder = img.parentElement; if (!holder || holder.querySelector("[data-img-fallback]")) return;
+    if (getComputedStyle(holder).position === "static") holder.classList.add("relative");
+    holder.classList.add("bg-surface-2");
+    holder.appendChild(FE.h("span", { "data-img-fallback": "", "aria-hidden": "true", class: "absolute inset-0 flex items-center justify-center text-subtle", html: FE.icon("image", 22) }));
+  };
+  document.addEventListener("error", function (e) { FE.imgFallback(e.target); }, true);
+
   // ───────────── boot ─────────────
   function boot() {
     try {
@@ -620,6 +644,7 @@
     FE.refreshTimes();
     $$("[data-theme-toggle]").forEach(themeButton);
     headerScroll(); reveal(); offline(); attribution(); FE.rtl(document);
+    $$("img").forEach(function (i) { if (i.complete && i.naturalWidth === 0 && i.getAttribute("src")) FE.imgFallback(i); }); // some may have failed before this script ran
     FE.mount(document);
   }
   /** Mounts every [data-fe-component] inside root that is not mounted yet (also used for markup built by JavaScript). */

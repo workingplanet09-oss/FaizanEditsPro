@@ -19,6 +19,11 @@ const exe = process.env.CHROMIUM_PATH || "/opt/pw-browsers/chromium";
 rmSync(OUT, { recursive: true, force: true });
 mkdirSync(OUT, { recursive: true });
 cpSync(join(root, "public_html", "assets"), join(OUT, "assets"), { recursive: true });
+// the stylesheet names its fonts by absolute path (/assets/fonts/…), which breaks when the copy is served from a sub-folder
+{
+  const f = join(OUT, "assets", "css", "app.css");
+  writeFileSync(f, readFileSync(f, "utf8").replace(/url\(\/assets\/fonts\//g, "url(../fonts/"));
+}
 cpSync(join(root, "public_html", "favicon.svg"), join(OUT, "favicon.svg"));
 cpSync(join(root, "public_html", "assets", "img", "favicon-32.png"), join(OUT, "favicon.ico"));
 
@@ -148,8 +153,10 @@ const shim = `/* Static preview shim: this copy of the site has no PHP server be
   document.addEventListener("DOMContentLoaded", function () {
     var b = document.createElement("button"); b.type = "button"; b.textContent = "Preview menu"; b.setAttribute("aria-expanded", "false");
     b.style.cssText = "position:fixed;right:16px;bottom:16px;z-index:9998;height:44px;padding:0 18px;border-radius:12px;border:0;background:#2457E6;color:#fff;font:600 16px Inter,Arial,sans-serif;cursor:pointer;box-shadow:0 8px 24px rgba(16,33,61,.2)";
+    var lift = document.querySelector('nav[aria-label="Quick navigation"]') && innerWidth < 1024 ? 84 : 16; // keep clear of the portal's bottom tab bar on phones
+    b.style.bottom = lift + "px";
     var p = document.createElement("div"); p.hidden = true; p.setAttribute("role", "dialog"); p.setAttribute("aria-label", "Preview pages");
-    p.style.cssText = "position:fixed;right:16px;bottom:68px;z-index:9998;width:min(360px,calc(100vw - 32px));max-height:70vh;overflow:auto;background:#fff;color:#10213D;border:1px solid #D9E2EF;border-radius:16px;padding:16px;box-shadow:0 8px 24px rgba(16,33,61,.2);font:16px/1.5 Inter,Arial,sans-serif";
+    p.style.cssText = "position:fixed;right:16px;bottom:" + (lift + 52) + "px;z-index:9998;width:min(360px,calc(100vw - 32px));max-height:70vh;overflow:auto;background:#fff;color:#10213D;border:1px solid #D9E2EF;border-radius:16px;padding:16px;box-shadow:0 8px 24px rgba(16,33,61,.2);font:16px/1.5 Inter,Arial,sans-serif";
     b.onclick = function () { p.hidden = !p.hidden; b.setAttribute("aria-expanded", String(!p.hidden)); };
     fetch(root + "preview-pages.json").then(function (r) { return r.json(); }).then(function (d) {
       var h = '<p style="margin:0 0 12px;color:#526078;font-size:14px">Static copy of the site. Buttons that save or send are switched off.</p>';
@@ -221,4 +228,12 @@ const hubTitle = "Faizan Ali Website";
 writeFileSync(join(OUT, "index.html"), `<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>${hubTitle}</title>${font}<style>${hubStyle}</style></head><body>${hubBody}</body></html>\n`);
 // the same hub without document tags: the Artifact tool adds its own skeleton around it
 writeFileSync(join(OUT, "hub.fragment.html"), `<title>${hubTitle}</title>${font}<style>${hubStyle}</style>${hubBody}\n`);
+// every reference must now be relative: report anything still pointing at the server root
+{
+  let rooted = 0;
+  for (const [c] of pages) { const t = readFileSync(join(OUT, written.get(c)), "utf8"); rooted += (t.match(/\b(?:href|src|poster|data-src)="\/(?!\/)/g) || []).length; } // form actions point at /api, which the shim answers
+  const css = readFileSync(join(OUT, "assets", "css", "app.css"), "utf8");
+  rooted += (css.match(/url\(\/(?!\/)/g) || []).length;
+  console.log(rooted ? `WARNING: ${rooted} references still start with "/"` : "all references are relative");
+}
 console.log(`wrote ${pages.size} pages to ${relative(root, OUT)}/ (${missing} links to pages outside the preview were disabled)`);

@@ -54,7 +54,7 @@ const CARD = 'rounded-[var(--radius-card)] border border-line bg-surface shadow-
 
 function card_class(string $extra = '', bool $hover = false): string
 {
-    return cx(CARD, $hover ? 'transition duration-300 hover:-translate-y-0.5 hover:shadow-lift hover:border-line-strong' : '', $extra);
+    return cx(CARD, $hover ? 'transition-[border-color,box-shadow] duration-150 hover:shadow-lift hover:border-line-strong' : '', $extra);
 }
 
 function ui_card_header(string $title, ?string $description = null, ?string $actionHtml = null, string $class = ''): string

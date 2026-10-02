@@ -11,7 +11,7 @@ $more = fn(string $href, string $label) => text_link($href, $label);
 
 <?php if ($h['alerts']): ?>
   <ul class="mb-6 flex flex-wrap gap-2" aria-label="Alerts"><?php foreach ($h['alerts'] as $al): ?>
-    <li><a href="<?= e($al['href']) ?>" class="inline-flex items-center gap-2 rounded-xl border px-3.5 py-2 text-sm font-semibold transition hover:-translate-y-px hover:shadow-soft <?= $al['tone'] === 'danger' ? 'border-danger/30 bg-danger-soft text-danger' : ($al['tone'] === 'warning' ? 'border-warning/30 bg-warning-soft text-warning' : 'border-info/30 bg-info-soft text-info') ?>"><?= icon($al['tone'] === 'info' ? 'info' : 'alert', 15) ?><?= e($al['text']) ?><?= icon('chevron-right', 13) ?></a></li>
+    <li><a href="<?= e($al['href']) ?>" class="inline-flex items-center gap-2 rounded-xl border px-3.5 py-2 text-sm font-semibold transition-[border-color,box-shadow] duration-150 hover:shadow-soft <?= $al['tone'] === 'danger' ? 'border-danger/30 bg-danger-soft text-danger' : ($al['tone'] === 'warning' ? 'border-warning/30 bg-warning-soft text-warning' : 'border-info/30 bg-info-soft text-info') ?>"><?= icon($al['tone'] === 'info' ? 'info' : 'alert', 15) ?><?= e($al['text']) ?><?= icon('chevron-right', 13) ?></a></li>
   <?php endforeach; ?></ul>
 <?php else: ?>
   <p class="mb-6 flex items-center gap-2 rounded-xl border border-success/30 bg-success-soft/50 px-4 py-3 text-sm font-semibold text-success"><?= icon('check-circle', 16) ?> Nothing urgent right now.</p>

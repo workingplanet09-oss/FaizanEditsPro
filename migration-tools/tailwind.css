@@ -8,6 +8,10 @@
 @font-face{font-family:"Manrope Variable";font-style:normal;font-display:swap;font-weight:200 800;src:url(/assets/fonts/manrope-latin-ext-wght-normal.woff2) format("woff2-variations");unicode-range:U+0100-02BA,U+02BD-02C5,U+02C7-02CC,U+02CE-02D7,U+02DD-02FF,U+0304,U+0308,U+0329,U+1D00-1DBF,U+1E00-1E9F,U+1EF2-1EFF,U+2020,U+20A0-20AB,U+20AD-20C0,U+2113,U+2C60-2C7F,U+A720-A7FF}
 @font-face{font-family:"Manrope Variable";font-style:normal;font-display:swap;font-weight:200 800;src:url(/assets/fonts/manrope-latin-wght-normal.woff2) format("woff2-variations");unicode-range:U+0000-00FF,U+0131,U+0152-0153,U+02BB-02BC,U+02C6,U+02DA,U+02DC,U+0304,U+0308,U+0329,U+2000-206F,U+20AC,U+2122,U+2191,U+2193,U+2212,U+2215,U+FEFF,U+FFFD}
 @font-face{font-family:"Noto Nastaliq Urdu Variable";font-style:normal;font-display:swap;font-weight:400 700;src:url(/assets/fonts/noto-nastaliq-urdu-arabic-wght-normal.woff2) format("woff2-variations");unicode-range:U+0600-06FF,U+0750-077F,U+0870-088E,U+0890-0891,U+0897-08E1,U+08E3-08FF,U+200C-200E,U+2010-2011,U+204F,U+2E41,U+FB50-FDFF,U+FE70-FE74,U+FE76-FEFC}
+/* Metric-matched fallbacks (measured against the real fonts): the page lays out the same before and after the web fonts load. */
+@font-face{font-family:"Inter Fallback";src:local("Arial"),local("ArialMT"),local("Liberation Sans"),local("Arimo"),local("Helvetica");font-weight:100 500;size-adjust:107.4%;ascent-override:90.3%;descent-override:22.3%;line-gap-override:0%}
+@font-face{font-family:"Inter Fallback";src:local("Arial Bold"),local("Arial-BoldMT"),local("Liberation Sans Bold"),local("LiberationSans-Bold"),local("Arimo Bold"),local("Helvetica Bold");font-weight:600 900;size-adjust:101.3%;ascent-override:95.7%;descent-override:23.7%;line-gap-override:0%}
+@font-face{font-family:"Manrope Fallback";src:local("Arial Bold"),local("Arial-BoldMT"),local("Liberation Sans Bold"),local("LiberationSans-Bold"),local("Arimo Bold"),local("Helvetica Bold");font-weight:100 900;size-adjust:101.6%;ascent-override:105.3%;descent-override:29.5%;line-gap-override:0%}
 
 @custom-variant dark (&:where(.dark, .dark *));
 
@@ -64,8 +68,8 @@
 .dark .dark-zone { --bg: #10213d; }
 
 @theme inline {
-  --font-sans: "Inter Variable", "Noto Nastaliq Urdu Variable", Arial, ui-sans-serif, system-ui, sans-serif;
-  --font-display: "Manrope Variable", "Inter Variable", "Noto Nastaliq Urdu Variable", Arial, ui-sans-serif, system-ui, sans-serif;
+  --font-sans: "Inter Variable", "Noto Nastaliq Urdu Variable", "Inter Fallback", Arial, ui-sans-serif, system-ui, sans-serif;
+  --font-display: "Manrope Variable", "Inter Variable", "Noto Nastaliq Urdu Variable", "Manrope Fallback", "Inter Fallback", Arial, ui-sans-serif, system-ui, sans-serif;
   --color-bg: var(--bg);
   --color-surface: var(--surface);
   --color-surface-2: var(--surface-2);
@@ -114,7 +118,7 @@
   * { border-color: var(--line); }
   /* fieldsets default to min-width: min-content, which lets a scroller inside them blow out the whole page */
   fieldset { min-inline-size: 0; }
-  html { scroll-behavior: smooth; -webkit-text-size-adjust: 100%; }
+  html { scroll-behavior: smooth; scroll-padding-top: 5.5rem; -webkit-text-size-adjust: 100%; } /* anchor jumps stop below the sticky header */
   body {
     background: var(--bg);
     color: var(--fg);
@@ -191,9 +195,17 @@
 /* Unlayered on purpose: wins over utility classes. Section and card headings are Manrope 700; only page titles and the hero are 800. */
 h2, h3, h4, h5 { font-weight: 700; }
 
+/* The upload drop zone is drawn by JavaScript: keep its place (148 px, 168 px where the title wraps; +16 px for the roomier version) so nothing below it jumps. */
+[data-fe-component="uploader"]:empty { min-height: 10.25rem; }
+[data-fe-component="uploader"][data-props*='"compact":true']:empty { min-height: 9.25rem; }
+@media (max-width: 640px) { [data-fe-component="uploader"]:empty { min-height: 11.5rem; } [data-fe-component="uploader"][data-props*='"compact":true']:empty { min-height: 10.5rem; } }
+
 /* Content stays visible if JavaScript or the animation never runs: elements wait for their reveal only once the page script has marked <html class="js">. */
-html.js [data-reveal]:not(.animate-fade-up) { opacity: 0; }
+html.js [data-reveal]:not(.animate-fade-up):not(.revealed) { opacity: 0; }
 html.reveal-all [data-reveal] { opacity: 1 !important; }
+@media print { [data-reveal] { opacity: 1 !important; animation: none !important; } }
+/* switching theme: every colour changes in the same frame instead of fading at different speeds */
+html.no-transitions *, html.no-transitions *::before, html.no-transitions *::after { transition: none !important; }
 
 /* ── Urdu: Noto Nastaliq Urdu, right-to-left, generous line spacing; never letter-spaced (it would break connected script) ── */
 :lang(ur), [dir="rtl"], .rtl-text { font-family: var(--font-sans); line-height: 2; letter-spacing: 0 !important; word-spacing: normal; }
@@ -206,5 +218,5 @@ bdi, [dir="auto"] { unicode-bidi: plaintext; }
 @media (prefers-reduced-motion: reduce) {
   html { scroll-behavior: auto; }
   *, *::before, *::after { animation-duration: 0.01ms !important; animation-iteration-count: 1 !important; transition-duration: 0.01ms !important; scroll-behavior: auto !important; }
-  html.js [data-reveal], html.js [data-reveal]:not(.animate-fade-up) { opacity: 1; }
+  html.js [data-reveal], html.js [data-reveal]:not(.animate-fade-up):not(.revealed) { opacity: 1; }
 }

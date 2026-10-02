@@ -27,7 +27,7 @@ cPanel → **MySQL® Databases**
 
 ### 2. Upload the files
 
-1. On your computer, open the `public_html` folder of this project and compress **its contents** into a ZIP file (select everything inside it, not the folder itself).
+1. If you were given a ready-made `faizan-ali-website.zip`, use that. Otherwise, on your computer, open the `public_html` folder of this project and compress **its contents** into a ZIP file (select everything inside it, not the folder itself).
 2. cPanel → **File Manager** → open your site's `public_html` → **Upload** the ZIP → right-click it → **Extract**. Delete the ZIP afterwards.
 3. In File Manager, open *Settings* (top right) and tick **Show Hidden Files (dotfiles)**. Check that `.htaccess` is there — it keeps private files private.
 

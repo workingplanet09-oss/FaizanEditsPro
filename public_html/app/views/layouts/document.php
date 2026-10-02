@@ -41,6 +41,7 @@ $favicon = !empty($site['business']['faviconUrl']) ? $site['business']['faviconU
 <link rel="apple-touch-icon" href="/apple-icon">
 <link rel="manifest" href="/manifest.webmanifest">
 <link rel="preload" href="/assets/fonts/inter-latin-wght-normal.woff2" as="font" type="font/woff2" crossorigin>
+<link rel="preload" href="/assets/fonts/manrope-latin-wght-normal.woff2" as="font" type="font/woff2" crossorigin>
 <link rel="stylesheet" href="<?= e(asset('css/app.css')) ?>">
 <script src="<?= e(asset('js/theme.js')) ?>"></script>
 <style>:root{--accent:<?= e($accent) ?>;--accent-fg:<?= e(contrast_on($accent)) ?>;--accent-hover:<?= e(accent_hover($accent)) ?>;--accent-text:<?= e(accent_for_text($accent, '#eaf0ff', 'black')) ?>;--info:<?= e(accent_hover($accent)) ?>}.dark,.dark-zone{--accent-text:<?= e($accent === '#2457e6' ? '#a9c0ff' : accent_for_text($accent, '#182b4d', 'white')) ?>}</style>

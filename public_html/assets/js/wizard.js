@@ -81,7 +81,7 @@
         ? '<button type="button" data-back class="inline-flex h-11 items-center justify-center gap-2 rounded-xl px-5 text-base font-semibold text-muted transition hover:bg-surface-2 hover:text-fg">' + FE.icon("chevron-left", 16) + "Back</button>"
         : '<a href="' + esc(p.exitHref) + '" class="inline-flex h-11 items-center px-3 text-sm font-semibold text-muted hover:text-fg">Cancel</a>';
       el.right.innerHTML = '<a href="' + esc(p.exitHref) + '" class="hidden h-11 items-center px-3 text-sm font-semibold text-muted hover:text-fg sm:inline-flex" title="Your progress is saved automatically">Save &amp; exit</a>' +
-        '<button type="submit" data-next class="relative inline-flex h-13 items-center justify-center gap-2 whitespace-nowrap rounded-2xl bg-accent px-7 text-base font-semibold text-accent-fg shadow-[0_8px_20px_-8px_color-mix(in_srgb,var(--accent)_70%,transparent)] transition hover:-translate-y-px hover:bg-accent-hover  disabled:pointer-events-none disabled:opacity-50">' +
+        '<button type="submit" data-next class="relative inline-flex h-13 items-center justify-center gap-2 whitespace-nowrap rounded-2xl bg-accent px-7 text-base font-semibold text-accent-fg shadow-[0_8px_20px_-8px_color-mix(in_srgb,var(--accent)_70%,transparent)] transition-[border-color,box-shadow] duration-150 hover:bg-accent-hover  disabled:pointer-events-none disabled:opacity-50">' +
         (review ? esc(p.submitLabel || "Send project details") + FE.icon("send", 16) : (i === total - 2 ? "Review" : "Continue") + FE.icon("arrow", 16)) + "</button>";
     }
     function showSubmitError(msg) { el["submit-error"].textContent = msg || ""; el["submit-error"].classList.toggle("hidden", !msg); el["submit-error"].classList.toggle("flex", !!msg); }
@@ -105,7 +105,7 @@
       }).join("") + "</div>";
     }
     function choiceCls(cards, on) {
-      return "group relative cursor-pointer select-none transition duration-200 " + (cards ? "flex items-start gap-3 rounded-2xl border p-4 hover:-translate-y-px hover:shadow-soft" : "inline-flex items-center gap-2 rounded-full border px-4 py-2 text-sm font-medium") + " " +
+      return "group relative cursor-pointer select-none transition-[border-color,background-color,box-shadow] duration-150 " + (cards ? "flex items-start gap-3 rounded-2xl border p-4 hover:shadow-soft" : "inline-flex items-center gap-2 rounded-full border px-4 py-2 text-sm font-medium") + " " +
         (on ? "border-accent bg-accent-soft shadow-[0_0_0_1px_var(--accent)_inset]" : "border-line-strong bg-surface hover:border-subtle");
     }
     function control(q) {

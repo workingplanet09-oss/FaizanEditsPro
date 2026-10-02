@@ -36,6 +36,16 @@ The specification asks for accurate claims only, so these start empty or neutral
 * **Prices, turnarounds** default to "Custom quote" and "Confirmed in your quote".
 * **Services** are the three in the specification (short-form; long-form and podcast; motion graphics). Real estate, podcast and business are *portfolio categories*, not services. The older service rows stay in the database, unpublished.
 
+## Motion and polish (what keeps it from looking glitchy)
+
+* **First paint never waits for JavaScript.** The hero and page titles animate with a plain CSS animation (`rv_now()`); only content below the fold uses scroll-reveal (`rv()`), and content that was scrolled past without being seen appears at once, so there are no blank gaps on scroll-up, find-in-page or print.
+* **No layout jumps.** JavaScript-built blocks (review player, upload drop zone, brand-kit lists, project form) reserve their space; Inter and Manrope have metric-matched fallback faces and the two main font files are preloaded, so text does not shift when the web fonts arrive.
+* **Hover is colour, 150 ms.** No lifting or resizing cards and buttons; `transition: all` is not used.
+* **Switching theme changes everything in one frame** (no staggered fades); the phone menu overlays the page instead of pushing it down and its button turns into a close icon; in-page links stop below the sticky header.
+* **Reduced motion** switches the animations off; with JavaScript disabled everything is visible.
+
+`php-tests/qa/glitch.mjs` checks all of this on every screen the demo accounts can reach (desktop and phone, light and dark).
+
 ## Portfolio videos
 
 Admin → Content → Portfolio. For each project fill *Title*, *Category*, *Client goal / Description*, *Video URL* and, ideally, *Thumbnail URL*. The video link can be:

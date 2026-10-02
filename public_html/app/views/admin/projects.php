@@ -30,7 +30,7 @@ $isLate = fn(array $p) => $p['deadline'] && days_until($p['deadline']) < 0 && !i
     <section aria-label="<?= e($col['label']) ?>" class="w-72 shrink-0">
       <h3 class="mb-3 flex items-center justify-between text-xs font-bold text-muted"><?= e($col['label']) ?><span class="rounded-full bg-surface-2 px-2 py-0.5 text-xs"><?= count($items) ?></span></h3>
       <ul class="space-y-2.5"><?php foreach ($items as $p): ?>
-        <li><a href="/admin/projects/<?= e($p['id']) ?>" class="block rounded-xl border border-line bg-surface p-3.5 shadow-soft transition hover:-translate-y-0.5 hover:border-line-strong hover:shadow-lift">
+        <li><a href="/admin/projects/<?= e($p['id']) ?>" class="block rounded-xl border border-line bg-surface p-3.5 shadow-soft transition-[border-color,box-shadow] duration-150 hover:border-line-strong hover:shadow-lift">
           <div class="flex items-start justify-between gap-2"><span class="text-xs font-bold text-subtle"><?= e($p['code']) ?></span><?= $p['priority'] === 'NORMAL' ? '' : priority_badge($p['priority']) ?></div>
           <div class="mt-1 text-sm font-bold leading-snug"><?= e($p['name']) ?></div><div class="truncate text-xs text-muted"><?= e($p['client']['companyName']) ?></div>
           <div class="mt-2.5 flex flex-wrap items-center gap-1.5"><?= status_badge($p['status']) ?><?= $p['openRevisions'] ? '<span class="rounded-full bg-info-soft px-2 py-0.5 text-xs font-bold text-info">' . (int)$p['openRevisions'] . ' rev</span>' : '' ?></div>

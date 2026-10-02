@@ -27,7 +27,13 @@ $vmap = ['PENDING_CLIENT' => ['Awaiting client review', 'warning'], 'APPROVED' =
     </div>
   </div>
 
-  <div data-fe-component="review-player" data-props="<?= json_attr($props) ?>"></div>
+  <?php /* The player is built by JavaScript. This placeholder has the same proportions, so nothing below it moves when the player appears. */ ?>
+  <div data-fe-component="review-player" data-props="<?= json_attr($props) ?>">
+    <div class="grid grid-cols-1 gap-5 lg:grid-cols-[minmax(0,1fr)_24rem] xl:grid-cols-[minmax(0,1fr)_26rem]" aria-hidden="true">
+      <div><div class="aspect-video w-full bg-black sm:rounded-t-[var(--radius-card)]"></div><div class="h-[5.25rem] bg-neutral-950 sm:rounded-b-[var(--radius-card)]"></div></div>
+      <div class="h-[24.5rem] px-4 sm:px-0 lg:h-[max(32rem,calc(100vh-11rem))]"><div class="skeleton h-full w-full rounded-[var(--radius-card)]"></div></div>
+    </div>
+  </div>
 
   <div class="px-4 sm:px-0">
     <?php if ($cur['notes'] || $cur['changeSummary']): ?>

@@ -81,7 +81,7 @@ $actions = ($latest ? ui_link("{$here}/review/{$latest['id']}", 'Open review · 
   <div class="grid grid-cols-1 gap-6 xl:grid-cols-[minmax(0,1fr)_28rem]">
     <div>
       <?php if ($versions): ?><div class="grid grid-cols-1 gap-4 sm:grid-cols-2"><?php foreach ($versions as $i => $v): ?>
-        <a href="<?= e("{$here}/review/{$v['id']}") ?>" class="group overflow-hidden rounded-[var(--radius-card)] border border-line bg-surface shadow-soft transition hover:-translate-y-0.5 hover:shadow-lift">
+        <a href="<?= e("{$here}/review/{$v['id']}") ?>" class="group overflow-hidden rounded-[var(--radius-card)] border border-line bg-surface shadow-soft transition-[border-color,box-shadow] duration-150 hover:shadow-lift">
           <div class="relative aspect-video bg-surface-2"><?php if ($posters[$i]): ?><img src="<?= e($posters[$i]) ?>" alt="" class="h-full w-full object-cover" loading="lazy"><?php else: ?><div class="flex h-full items-center justify-center text-subtle"><?= icon('film', 30) ?></div><?php endif; ?>
             <?= !empty($v['durationMs']) ? '<span class="absolute bottom-2 right-2 rounded-md bg-black/70 px-1.5 py-0.5 text-xs font-semibold text-white">' . e(fmt_timecode((int)$v['durationMs'])) . '</span>' : '' ?></div>
           <div class="space-y-1.5 p-4"><div class="flex items-center justify-between gap-2"><b class="text-base"><?= e($v['label'] . (!empty($v['isFinal']) ? ' · Final' : '')) ?></b><?= ui_badge(strtolower(str_replace('_', ' ', $v['reviewStatus'])), $rmap[$v['reviewStatus']] ?? 'neutral') ?></div>
