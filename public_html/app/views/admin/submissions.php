@@ -5,7 +5,7 @@
   <?= card(ui_empty($tab === 'no' ? 'Nothing waiting' : 'No messages', 'New contact-form messages appear here and in your notifications.', 'mail')) ?>
 <?php else: ?>
   <ul class="space-y-3"><?php foreach ($res['items'] as $s): ?>
-    <li><?php ob_start(); ?><div class="p-5">
+    <li><?php ob_start(); ?><div class="p-6">
       <div class="flex flex-wrap items-start justify-between gap-3"><div>
         <div class="flex flex-wrap items-center gap-2"><b><?= e($s['name']) ?></b><a class="text-sm text-accent-text hover:underline" href="mailto:<?= e($s['email']) ?>"><?= e($s['email']) ?></a><?= $s['phone'] ? '<span class="text-sm text-muted">' . e($s['phone']) . '</span>' : '' ?>
           <?= ui_badge(strtolower(humanize($s['reason'])), 'neutral', '', false, false) ?><?= $s['handled'] ? ui_badge('Handled', 'success') : ui_badge('New', 'warning') ?></div>

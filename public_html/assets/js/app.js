@@ -185,12 +185,12 @@
     return new Promise(function (resolve) {
       var done = false;
       var finish = function (v) { if (done) return; done = true; dlg.close(); dlg.remove(); resolve(v); };
-      var confirmBtn = FE.h("button", { type: "button", class: (o.tone === "danger" ? "bg-danger-soft text-danger hover:bg-danger hover:text-white" : "bg-accent text-accent-fg hover:brightness-105") + " inline-flex h-11 items-center justify-center gap-2 rounded-xl px-5 text-sm font-semibold", onclick: function () { finish(true); } }, o.confirmLabel || "Confirm");
+      var confirmBtn = FE.h("button", { type: "button", class: (o.tone === "danger" ? "bg-danger-soft text-danger hover:bg-danger hover:text-white" : "bg-accent text-accent-fg hover:bg-accent-hover") + " inline-flex h-11 items-center justify-center gap-2 rounded-xl px-5 text-base font-semibold", onclick: function () { finish(true); } }, o.confirmLabel || "Confirm");
       var dlg = FE.h("dialog", { "aria-labelledby": "fe-confirm-t", class: "m-auto w-[calc(100%-1.5rem)] max-w-md overflow-hidden rounded-3xl border border-line bg-surface p-0 text-fg shadow-lift open:flex open:flex-col open:animate-pop" },
         FE.h("div.border-b.border-line.px-6.py-4", {}, FE.h("h2.text-lg.font-bold.leading-tight", { id: "fe-confirm-t" }, o.title || "Are you sure?"), o.description ? FE.h("p.mt-1.text-sm.text-muted", {}, o.description) : null),
         o.bodyHtml ? FE.h("div.px-6.py-5", { html: o.bodyHtml }) : null,
         FE.h("div.flex.flex-wrap.items-center.justify-end.gap-2.border-t.border-line.bg-surface-2/40.px-6.py-4", {},
-          FE.h("button", { type: "button", class: "inline-flex h-11 items-center justify-center rounded-xl px-5 text-sm font-semibold text-muted hover:bg-surface-2 hover:text-fg", onclick: function () { finish(false); } }, "Cancel"), confirmBtn));
+          FE.h("button", { type: "button", class: "inline-flex h-11 items-center justify-center rounded-xl px-5 text-base font-semibold text-muted hover:bg-surface-2 hover:text-fg", onclick: function () { finish(false); } }, "Cancel"), confirmBtn));
       dlg.addEventListener("cancel", function (e) { e.preventDefault(); finish(false); });
       dlg.addEventListener("click", function (e) { if (e.target === dlg) finish(false); });
       document.body.appendChild(dlg);
@@ -451,11 +451,12 @@
 
   // ───────────── reveal on scroll ─────────────
   function reveal() {
+    document.documentElement.classList.add("reveal-ready"); // tells the safety timer in theme.js that this script is running
     var els = $$("[data-reveal]");
     if (!els.length) return;
-    if (typeof IntersectionObserver === "undefined") { els.forEach(function (el) { el.classList.remove("opacity-0"); }); return; }
+    if (typeof IntersectionObserver === "undefined") { els.forEach(function (el) { el.classList.add("animate-fade-up"); }); return; }
     var io = new IntersectionObserver(function (entries) {
-      entries.forEach(function (en) { if (en.isIntersecting) { en.target.classList.remove("opacity-0"); en.target.classList.add("animate-fade-up"); io.unobserve(en.target); } });
+      entries.forEach(function (en) { if (en.isIntersecting) { en.target.classList.add("animate-fade-up"); io.unobserve(en.target); } });
     }, { rootMargin: "0px 0px -8% 0px", threshold: 0.05 });
     els.forEach(function (el) { io.observe(el); });
   }
@@ -508,7 +509,7 @@
       } },
         FE.h("span", { class: "mt-0.5 flex h-8 w-8 shrink-0 items-center justify-center rounded-xl bg-surface-2 text-muted", html: FE.icon(catIcon[n.category] || "bell", 15) }),
         FE.h("span.min-w-0.flex-1", {}, FE.h("span", { class: "block text-sm leading-snug " + (read ? "font-medium" : "font-bold") }, n.title), n.message ? FE.h("span.mt-0.5.block.truncate.text-xs.text-muted", {}, n.message) : null,
-          FE.h("span.mt-1.block.text-[11px].text-subtle", { "data-ago": n.createdAt }, FE.timeAgo(n.createdAt))),
+          FE.h("span.mt-1.block.text-xs.text-subtle", { "data-ago": n.createdAt }, FE.timeAgo(n.createdAt))),
         read ? null : FE.h("span.mt-2.h-2.w-2.shrink-0.rounded-full.bg-accent", { "aria-label": "Unread" }));
       return FE.h("li", {}, b);
     }
@@ -562,7 +563,7 @@
       if (!r.length) { list.appendChild(FE.h("li.px-4.py-10.text-center.text-sm.text-muted", {}, input.value.trim().length < 2 ? "Type at least 2 characters to search." : "No results for “" + input.value + "”.")); return; }
       r.forEach(function (x, i) {
         var li = FE.h("li", { id: "cmd-" + x.key, role: "option", "aria-selected": i === idx ? "true" : "false" });
-        if (i === 0 || r[i - 1].group !== x.group) li.appendChild(FE.h("div.px-3.pb-1.pt-3.text-[11px].font-bold.uppercase.tracking-wider.text-subtle", {}, x.group));
+        if (i === 0 || r[i - 1].group !== x.group) li.appendChild(FE.h("div.px-3.pb-1.pt-3.text-xs.font-bold...text-subtle", {}, x.group));
         li.appendChild(FE.h("button", { type: "button", class: "flex w-full items-center gap-3 rounded-xl px-3 py-2.5 text-left " + (i === idx ? "bg-accent-soft" : "hover:bg-surface-2"), onmouseenter: function () { idx = i; paint(); }, onclick: function () { FE.go(x.href); } },
           FE.h("span", { class: "flex h-8 w-8 shrink-0 items-center justify-center rounded-lg bg-surface-2 text-muted", html: FE.icon(x.icon, 16) }),
           FE.h("span.min-w-0.flex-1", {}, FE.h("span.block.truncate.text-sm.font-semibold", {}, x.label), x.sub ? FE.h("span.block.truncate.text-xs.text-muted", {}, x.sub) : null)));

@@ -150,7 +150,7 @@ function request_upload(?Actor $actor, string $ip, array $in): array
         }
         rate_limit("lead-upload:{$ip}", 40, 3600000, 'Too many uploads. Please try again in a bit.');
         if (Db::count('assets', ['sql' => '`draftToken` = ? AND `deletedAt` IS NULL', 'params' => [$in['draftToken']]]) >= 10) {
-            throw bad_request('You can attach up to 10 files to a request. Add more after we reply.');
+            throw bad_request('You can attach up to 10 files to a request. Add more after I reply.');
         }
         assert_file_allowed($name, $mime, $size, ['lead' => true, 'maxBytes' => min(500 * 1048576, max_upload_bytes())]);
         $ws = workspace_id();
@@ -226,7 +226,7 @@ function request_upload(?Actor $actor, string $ip, array $in): array
     return ['asset' => asset_dto(asset_with_relations($asset)), 'upload' => $storage->uploadTarget($key, $mime, $size), 'fileRequestId' => $in['fileRequestId'] ?? null];
 }
 
-/** The browser calls this after its upload finishes; we verify the object really exists and is the right size. */
+/** The browser calls this after its upload finishes; I verify the object really exists and is the right size. */
 function complete_upload(?Actor $actor, string $assetId, array $in = []): array
 {
     $asset = Db::first('assets', ['id' => $assetId]);
@@ -267,7 +267,7 @@ function complete_upload(?Actor $actor, string $assetId, array $in = []): array
         storage()->remove($asset['storageKey']);
         Db::update('assets', ['id' => $asset['id']], ['status' => 'FAILED', 'scanStatus' => 'rejected']);
         audit($actor ?? system_actor('Upload check'), ['workspaceId' => $asset['workspaceId'], 'action' => 'asset.rejected', 'entityType' => 'asset', 'entityId' => $asset['id'], 'message' => "{$asset['displayName']} was rejected: {$problem}"]);
-        throw new AppError('UNSUPPORTED', "We couldn't accept {$asset['displayName']}. {$problem}");
+        throw new AppError('UNSUPPORTED', "I couldn't accept {$asset['displayName']}. {$problem}");
     }
     // version detection: Interview_Final.mp4 / _V2 / _V3 are one file family
     ['group' => $group, 'version' => $parsed] = parse_versioned_name($asset['displayName']);

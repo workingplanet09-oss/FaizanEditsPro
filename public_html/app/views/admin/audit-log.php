@@ -6,7 +6,7 @@ $ents = ['project', 'invoice', 'payment', 'quote', 'contract', 'lead', 'client',
 <?= ui_table([
     ['key' => 't', 'header' => 'When', 'primary' => true, 'render' => fn($r) => '<span class="whitespace-nowrap font-semibold">' . local_time($r['createdAt']) . '</span>'],
     ['key' => 'a', 'header' => 'Who', 'render' => fn($r) => e($r['actorLabel'] ?? 'System')],
-    ['key' => 'm', 'header' => 'What happened', 'render' => fn($r) => '<span><span class="block">' . e($r['message']) . '</span><span class="font-mono text-[11px] text-subtle">' . e($r['action'] . ($r['ip'] ? ' · ' . $r['ip'] : '')) . '</span></span>'],
+    ['key' => 'm', 'header' => 'What happened', 'render' => fn($r) => '<span><span class="block">' . e($r['message']) . '</span><span class="font-mono text-xs text-subtle">' . e($r['action'] . ($r['ip'] ? ' · ' . $r['ip'] : '')) . '</span></span>'],
     ['key' => 'e', 'header' => 'Entity', 'hideOnMobile' => true, 'render' => fn($r) => '<span class="text-muted">' . e($r['entityType'] ?? '—') . '</span>'],
 ], $res['items'], fn($r) => $r['id'], null, ui_empty('No matching entries', 'Actions are recorded here as they happen.', 'shield')) ?>
 <?= ui_pagination($res['page'], $res['pages'], '/admin/audit-log', array_filter($f), $res['total']) ?>

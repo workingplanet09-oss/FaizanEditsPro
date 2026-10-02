@@ -227,7 +227,7 @@ function accept_quote(Actor $actor, string $id): array
     }
     if ($q['validUntil'] && ts_ms($q['validUntil']) < now_ms()) {
         Db::update('quotes', ['id' => $id], ['status' => 'EXPIRED']);
-        throw new AppError('CONFLICT', "This quote has expired. Message us and we'll refresh it.");
+        throw new AppError('CONFLICT', "This quote has expired. Message me and I’ll refresh it.");
     }
     $meta = request_meta();
     // atomic: two clicks (or two tabs) can only accept once

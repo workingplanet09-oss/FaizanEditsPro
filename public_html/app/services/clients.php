@@ -125,7 +125,7 @@ function get_client_or_throw(Actor $actor, string $id): array
     return $c;
 }
 
-/** Per-currency lifetime figures — we never add up amounts of different currencies. */
+/** Per-currency lifetime figures — I never add up amounts of different currencies. */
 function client_lifetime(string $clientId): array
 {
     $projects = Db::find('projects', ['clientId' => $clientId], ['cols' => ['id', 'status', 'name', 'createdAt', 'currency']]);
@@ -334,7 +334,7 @@ function onboarding_checklist(Actor $actor, string $clientId): array
     $brandDone = $kit && ($kit['logoAssetId'] || (is_array($kit['colors']) && count($kit['colors'])) || (is_array($kit['fonts']) && count($kit['fonts'])));
     $items = [
         ['key' => 'account', 'label' => 'Account created', 'done' => (bool)$c['userId']],
-        ['key' => 'contact', 'label' => 'Contact information', 'done' => (bool)($c['name'] && $c['email'] && $c['phone']), 'href' => '/dashboard/profile', 'hint' => 'Add a phone number so we can reach you.'],
+        ['key' => 'contact', 'label' => 'Contact information', 'done' => (bool)($c['name'] && $c['email'] && $c['phone']), 'href' => '/dashboard/profile', 'hint' => 'Add a phone number so I can reach you.'],
         ['key' => 'company', 'label' => 'Company information', 'done' => (bool)($c['companyName'] && ($c['industry'] || $c['website'])), 'href' => '/dashboard/profile', 'hint' => 'Add your industry or website.'],
         ['key' => 'brand', 'label' => 'Brand assets', 'done' => (bool)$brandDone, 'href' => '/dashboard/brand-kit', 'hint' => 'Save your logo, colors and fonts once.'],
         ['key' => 'requirements', 'label' => 'Project requirements', 'done' => $projects > 0 && $briefs > 0, 'href' => '/dashboard/projects'],

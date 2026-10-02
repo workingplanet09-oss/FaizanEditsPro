@@ -195,7 +195,7 @@ function list_contracts(Actor $actor, array $query = []): array
     return paged($items, $total, $page, $pageSize);
 }
 
-/** Client signs the CURRENT version. We keep who/when/from where, plus a hash of exactly what they saw. $in: signerName, signature, kind (typed|drawn), accept, version */
+/** Client signs the CURRENT version. I keep who/when/from where, plus a hash of exactly what they saw. $in: signerName, signature, kind (typed|drawn), accept, version */
 function sign_contract(Actor $actor, string $id, array $in): array
 {
     $c = scoped_contract_row($actor, $id);

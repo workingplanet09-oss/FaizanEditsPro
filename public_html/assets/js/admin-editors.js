@@ -10,7 +10,7 @@
   function cap(s) { return s ? s.charAt(0).toUpperCase() + s.slice(1) : s; }
   function slug(s) { return String(s || "").toLowerCase().replace(/[^a-z0-9]+/g, "_").replace(/^_+|_+$/g, "").slice(0, 50); }
   function card(inner, cls) { return '<div class="rounded-[var(--radius-card)] border border-line bg-surface shadow-soft ' + (cls || "") + '">' + inner + "</div>"; }
-  function cardHead(title, desc, actionHtml) { return '<div class="flex items-start justify-between gap-4 px-5 pt-5 pb-3"><div class="min-w-0"><h3 class="text-base font-bold leading-tight">' + esc(title) + "</h3>" + (desc ? '<p class="mt-1 text-sm text-muted">' + esc(desc) + "</p>" : "") + "</div>" + (actionHtml ? '<div class="shrink-0">' + actionHtml + "</div>" : "") + "</div>"; }
+  function cardHead(title, desc, actionHtml) { return '<div class="flex items-start justify-between gap-4 px-6 pt-6 pb-3"><div class="min-w-0"><h3 class="text-base font-bold leading-tight">' + esc(title) + "</h3>" + (desc ? '<p class="mt-1 text-sm text-muted">' + esc(desc) + "</p>" : "") + "</div>" + (actionHtml ? '<div class="shrink-0">' + actionHtml + "</div>" : "") + "</div>"; }
   function badge(text, tone, icon) {
     var t = { neutral: "bg-surface-2 text-muted", info: "bg-info-soft text-info", warning: "bg-warning-soft text-warning", success: "bg-success-soft text-success", danger: "bg-danger-soft text-danger", accent: "bg-accent-soft text-fg" }[tone || "neutral"];
     return '<span class="inline-flex items-center gap-1 rounded-full px-2.5 py-1 text-xs font-semibold ' + t + '">' + (icon ? FE.icon(icon, 12) : "") + esc(text) + "</span>";
@@ -26,7 +26,7 @@
       root.innerHTML =
         card(cardHead("Team", active + " active · " + p.members.length + " total", '<button type="button" data-act="invite" class="' + UI.btnClass("dark", "sm") + '">' + FE.icon("plus", 16) + "Invite teammate</button>")
           + '<ul class="divide-y divide-line">' + p.members.map(function (m) {
-            return '<li class="flex flex-wrap items-center gap-x-4 gap-y-2 px-5 py-3.5"><span class="flex h-[38px] w-[38px] shrink-0 items-center justify-center rounded-full bg-accent-soft text-sm font-bold">' + esc(m.name.split(/\s+/).map(function (w) { return w[0]; }).slice(0, 2).join("").toUpperCase()) + "</span>"
+            return '<li class="flex flex-wrap items-center gap-x-4 gap-y-2 px-6 py-3.5.5"><span class="flex h-[38px] w-[38px] shrink-0 items-center justify-center rounded-full bg-accent-soft text-sm font-bold">' + esc(m.name.split(/\s+/).map(function (w) { return w[0]; }).slice(0, 2).join("").toUpperCase()) + "</span>"
               + '<div class="min-w-0 flex-1 basis-56"><div class="flex flex-wrap items-center gap-2"><b class="text-sm">' + esc(m.name) + "</b>" + (m.id === p.meId ? '<span class="text-xs text-subtle">(you)</span>' : "")
               + (m.status === "INVITED" ? badge("Invited", "warning") : m.status === "SUSPENDED" ? badge("Suspended", "danger") : "") + (m.twoFactorEnabled ? badge("2FA", "success", "shield") : "") + "</div>"
               + '<div class="truncate text-xs text-muted">' + esc(m.email) + " · " + (m.lastLoginAt ? "seen " + esc(FE.timeAgo(m.lastLoginAt)) : "never signed in") + "</div></div>"
@@ -35,8 +35,8 @@
           }).join("") + "</ul>")
         + card(cardHead("Roles & permissions", "What each role can do. Clients never have any of these.", '<button type="button" data-act="roles" class="' + UI.btnClass("ghost", "sm") + '">' + (root.__roles ? "Hide" : "Show details") + "</button>")
           + '<ul class="divide-y divide-line">' + p.roles.map(function (r) {
-            return '<li class="px-5 py-3.5"><div class="flex flex-wrap items-baseline justify-between gap-2"><b class="text-sm">' + esc(r.name) + '</b><span class="text-xs text-subtle">' + r.permissions.length + " permissions</span></div><p class=\"text-xs text-muted\">" + esc(r.description || "") + "</p>"
-              + (root.__roles ? '<div class="mt-2 flex flex-wrap gap-1">' + r.permissions.map(function (k) { return '<span class="rounded bg-surface-2 px-1.5 py-0.5 font-mono text-[10px] text-muted">' + esc(k) + "</span>"; }).join("") + "</div>" : "") + "</li>";
+            return '<li class="px-6 py-3.5.5"><div class="flex flex-wrap items-baseline justify-between gap-2"><b class="text-sm">' + esc(r.name) + '</b><span class="text-xs text-subtle">' + r.permissions.length + " permissions</span></div><p class=\"text-xs text-muted\">" + esc(r.description || "") + "</p>"
+              + (root.__roles ? '<div class="mt-2 flex flex-wrap gap-1">' + r.permissions.map(function (k) { return '<span class="rounded bg-surface-2 px-1.5 py-0.5 font-mono text-xs text-muted">' + esc(k) + "</span>"; }).join("") + "</div>" : "") + "</li>";
           }).join("") + "</ul>");
     }
     root.addEventListener("click", function (e) {
@@ -143,8 +143,8 @@
     function control(f, value, locked) {
       var t = f.type, el;
       if (t === "boolean") { var s = UI.sw(value, f.label, f.help); return { field: s, get: s.get, el: s, setError: function () {} }; }
-      if (t === "textarea" || t === "lines" || t === "tasklist" || t === "deliverables" || t === "metrics") el = UI.textarea(value, t === "textarea" ? 3 : 4, { placeholder: f.placeholder || (t === "metrics" ? "Avg. watch time: +38%\nTurnaround: 3 days" : t === "deliverables" ? "2× Hero video\n5× Shorts" : ""), class: t === "tasklist" || t === "metrics" ? "font-mono text-[13px]" : "" });
-      else if (t === "markdown") el = UI.textarea(value, 10, { placeholder: "Markdown supported: ## headings, **bold**, lists, links", class: "font-mono text-[13px]" });
+      if (t === "textarea" || t === "lines" || t === "tasklist" || t === "deliverables" || t === "metrics") el = UI.textarea(value, t === "textarea" ? 3 : 4, { placeholder: f.placeholder || (t === "metrics" ? "Avg. watch time: +38%\nTurnaround: 3 days" : t === "deliverables" ? "2× Hero video\n5× Shorts" : ""), class: t === "tasklist" || t === "metrics" ? "font-mono text-sm" : "" });
+      else if (t === "markdown") el = UI.textarea(value, 10, { placeholder: "Markdown supported: ## headings, **bold**, lists, links", class: "font-mono text-sm" });
       else if (t === "select") el = UI.select([{ value: "", label: "—" }].concat(f.options || []), value);
       else if (t === "relation") el = UI.select([{ value: "", label: "—" }].concat(relations[f.relation] || []), value);
       else if (t === "icon") el = UI.select((p.icons || []).map(function (i) { return { value: i, label: i }; }), value);
@@ -168,7 +168,7 @@
       var ctrls = {}, err = h("div"), groups = [];
       res.fields.forEach(function (f) { var g = f.group || "Details"; if (groups.indexOf(g) < 0) groups.push(g); });
       var body = h("div", { class: "space-y-8" }, err, groups.map(function (g) {
-        return h("section", {}, h("h3", { class: "mb-3 text-xs font-bold uppercase tracking-wider text-subtle" }, g),
+        return h("section", {}, h("h3", { class: "mb-3 text-xs font-bold text-subtle" }, g),
           h("div", { class: "grid grid-cols-1 gap-4 sm:grid-cols-2" }, res.fields.filter(function (f) { return (f.group || "Details") === g; }).map(function (f) {
             var c = control(f, initial(f, row), !!row && !!f.readOnlyOnEdit); ctrls[f.key] = c;
             var wrap = h("div", { class: f.half ? "" : "sm:col-span-2" }, c.field); return wrap;
@@ -209,11 +209,11 @@
     }
     function draw() {
       var tabs = p.forms.map(function (f) { return '<a href="/admin/forms?form=' + esc(f.key) + '"' + (f.key === form.key ? ' aria-current="page"' : "") + ' class="flex-1 rounded-lg px-2 py-1.5 text-center ' + (f.key === form.key ? "bg-surface shadow-soft" : "text-muted") + '">' + (f.key === "inquiry" ? "Inquiry" : "Project brief") + "</a>"; }).join("");
-      var secs = form.sections.map(function (s) { var on = section && s.key === section.key; return '<a href="/admin/forms?form=' + esc(form.key) + "&section=" + esc(s.key) + '"' + (on ? ' aria-current="page"' : "") + ' class="flex items-center justify-between gap-2 rounded-xl px-3 py-2 text-sm font-semibold transition ' + (on ? "bg-fg text-bg" : "text-muted hover:bg-surface-2 hover:text-fg") + '"><span class="truncate">' + esc(s.title) + '</span><span class="rounded-full px-1.5 text-[11px] ' + (on ? "bg-white/15" : "bg-surface-2") + '">' + s.questions.length + "</span></a>"; }).join("");
+      var secs = form.sections.map(function (s) { var on = section && s.key === section.key; return '<a href="/admin/forms?form=' + esc(form.key) + "&section=" + esc(s.key) + '"' + (on ? ' aria-current="page"' : "") + ' class="flex items-center justify-between gap-2 rounded-xl px-3 py-2 text-sm font-semibold transition ' + (on ? "bg-fg text-bg" : "text-muted hover:bg-surface-2 hover:text-fg") + '"><span class="truncate">' + esc(s.title) + '</span><span class="rounded-full px-1.5 text-xs ' + (on ? "bg-white/15" : "bg-surface-2") + '">' + s.questions.length + "</span></a>"; }).join("");
       var rows = section ? (section.questions.length ? '<ul class="divide-y divide-line">' + section.questions.map(function (q, i) {
         var logic = describe(q.conditionalLogic), extra = (q.options || []).filter(function (o) { return o.categoryKeys && o.categoryKeys.length; });
-        return '<li data-id="' + esc(q.id) + '" class="flex flex-wrap items-start gap-x-3 gap-y-2 px-5 py-3.5' + (q.active === false ? " opacity-60" : "") + '"><span class="flex flex-col pt-0.5"><button type="button" data-act="up" aria-label="Move up" ' + (i === 0 ? "disabled " : "") + 'class="rounded p-0.5 text-subtle hover:text-fg disabled:opacity-25">' + FE.icon("chevron-up", 14) + '</button><button type="button" data-act="down" aria-label="Move down" ' + (i === section.questions.length - 1 ? "disabled " : "") + 'class="rounded p-0.5 text-subtle hover:text-fg disabled:opacity-25">' + FE.icon("chevron-down", 14) + "</button></span>"
-          + '<div class="min-w-0 flex-1 basis-64"><button type="button" data-act="edit" class="text-left text-sm font-bold hover:text-accent-text hover:underline">' + esc(q.text) + '</button><div class="mt-1 flex flex-wrap items-center gap-1.5 text-[11px]">' + badge(q.type.toLowerCase().replace("_", " "), "neutral") + (q.required ? badge("required", "danger") : "")
+        return '<li data-id="' + esc(q.id) + '" class="flex flex-wrap items-start gap-x-3 gap-y-2 px-6 py-3.5.5' + (q.active === false ? " opacity-60" : "") + '"><span class="flex flex-col pt-0.5"><button type="button" data-act="up" aria-label="Move up" ' + (i === 0 ? "disabled " : "") + 'class="rounded p-0.5 text-subtle hover:text-fg disabled:opacity-25">' + FE.icon("chevron-up", 14) + '</button><button type="button" data-act="down" aria-label="Move down" ' + (i === section.questions.length - 1 ? "disabled " : "") + 'class="rounded p-0.5 text-subtle hover:text-fg disabled:opacity-25">' + FE.icon("chevron-down", 14) + "</button></span>"
+          + '<div class="min-w-0 flex-1 basis-64"><button type="button" data-act="edit" class="text-left text-sm font-bold hover:text-accent-text hover:underline">' + esc(q.text) + '</button><div class="mt-1 flex flex-wrap items-center gap-1.5 text-xs">' + badge(q.type.toLowerCase().replace("_", " "), "neutral") + (q.required ? badge("required", "danger") : "")
           + (q.categoryKeys || []).filter(function (c) { return c !== "COMMON"; }).map(function (c) { return badge(c.toLowerCase().replace(/_/g, " "), "accent"); }).join("") + '<span class="font-mono text-subtle">' + esc(q.key) + "</span></div>"
           + (logic ? '<p class="mt-1.5 text-xs text-muted">' + FE.icon("workflow", 11, "mr-1 inline") + "Shown when: " + esc(logic) + "</p>" : "")
           + (extra.length ? '<p class="mt-1 text-xs text-muted">Selecting ' + esc(extra.map(function (o) { return o.label; }).slice(0, 4).join(", ")) + " adds extra questions.</p>" : "") + "</div>"
@@ -266,7 +266,7 @@
           optsList.appendChild(h("div", { class: "grid grid-cols-1 gap-2 rounded-xl border border-line p-3 sm:grid-cols-[minmax(0,1fr)_minmax(0,1fr)_minmax(0,1fr)_auto]" }, label, value, grp, UI.iconBtn("trash", "Remove option", function () { opts.splice(i, 1); drawOpts(); }, true)));
         });
       }
-      optsBox.appendChild(h("h3", { class: "mb-1 text-sm font-extrabold" }, "Options"));
+      optsBox.appendChild(h("h3", { class: "mb-1 text-sm font-bold" }, "Options"));
       optsBox.appendChild(h("p", { class: "mb-3 text-xs text-muted" }, "Choose which extra question groups an option unlocks — that's how “Real estate” adds property questions."));
       optsBox.appendChild(optsList);
       optsBox.appendChild(UI.btn("Add option", { variant: "outline", size: "sm", icon: "plus", onclick: function () { opts.push({ label: "", value: "", categoryKeys: [], description: "" }); drawOpts(); } }));
@@ -297,14 +297,14 @@
         addCond.hidden = conds.length >= 10;
       }
       var addCond = UI.btn("Add condition", { variant: "outline", size: "sm", icon: "plus", onclick: function () { conds.push({ field: "", op: "eq", value: "" }); drawConds(); } });
-      condBox.appendChild(h("h3", { class: "mb-1 text-sm font-extrabold" }, "Show this question only when…"));
+      condBox.appendChild(h("h3", { class: "mb-1 text-sm font-bold" }, "Show this question only when…"));
       condBox.appendChild(h("p", { class: "mb-3 text-xs text-muted" }, "Leave empty to always show it (when its question group is active)."));
       condBox.appendChild(modeRow); condBox.appendChild(condList); condBox.appendChild(addCond); drawConds();
 
       // groups
       var cats = (q ? q.categoryKeys : ["COMMON"]) || ["COMMON"];
       var catBoxes = p.categories.map(function (c) { var b = UI.checkbox(cats.indexOf(c.key) >= 0, c.name); b.dataset.key = c.key; return b; });
-      var grpBox = h("section", {}, h("h3", { class: "mb-2 text-sm font-extrabold" }, "Question group"), h("div", { class: "flex flex-wrap gap-x-5 gap-y-2" }, catBoxes),
+      var grpBox = h("section", {}, h("h3", { class: "mb-2 text-sm font-bold" }, "Question group"), h("div", { class: "flex flex-wrap gap-x-5 gap-y-2" }, catBoxes),
         h("p", { class: "mt-2 text-xs text-muted" }, "The question appears only when at least one of its groups is active. “Common” is always active."));
 
       var body = h("div", { class: "space-y-7" }, err,
@@ -344,8 +344,8 @@
       var groups = []; rows.forEach(function (a) { if (groups.indexOf(a.event) < 0) groups.push(a.event); });
       root.innerHTML = '<div class="mb-5 flex flex-wrap items-center gap-3"><p class="text-sm text-muted">' + rows.filter(function (a) { return a.enabled; }).length + " of " + rows.length + ' automations are on. Turning one off stops it immediately; nothing is deleted.</p><button type="button" data-act="new" class="ml-auto ' + UI.btnClass("dark", "md") + '">' + FE.icon("plus", 16) + "New automation</button></div>"
         + (!rows.length ? card(empty("workflow", "No automations yet", "Create your own to get started.")) : '<div class="space-y-6">' + groups.map(function (g) {
-          return '<section><h3 class="mb-2 text-xs font-extrabold uppercase tracking-wider text-subtle">When: ' + esc(label(g)) + '</h3><ul class="divide-y divide-line overflow-hidden rounded-[var(--radius-card)] border border-line bg-surface shadow-soft">' + rows.filter(function (a) { return a.event === g; }).map(function (a) {
-            return '<li data-id="' + esc(a.id) + '" class="flex flex-wrap items-center gap-x-4 gap-y-2 px-5 py-3.5"><div class="min-w-0 flex-1 basis-64"><button type="button" data-act="edit" class="text-left text-sm font-bold hover:text-accent-text hover:underline">' + esc(a.name) + "</button>" + (a.description ? '<p class="mt-0.5 text-xs text-muted">' + esc(a.description) + "</p>" : "")
+          return '<section><h3 class="mb-2 text-xs font-bold text-subtle">When: ' + esc(label(g)) + '</h3><ul class="divide-y divide-line overflow-hidden rounded-[var(--radius-card)] border border-line bg-surface shadow-soft">' + rows.filter(function (a) { return a.event === g; }).map(function (a) {
+            return '<li data-id="' + esc(a.id) + '" class="flex flex-wrap items-center gap-x-4 gap-y-2 px-6 py-3.5.5"><div class="min-w-0 flex-1 basis-64"><button type="button" data-act="edit" class="text-left text-sm font-bold hover:text-accent-text hover:underline">' + esc(a.name) + "</button>" + (a.description ? '<p class="mt-0.5 text-xs text-muted">' + esc(a.description) + "</p>" : "")
               + '<div class="mt-1.5 flex flex-wrap gap-1.5">' + a.actions.map(function (x) { var t = ACTION_TYPES.filter(function (y) { return y[0] === x.type; })[0]; return badge((t ? t[1] : x.type) + (x.delayMinutes ? " · after " + fmtDelay(x.delayMinutes) : ""), "neutral", t ? t[2] : "zap"); }).join("") + "</div></div>"
               + (a.isSystem ? badge("built-in", "info") : "") + '<span class="text-xs text-subtle">' + a.runs + " run" + (a.runs === 1 ? "" : "s") + '</span>'
               + '<button type="button" role="switch" data-act="toggle" aria-checked="' + a.enabled + '" aria-label="' + esc(a.name) + ' enabled" class="relative h-6 w-11 shrink-0 rounded-full transition-colors ' + (a.enabled ? "bg-accent" : "bg-line-strong") + '"><span class="absolute top-0.5 h-5 w-5 rounded-full bg-white shadow transition-transform ' + (a.enabled ? "translate-x-[22px]" : "translate-x-0.5") + '"></span></button>'
@@ -409,8 +409,8 @@
       drawConds(); drawActs();
       var body = h("div", { class: "space-y-7" }, err,
         h("section", { class: "grid grid-cols-1 gap-4 sm:grid-cols-2" }, nameF, UI.field("Description", desc, { optional: true, class: "sm:col-span-2" }), UI.field("Trigger — when this happens", ev), h("div", { class: "flex items-end pb-1" }, enabled)),
-        h("section", {}, h("h3", { class: "mb-1 text-sm font-extrabold" }, "Only if… (optional)"), h("p", { class: "mb-3 text-xs text-muted" }, "Conditions look at the event's data, e.g. toStatus is CLIENT_REVIEW for a status change."), condList, addCond),
-        h("section", {}, h("h3", { class: "mb-3 text-sm font-extrabold" }, "Then do this"), actList, h("div", { class: "mt-3" }, addAct),
+        h("section", {}, h("h3", { class: "mb-1 text-sm font-bold" }, "Only if… (optional)"), h("p", { class: "mb-3 text-xs text-muted" }, "Conditions look at the event's data, e.g. toStatus is CLIENT_REVIEW for a status change."), condList, addCond),
+        h("section", {}, h("h3", { class: "mb-3 text-sm font-bold" }, "Then do this"), actList, h("div", { class: "mt-3" }, addAct),
           h("p", { class: "mt-3 text-xs text-muted" }, "Use placeholders like {{client_name}}, {{project_name}}, {{amount}}, {{deadline}}, {{project_url}}.")));
       var save = UI.btn(row ? "Save changes" : "Create automation", { onclick: function () {
         err.innerHTML = ""; nameF.setError("");
@@ -441,7 +441,7 @@
   /** Schema-less editor: renders controls from the shape of the current value; the server validates with the real schema on save. */
   FE.components.settingsEditor = function (root, p) {
     var value = JSON.parse(JSON.stringify(p.value)), original = JSON.stringify(p.value);
-    var bar = h("div", { class: "sticky bottom-20 z-10 mt-5 flex items-center justify-end gap-3 rounded-2xl border border-line bg-bg/90 p-3 shadow-lift backdrop-blur lg:bottom-4" });
+    var bar = h("div", { class: "sticky bottom-20 z-10 mt-5 flex items-center justify-end gap-3 rounded-2xl border border-line bg-bg/90 p-3 shadow-lift lg:bottom-4" });
     var status = h("span", { class: "mr-auto text-sm text-subtle" }, "All changes saved");
     var reset = UI.btn("Reset", { variant: "ghost", onclick: function () { value = JSON.parse(original); paint(); touch(); } });
     var save = UI.btn("Save settings", { icon: "check", onclick: function () {
@@ -484,13 +484,13 @@
           return UI.field(label, area, { class: "sm:col-span-2", hint: isNum ? "Comma-separated numbers (e.g. weekdays 1–5 = Mon–Fri)." : "One per line." });
         }
         var template = blankLike(val[0]), wrap = h("div", { class: "sm:col-span-2" }), list = h("div", { class: "space-y-3" });
-        wrap.appendChild(h("h4", { class: "mb-2 text-sm font-extrabold" }, label)); wrap.appendChild(list);
+        wrap.appendChild(h("h4", { class: "mb-2 text-sm font-bold" }, label)); wrap.appendChild(list);
         var redraw = function () {
           list.innerHTML = "";
           val.forEach(function (row, i) {
             var move = function (d) { var j = i + d; if (j < 0 || j >= val.length) return; var t2 = val[i]; val[i] = val[j]; val[j] = t2; onChange(val); redraw(); };
             list.appendChild(h("div", { class: "rounded-2xl border border-line bg-surface-2/30 p-4" },
-              h("div", { class: "mb-3 flex items-center justify-between" }, h("span", { class: "text-xs font-bold uppercase tracking-wider text-subtle" }, "#" + (i + 1)),
+              h("div", { class: "mb-3 flex items-center justify-between" }, h("span", { class: "text-xs font-bold text-subtle" }, "#" + (i + 1)),
                 h("span", { class: "flex gap-1" }, UI.iconBtn("chevron-up", "Move up", function () { move(-1); }), UI.iconBtn("chevron-down", "Move down", function () { move(1); }), UI.iconBtn("trash", "Remove", function () { val.splice(i, 1); onChange(val); redraw(); }, true))),
               row && typeof row === "object" ? objectFields(row, function (nv) { val[i] = nv; onChange(val); }) : null));
           });
@@ -500,7 +500,7 @@
         return wrap;
       }
       if (val && typeof val === "object") {
-        return h("fieldset", { class: "sm:col-span-2" }, h("legend", { class: "mb-2 text-sm font-extrabold" }, label), h("div", { class: "rounded-2xl border border-line p-4" }, objectFields(val, function (nv) { onChange(nv); })));
+        return h("fieldset", { class: "sm:col-span-2" }, h("legend", { class: "mb-2 text-sm font-bold" }, label), h("div", { class: "rounded-2xl border border-line p-4" }, objectFields(val, function (nv) { onChange(nv); })));
       }
       return h("div");
     }

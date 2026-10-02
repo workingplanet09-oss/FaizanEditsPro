@@ -23,7 +23,7 @@ function doc_lines(array $d): string
     foreach ($d['items'] as $i) {
         $rows .= '<tr><td data-primary class="py-3 pr-4 font-medium">' . e($i['description']) . '</td><td data-label="Qty" class="py-3 pr-4 text-right tabular-nums text-muted">' . e($i['quantity']) . '</td><td data-label="Unit price" class="py-3 pr-4 text-right tabular-nums text-muted">' . $m($i['unitPrice']) . '</td><td data-label="Amount" class="py-3 text-right font-semibold tabular-nums">' . $m($i['amount']) . '</td></tr>';
     }
-    $row = fn($k, $v, $strong = false, $muted = false) => '<div class="flex items-baseline justify-between gap-4' . ($strong ? ' border-t border-line pt-2 text-base font-extrabold' : '') . ($muted ? ' text-muted' : '') . '"><dt' . (!$strong ? ' class="text-muted"' : '') . '>' . e($k) . '</dt><dd class="tabular-nums">' . $v . '</dd></div>';
+    $row = fn($k, $v, $strong = false, $muted = false) => '<div class="flex items-baseline justify-between gap-4' . ($strong ? ' border-t border-line pt-2 text-base font-bold' : '') . ($muted ? ' text-muted' : '') . '"><dt' . (!$strong ? ' class="text-muted"' : '') . '>' . e($k) . '</dt><dd class="tabular-nums">' . $v . '</dd></div>';
     $t = $row('Subtotal', $m($d['subtotal']));
     if (($d['discount'] ?? 0) > 0) {
         $t .= $row('Discount', '− ' . $m($d['discount']));
@@ -124,22 +124,22 @@ function delivery_list(array $d, string $status, string $projectId, bool $staff 
     $visible = $staff ? $d['items'] : array_values(array_filter($d['items'], fn($i) => !empty($i['visibleToClient'])));
     if (!$visible) {
         $approved = $status === 'APPROVED';
-        return card(ui_empty($approved ? "We're preparing your final files" : 'No final files yet', $approved ? "You approved the video — we're exporting the final deliverables now. You'll get a notification the moment they're ready." : 'Your final files will appear here once the video is approved and delivered.', 'package'));
+        return card(ui_empty($approved ? "I’m preparing your final files" : 'No final files yet', $approved ? "You approved the video — I’m exporting the final deliverables now. You'll get a notification the moment they're ready." : 'Your final files will appear here once the video is approved and delivered.', 'package'));
     }
     $h = '<div class="space-y-4">';
     if (!$d['unlocked']) {
-        $h .= '<div class="flex flex-col gap-3 rounded-2xl border border-warning/40 bg-warning-soft/70 p-5 sm:flex-row sm:items-center sm:justify-between" role="status"><div class="flex gap-3">' . icon('lock', 20, 'mt-0.5 shrink-0 text-warning')
-            . '<div><h3 class="font-extrabold">Your final files are ready — and waiting for you</h3><p class="mt-0.5 text-sm text-muted">' . e($d['lockedReason']) . '</p></div></div>'
+        $h .= '<div class="flex flex-col gap-3 rounded-2xl border border-warning/40 bg-warning-soft/70 p-6 sm:flex-row sm:items-center sm:justify-between" role="status"><div class="flex gap-3">' . icon('lock', 20, 'mt-0.5 shrink-0 text-warning')
+            . '<div><h3 class="font-bold">Your final files are ready — and waiting for you</h3><p class="mt-0.5 text-sm text-muted">' . e($d['lockedReason']) . '</p></div></div>'
             . (!$staff ? ui_link("/dashboard/projects/{$projectId}?tab=billing", 'View invoices', ['variant' => 'dark', 'icon' => 'card']) : '') . '</div>';
     } else {
-        $h .= '<div class="flex items-center gap-3 rounded-2xl border border-success/30 bg-success-soft/50 px-5 py-4 text-sm" role="status">' . icon('check-circle', 20, 'text-success') . '<span><b>Ready to download.</b> Links are private and expire after an hour — just click again for a fresh one.</span></div>';
+        $h .= '<div class="flex items-center gap-3 rounded-2xl border border-success/30 bg-success-soft/50 px-6 py-4 text-sm" role="status">' . icon('check-circle', 20, 'text-success') . '<span><b>Ready to download.</b> Links are private and expire after an hour — just click again for a fresh one.</span></div>';
     }
     $h .= '<ul class="divide-y divide-line overflow-hidden rounded-[var(--radius-card)] border border-line bg-surface shadow-soft">';
     foreach ($visible as $f) {
         $can = $d['unlocked'] || $staff;
-        $h .= '<li class="flex flex-wrap items-center gap-4 px-5 py-4"><span class="flex h-11 w-11 shrink-0 items-center justify-center rounded-xl bg-surface-2">' . icon(str_starts_with($f['mimeType'], 'video/') ? 'video' : (str_starts_with($f['mimeType'], 'image/') ? 'image' : 'file'), 20) . '</span>'
+        $h .= '<li class="flex flex-wrap items-center gap-4 px-6 py-4"><span class="flex h-11 w-11 shrink-0 items-center justify-center rounded-xl bg-surface-2">' . icon(str_starts_with($f['mimeType'], 'video/') ? 'video' : (str_starts_with($f['mimeType'], 'image/') ? 'image' : 'file'), 20) . '</span>'
             . '<div class="min-w-0 flex-1 basis-48"><div class="truncate text-sm font-bold">' . e($f['deliverableLabel'] ?: $f['displayName']) . '</div><div class="truncate text-xs text-muted">' . e($f['displayName'] . ' · ' . fmt_bytes((int)$f['sizeBytes']) . ' · ' . fmt_date_short($f['createdAt'])) . (empty($f['visibleToClient']) ? ' · unpublished' : '') . '</div></div>'
-            . ui_button($can ? 'Download' : 'Locked', ['variant' => $can ? 'dark' : 'outline', 'icon' => $can ? 'download' : 'lock', 'attrs' => $can ? ['data-asset-open' => $f['id'], 'data-mode' => 'download'] : ['disabled' => true]]) . '</li>';
+            . ui_button($can ? 'Download final files' : 'Locked', ['variant' => $can ? 'dark' : 'outline', 'icon' => $can ? 'download' : 'lock', 'attrs' => $can ? ['data-asset-open' => $f['id'], 'data-mode' => 'download'] : ['disabled' => true]]) . '</li>';
     }
     return $h . '</ul></div>';
 }
@@ -155,7 +155,7 @@ function message_thread(array $initial, array $o = []): string
         . '<form data-msg-form class="border-t border-line bg-surface-2/40 p-3 sm:p-4"><p data-msg-error role="alert" class="mb-2 hidden text-xs font-medium text-danger"></p><div class="flex items-end gap-2"><label class="sr-only" for="msg-body">Message</label>'
         . '<textarea id="msg-body" rows="2" maxlength="5000" placeholder="' . e($props['placeholder']) . '" class="max-h-40 min-h-[3rem] flex-1 resize-y rounded-xl border border-line-strong bg-surface px-3.5 py-2.5 text-sm focus:border-accent focus:outline-none focus:ring-4 focus:ring-accent/20"></textarea>'
         . '<button type="submit" disabled aria-label="Send message" class="' . e(btn_class('primary', 'md')) . '">' . icon('send', 16) . '<span class="hidden sm:inline">Send</span></button></div>'
-        . '<div class="mt-2 flex items-center justify-between text-[11px] text-subtle"><span>Ctrl/⌘ + Enter to send</span>'
+        . '<div class="mt-2 flex items-center justify-between text-xs text-subtle"><span>Ctrl/⌘ + Enter to send</span>'
         . (empty($o['staff']) ? '<label class="flex items-center gap-1.5">Send to <select data-msg-group class="rounded-md border border-line bg-surface px-1.5 py-1 text-xs font-medium text-fg"><option value="PROJECT_MANAGER">Project manager</option><option value="EDITOR">Editor</option><option value="SUPPORT">Support</option></select></label>' : '') . '</div></form></div>';
 }
 
@@ -166,13 +166,13 @@ function quote_actions(string $id, ?string $projectId): string
     return '<div class="flex flex-wrap gap-3">' . ui_action("/api/quotes/{$id}/accept", 'Accept quote', ['size' => 'lg', 'icon' => 'check-circle', 'body' => (object)[], 'success' => 'Quote accepted — your contract is next.', 'redirect' => $projectId ? "/dashboard/projects/{$projectId}" : null])
         . ui_button('Decline', ['size' => 'lg', 'variant' => 'outline', 'attrs' => ['data-modal-open' => '#decline-quote']]) . '<a href="/dashboard/messages" class="inline-flex h-13 items-center px-3 text-sm font-semibold text-muted hover:text-fg">Ask a question first</a></div>'
         . ui_modal('decline-quote', 'Decline this quote?', '<form id="decline-form" novalidate data-fe-form="/api/quotes/' . e($id) . '/reject" data-success="Quote declined" class="space-y-3">' . form_error_slot() . field_textarea('reason', 'Reason (optional)', '', ['rows' => 3, 'placeholder' => 'Budget, timing, scope…']) . '</form>',
-            ['size' => 'sm', 'description' => "We'd love to make it work — tell us what would change your mind.", 'footerHtml' => ui_button('Cancel', ['variant' => 'ghost', 'attrs' => ['data-modal-close' => true]]) . ui_button('Decline quote', ['type' => 'submit', 'variant' => 'danger', 'attrs' => ['form' => 'decline-form']])]);
+            ['size' => 'sm', 'description' => "I’d love to make it work — tell me what would change your mind.", 'footerHtml' => ui_button('Cancel', ['variant' => 'ghost', 'attrs' => ['data-modal-close' => true]]) . ui_button('Decline quote', ['type' => 'submit', 'variant' => 'danger', 'attrs' => ['form' => 'decline-form']])]);
 }
 
 /** E-signature: type your name or draw it. The server stores who/when/IP/UA and a hash of the exact text signed. */
 function contract_sign(string $id, int $version, string $defaultName): string
 {
-    return '<section aria-labelledby="sign-h" data-fe-component="contract-sign" data-props="' . json_attr(['id' => $id, 'version' => $version]) . '" class="rounded-[var(--radius-card)] border-2 border-accent/50 bg-surface p-5 shadow-soft sm:p-7"><h2 id="sign-h" class="text-lg font-extrabold">Sign this agreement</h2>'
+    return '<section aria-labelledby="sign-h" data-fe-component="contract-sign" data-props="' . json_attr(['id' => $id, 'version' => $version]) . '" class="rounded-[var(--radius-card)] border-2 border-accent/50 bg-surface p-6 shadow-soft sm:p-7"><h2 id="sign-h" class="text-lg font-bold">Sign this agreement</h2>'
         . '<p class="mt-1 text-sm text-muted">By signing you confirm you have authority to enter this agreement on behalf of your company.</p><form novalidate class="mt-5 space-y-5" data-sign-form>' . form_error_slot()
         . field_input('signerName', 'Full legal name', $defaultName, ['required' => true, 'autocomplete' => 'name'])
         . '<div><div role="tablist" aria-label="Signature style" class="mb-3 inline-flex rounded-xl bg-surface-2 p-1 text-sm font-semibold"><button role="tab" type="button" data-kind="typed" aria-selected="true" class="rounded-lg bg-surface px-4 py-1.5 shadow-soft transition">Type</button><button role="tab" type="button" data-kind="drawn" aria-selected="false" class="rounded-lg px-4 py-1.5 text-muted transition">Draw</button></div>'
@@ -187,7 +187,7 @@ function pay_panel(string $id, int $due, string $currency, bool $demoCheckout): 
 {
     $amount = e(money($due, $currency));
     return '<div data-fe-component="pay-panel" data-props="' . json_attr(['id' => $id, 'demo' => $demoCheckout]) . '"><div data-pay-start' . ($demoCheckout ? ' hidden' : '') . '><button type="button" data-pay-begin class="' . e(btn_class('primary', 'lg')) . '">' . icon('card', 16) . 'Pay ' . $amount . '</button></div>'
-        . '<div data-pay-demo' . ($demoCheckout ? '' : ' hidden') . ' class="rounded-[var(--radius-card)] border-2 border-dashed border-accent/60 bg-accent-soft/40 p-5"><div class="flex items-start gap-3">' . icon('card', 20, 'mt-0.5') . '<div class="flex-1"><h3 class="font-extrabold">Demo checkout</h3>'
+        . '<div data-pay-demo' . ($demoCheckout ? '' : ' hidden') . ' class="rounded-[var(--radius-card)] border-2 border-dashed border-accent/60 bg-accent-soft/40 p-6"><div class="flex items-start gap-3">' . icon('card', 20, 'mt-0.5') . '<div class="flex-1"><h3 class="font-bold">Demo checkout</h3>'
         . '<p class="mt-1 text-sm text-muted">Payments are in demo mode: no real card is charged, but the invoice, project activation, notifications and receipt all run exactly as they would live.</p><div class="mt-4 flex flex-wrap items-center gap-3">'
         . '<button type="button" data-pay-demo-go class="' . e(btn_class('primary', 'lg')) . '">' . icon('check-circle', 16) . 'Simulate paying ' . $amount . '</button><button type="button" data-pay-cancel class="text-sm font-semibold text-muted hover:text-fg">Cancel</button></div></div></div></div>'
         . '<p data-pay-error role="alert" class="mt-3 hidden text-sm font-medium text-danger"></p></div>';
@@ -197,9 +197,9 @@ function pay_panel(string $id, int $due, string $currency, bool $demoCheckout): 
 
 function change_request_form(string $projectId): string
 {
-    return '<form novalidate data-fe-form="/api/projects/' . e($projectId) . '/change-requests" data-success="Change request sent" data-reset class="space-y-4 rounded-[var(--radius-card)] border border-line bg-surface p-5 shadow-soft">'
-        . '<div><h3 class="text-base font-extrabold">Request a change to the brief</h3><p class="mt-1 text-sm text-muted">Production has started, so the brief is locked. Tell us what changed and we\'ll confirm whether it\'s included or needs a small quote — nothing is charged without your approval.</p></div>' . form_error_slot()
-        . field_textarea('whatChanged', 'What changed?', '', ['required' => true, 'rows' => 3, 'placeholder' => 'e.g. The client has asked for a 9:16 version as well.']) . field_textarea('why', 'Why?', '', ['rows' => 2]) . field_textarea('additionalRequirements', 'Anything new we should know?', '', ['rows' => 2])
+    return '<form novalidate data-fe-form="/api/projects/' . e($projectId) . '/change-requests" data-success="Change request sent" data-reset class="space-y-4 rounded-[var(--radius-card)] border border-line bg-surface p-6 shadow-soft">'
+        . '<div><h3 class="text-base font-bold">Request a change to the brief</h3><p class="mt-1 text-sm text-muted">Production has started, so the brief is locked. Tell me what changed and I\'ll confirm whether it\'s included or needs a small quote — nothing is charged without your approval.</p></div>' . form_error_slot()
+        . field_textarea('whatChanged', 'What changed?', '', ['required' => true, 'rows' => 3, 'placeholder' => 'e.g. The client has asked for a 9:16 version as well.']) . field_textarea('why', 'Why?', '', ['rows' => 2]) . field_textarea('additionalRequirements', 'Anything new I should know?', '', ['rows' => 2])
         . submit_button('Submit change request', ['size' => 'md', 'class' => '']) . '</form>';
 }
 
@@ -212,11 +212,11 @@ function rating_input(string $name, string $label, bool $required = true): strin
 
 function feedback_form(string $projectId, array $defaults): string
 {
-    return '<form novalidate data-fe-form="/api/projects/' . e($projectId) . '/feedback" data-success="Thank you! Your feedback means a lot." class="space-y-4 rounded-[var(--radius-card)] border border-line bg-surface p-5 shadow-soft"><div><h3 class="text-base font-extrabold">How did we do?</h3>'
-        . '<p class="mt-1 text-sm text-muted">A minute of your time helps us improve — and helps other creators choose with confidence.</p></div>' . form_error_slot() . rating_input('rating', 'Overall rating')
+    return '<form novalidate data-fe-form="/api/projects/' . e($projectId) . '/feedback" data-success="Thank you! Your feedback means a lot." class="space-y-4 rounded-[var(--radius-card)] border border-line bg-surface p-6 shadow-soft"><div><h3 class="text-base font-bold">How did I do?</h3>'
+        . '<p class="mt-1 text-sm text-muted">A minute of your time helps me improve — and helps other creators choose with confidence.</p></div>' . form_error_slot() . rating_input('rating', 'Overall rating')
         . field_textarea('quote', 'Your experience', '', ['required' => true, 'rows' => 4, 'placeholder' => 'What went well? What made the biggest difference?'])
         . '<div class="grid grid-cols-1 gap-4 sm:grid-cols-3">' . field_input('name', 'Name', $defaults['name'] ?? '', ['required' => true]) . field_input('role', 'Role', '') . field_input('company', 'Company', $defaults['company'] ?? '') . '</div>'
-        . ui_checkbox('permissionToPublish', 'You may publish this on the website', true, 'Only shown after the studio reviews it. You can ask us to remove it any time.') . submit_button('Send feedback', ['size' => 'md', 'class' => '']) . '</form>';
+        . ui_checkbox('permissionToPublish', 'You may publish this on the website', true, 'Only shown after the studio reviews it. You can ask me to remove it any time.') . submit_button('Send feedback', ['size' => 'md', 'class' => '']) . '</form>';
 }
 
 function retainer_start(string $id, string $base = '/dashboard'): string

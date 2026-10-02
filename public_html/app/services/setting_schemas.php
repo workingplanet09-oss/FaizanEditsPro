@@ -13,6 +13,7 @@ function setting_schema(string $key): ?V
     $schemas = [
         'business' => fn() => V::obj([
             'name' => V::str()->trim()->min(1)->max(80), 'legalName' => V::str()->max(120), 'taxId' => V::str()->max(60)->default(''), 'tagline' => V::str()->max(200),
+            'descriptor' => V::str()->max(80)->default(''), 'handle' => V::str()->max(40)->default(''), 'portraitUrl' => $url(),
             'email' => $emailOrEmpty(), 'phone' => V::str()->max(40), 'address' => V::str()->max(300), 'logoUrl' => $url(), 'faviconUrl' => $url(), 'website' => $url(),
             'socials' => V::rec($url()), 'defaultCurrency' => $cur(), 'currencies' => V::arr($cur())->min(1)->max(30), 'timezone' => V::str()->max(60),
             'defaultTurnaround' => V::str()->max(80), 'revisionPolicy' => V::str()->max(2000),

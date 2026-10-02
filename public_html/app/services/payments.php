@@ -53,7 +53,7 @@ function payment_create_checkout(array $in): array
 
 /**
  * Verifies a Stripe webhook (HMAC over "t.body", 10-minute replay window) and returns a normalised event, or null when the
- * signature is missing/invalid or the event is not one we act on.
+ * signature is missing/invalid or the event is not one I act on.
  * @return array{type:string,invoiceId:string,transactionId:string,amount:int,currency:string,method?:string}|null
  */
 function payment_parse_webhook(string $raw, array $headers): ?array

@@ -6,12 +6,12 @@
   <div class="space-y-6">
   <?php foreach ($list as $r): ?>
     <?php ob_start(); ?>
-      <div class="grid grid-cols-1 gap-6 px-5 pb-6 md:grid-cols-2">
-        <div class="space-y-4"><h3 class="text-xs font-bold uppercase tracking-wider text-subtle">This month</h3>
+      <div class="grid grid-cols-1 gap-6 px-6 pb-6 md:grid-cols-2">
+        <div class="space-y-4"><h3 class="text-xs font-bold text-subtle">This month</h3>
           <?= $r['videosIncluded'] ? progress_row('Videos', $r['usage']['used']['videos'], $r['videosIncluded']) : '' ?>
           <?= $r['shortsIncluded'] ? progress_row('Short-form', $r['usage']['used']['shorts'], $r['shortsIncluded']) : '' ?>
           <?= $r['hoursIncluded'] ? progress_row('Hours', $r['usage']['used']['hours'], $r['hoursIncluded']) : '' ?></div>
-        <div><h3 class="mb-3 text-xs font-bold uppercase tracking-wider text-subtle">In progress</h3>
+        <div><h3 class="mb-3 text-xs font-bold text-subtle">In progress</h3>
           <?php if ($r['usage']['upcoming']): ?><ul class="divide-y divide-line rounded-xl border border-line"><?php foreach ($r['usage']['upcoming'] as $p): ?>
             <li><a href="/dashboard/projects/<?= e($p['id']) ?>" class="flex items-center justify-between gap-3 px-4 py-2.5 text-sm hover:bg-surface-2/60"><span class="min-w-0"><span class="block truncate font-semibold"><?= e($p['name']) ?></span><span class="text-xs text-subtle"><?= e($p['deadline'] ? 'Due ' . fmt_date_short($p['deadline']) : $p['code']) ?></span></span><?= status_badge($p['status'], 'STATUS', true) ?></a></li>
           <?php endforeach; ?></ul>

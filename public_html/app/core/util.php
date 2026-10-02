@@ -517,10 +517,20 @@ function contrast_on(string $hex): string
 {
     $rgb = color_parse($hex);
     if (!$rgb) {
-        return '#0b0b0c';
+        return '#10213d';
     }
     $L = color_luminance($rgb);
-    return ($L + 0.05) / 0.05 > 1.05 / ($L + 0.05) ? '#0b0b0c' : '#ffffff';
+    return ($L + 0.05) / 0.05 > 1.05 / ($L + 0.05) ? '#10213d' : '#ffffff';
+}
+
+/** Hover shade of the accent. The brand blue maps to the specified #1D46BC; any other accent is darkened by 20%. */
+function accent_hover(string $accent): string
+{
+    if (strtolower($accent) === '#2457e6') {
+        return '#1d46bc';
+    }
+    $rgb = color_parse($accent);
+    return $rgb ? color_to_hex(array_map(fn($c) => $c * 0.8, $rgb)) : $accent;
 }
 
 function accent_for_text(string $accent, string $surface, string $toward, float $min = 4.6): string

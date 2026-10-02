@@ -8,7 +8,7 @@
   <?= field_input('password', 'Password', '', ['type' => 'password', 'required' => true, 'autocomplete' => 'new-password', 'hint' => 'At least 10 characters.']) ?>
   <?= honeypot() ?>
   <?= submit_button('Create account') ?>
-  <p class="text-center text-xs text-subtle">We'll email a link to confirm your address. Your projects appear once it's confirmed.</p>
+  <p class="text-center text-sm text-muted">I will email a link to confirm your address. Your projects appear once it is confirmed.</p>
 </form>
 <?php $bodyHtml = ob_get_clean(); ?>
-<?= auth_card('Create your account', 'Track projects, review drafts and approve videos — all in one place.', $bodyHtml, 'Already have an account? <a href="/login" class="font-bold text-fg hover:text-accent-text">Sign in</a>') ?>
+<?= auth_card('Create your account', 'Track projects, review drafts and approve videos — all in one place.', $bodyHtml, 'Already have an account? <a href="/login" class="inline-flex min-h-11 items-center font-semibold text-accent-text underline underline-offset-4 hover:text-accent-hover">Sign in</a>') ?>

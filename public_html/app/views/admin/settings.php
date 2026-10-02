@@ -18,21 +18,21 @@ $items = [
     <a href="/admin/settings?g=<?= e($k) ?>"<?= $on ? ' aria-current="page"' : '' ?> class="flex shrink-0 items-center gap-2.5 whitespace-nowrap rounded-xl px-3 py-2 text-sm font-semibold transition <?= $on ? 'bg-fg text-bg' : 'text-muted hover:bg-surface-2 hover:text-fg' ?>"><?= icon($ic, 16, $on ? 'text-accent-text' : 'text-subtle') ?><?= e($l) ?></a><?php endforeach; ?></nav>
   <div class="min-w-0">
     <?php if ($group): ?>
-      <h2 class="text-xl font-extrabold"><?= e($group[1]) ?></h2><p class="mb-5 mt-1 text-sm text-muted"><?= e($group[3]) ?></p>
+      <h2 class="text-xl font-bold"><?= e($group[1]) ?></h2><p class="mb-5 mt-1 text-sm text-muted"><?= e($group[3]) ?></p>
       <div data-fe-component="settings-editor" data-props="<?= json_attr(['group' => $group[0], 'value' => $value]) ?>"></div>
     <?php else: ?>
       <div class="space-y-6">
         <?php ob_start(); ?><ul class="divide-y divide-line"><?php foreach ($items as [$name, $ok, $detail, $where]): ?>
-          <li class="flex flex-wrap items-center gap-3 px-5 py-3.5"><span class="flex h-8 w-8 items-center justify-center rounded-full <?= $ok ? 'bg-success-soft text-success' : 'bg-warning-soft text-warning' ?>"><?= icon($ok ? 'check' : 'alert', 15) ?></span>
-            <div class="min-w-0 flex-1"><div class="text-sm font-bold"><?= e($name) ?></div><div class="text-xs text-muted"><?= e($detail) ?></div></div><code class="rounded bg-surface-2 px-2 py-1 text-[11px] text-muted"><?= e($where) ?></code></li><?php endforeach; ?></ul>
+          <li class="flex flex-wrap items-center gap-3 px-6 py-3.5.5"><span class="flex h-8 w-8 items-center justify-center rounded-full <?= $ok ? 'bg-success-soft text-success' : 'bg-warning-soft text-warning' ?>"><?= icon($ok ? 'check' : 'alert', 15) ?></span>
+            <div class="min-w-0 flex-1"><div class="text-sm font-bold"><?= e($name) ?></div><div class="text-xs text-muted"><?= e($detail) ?></div></div><code class="rounded bg-surface-2 px-2 py-1 text-xs text-muted"><?= e($where) ?></code></li><?php endforeach; ?></ul>
         <?= card(ob_get_clean(), '', 'Integrations', 'Configured in config.php so secrets never touch the database.') ?>
-        <?php ob_start(); ?><div class="flex flex-wrap items-center gap-3 px-5 pb-5">
+        <?php ob_start(); ?><div class="flex flex-wrap items-center gap-3 px-6 pb-6">
           <?php foreach ((array)$jobs['counts'] as $k => $n): ?><?= ui_badge(strtolower($k) . ': ' . (int)$n, $k === 'FAILED' ? 'danger' : ($k === 'PENDING' ? 'warning' : 'neutral')) ?><?php endforeach; ?>
           <?= !empty($jobs['counts']->FAILED) ? ui_action('/api/admin/jobs', 'Retry failed jobs', ['size' => 'sm', 'variant' => 'outline', 'success' => 'Failed jobs queued for retry']) : '' ?>
           <?= !(array)$jobs['counts'] ? '<span class="text-sm text-muted">No jobs yet.</span>' : '' ?></div>
-        <?php if ($jobs['failed']): ?><ul class="divide-y divide-line border-t border-line"><?php foreach ($jobs['failed'] as $j): ?><li class="px-5 py-3 text-sm"><b><?= e($j['type']) ?></b> <span class="text-muted">— <?= e(mb_substr((string)$j['lastError'], 0, 160)) ?></span></li><?php endforeach; ?></ul><?php endif; ?>
+        <?php if ($jobs['failed']): ?><ul class="divide-y divide-line border-t border-line"><?php foreach ($jobs['failed'] as $j): ?><li class="px-6 py-3.5 text-sm"><b><?= e($j['type']) ?></b> <span class="text-muted">— <?= e(mb_substr((string)$j['lastError'], 0, 160)) ?></span></li><?php endforeach; ?></ul><?php endif; ?>
         <?= card(ob_get_clean(), '', 'Background jobs', 'Emails, reminders and automations run through a database-backed queue, processed on each page visit or by an optional cPanel cron job.') ?>
-        <?php ob_start(); ?><div class="flex flex-wrap items-center gap-4 px-5 pb-5">
+        <?php ob_start(); ?><div class="flex flex-wrap items-center gap-4 px-6 pb-6">
           <p class="min-w-0 flex-1 basis-72 text-sm text-muted"><?= $demoLoaded
               ? 'A fictional studio (clients, projects, invoices and videos) is loaded so you can explore. Remove it before you start using the site for real — every sample row, file link and sign-in is deleted; your own data is never touched.'
               : ($demoCanLoad ? 'Want to look around first? Add a fictional studio with clients, projects, invoices and review videos. You can remove it again with one click.' : 'Sample data can only be added to a site that has no clients, projects or invoices yet.') ?></p>

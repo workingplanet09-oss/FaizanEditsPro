@@ -51,8 +51,8 @@ page('/robots.txt', function (Ctx $c) {
 page('/manifest.webmanifest', function (Ctx $c) {
     $site = get_site_context();
     $name = $site['business']['name'];
-    $accent = preg_match('/^#[0-9a-f]{6}$/i', (string)$site['theme']['accent']) ? $site['theme']['accent'] : '#FF5B2E';
-    Res::text(json_enc(['name' => $name, 'short_name' => mb_strlen($name) > 14 ? explode(' ', $name)[0] : $name, 'description' => $site['business']['tagline'], 'start_url' => '/', 'display' => 'standalone', 'background_color' => '#09090b', 'theme_color' => $accent,
+    $accent = preg_match('/^#[0-9a-f]{6}$/i', (string)$site['theme']['accent']) ? $site['theme']['accent'] : '#2457E6';
+    Res::text(json_enc(['name' => $name, 'short_name' => mb_strlen($name) > 14 ? explode(' ', $name)[0] : $name, 'description' => $site['business']['tagline'], 'start_url' => '/', 'display' => 'standalone', 'background_color' => '#F7F9FC', 'theme_color' => $accent,
         'icons' => [['src' => '/favicon.svg', 'sizes' => 'any', 'type' => 'image/svg+xml'], ['src' => '/assets/img/icon-192.png', 'sizes' => '192x192', 'type' => 'image/png'], ['src' => '/assets/img/icon-512.png', 'sizes' => '512x512', 'type' => 'image/png']]]), 'application/manifest+json; charset=utf-8');
 });
 

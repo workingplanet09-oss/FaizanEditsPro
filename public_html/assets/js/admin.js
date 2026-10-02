@@ -135,7 +135,7 @@
       var items = parsed(), t = totals(items), m = function (n) { return FE.esc(FE.money(n, cur)); };
       if (!items.length) { prev.innerHTML = '<p class="text-sm text-muted">Add a line item to see totals.</p>'; }
       else {
-        var row = function (k, v, strong, muted) { return '<div class="flex items-baseline justify-between gap-4' + (strong ? " border-t border-line pt-2 text-base font-extrabold" : "") + (muted ? " text-muted" : "") + '"><dt' + (!strong ? ' class="text-muted"' : "") + ">" + k + '</dt><dd class="tabular-nums">' + v + "</dd></div>"; };
+        var row = function (k, v, strong, muted) { return '<div class="flex items-baseline justify-between gap-4' + (strong ? " border-t border-line pt-2 text-base font-bold" : "") + (muted ? " text-muted" : "") + '"><dt' + (!strong ? ' class="text-muted"' : "") + ">" + k + '</dt><dd class="tabular-nums">' + v + "</dd></div>"; };
         var h = '<table class="w-full text-left text-sm"><thead><tr class="border-b border-line text-xs font-semibold text-subtle"><th class="py-2 pr-2 font-semibold">Description</th><th class="py-2 pr-2 text-right font-semibold">Qty</th><th class="py-2 text-right font-semibold">Amount</th></tr></thead><tbody class="divide-y divide-line">'
           + items.map(function (l) { return '<tr><td class="py-2 pr-2 font-medium">' + FE.esc(l.description) + '</td><td class="py-2 pr-2 text-right tabular-nums text-muted">' + FE.esc(l.quantity) + '</td><td class="py-2 text-right tabular-nums">' + m(Math.round(l.quantity * l.unitPrice)) + "</td></tr>"; }).join("") + "</tbody></table>";
         h += '<dl class="ml-auto mt-4 w-full space-y-1.5 text-sm">' + row("Subtotal", m(t.subtotal)) + (t.discount > 0 ? row("Discount", "− " + m(t.discount)) : "") + (t.tax > 0 ? row("Tax (" + (t.bps / 100) + "%)", m(t.tax)) : "") + row("Total", m(t.total), true);
@@ -197,9 +197,9 @@
   var UI = (FE.ui = {});
   UI.INPUT = INPUT;
   UI.btnClass = function (variant, size) {
-    var sz = { xs: "h-7 px-2.5 text-xs rounded-lg", sm: "h-9 px-3.5 text-sm rounded-xl", md: "h-11 px-5 text-sm rounded-xl" }[size || "md"];
-    var v = { primary: "bg-accent text-accent-fg hover:brightness-105", dark: "bg-fg text-bg hover:opacity-90", outline: "border border-line-strong text-fg hover:bg-surface-2", ghost: "text-muted hover:text-fg hover:bg-surface-2", danger: "bg-danger-soft text-danger hover:bg-danger hover:text-white", secondary: "bg-surface-2 text-fg hover:bg-line" }[variant || "primary"];
-    return "relative inline-flex items-center justify-center gap-2 whitespace-nowrap font-semibold select-none transition duration-200 active:scale-[0.98] disabled:pointer-events-none disabled:opacity-50 " + sz + " " + v;
+    var sz = { xs: "h-9 px-3 text-sm rounded-xl", sm: "h-11 px-4 text-base rounded-xl", md: "h-11 px-5 text-base rounded-xl" }[size || "md"];
+    var v = { primary: "bg-accent text-accent-fg hover:bg-accent-hover", dark: "bg-accent text-accent-fg hover:bg-accent-hover", outline: "border border-line-strong bg-surface text-fg hover:bg-surface-2", ghost: "text-fg hover:bg-surface-2", danger: "bg-danger-soft text-danger hover:bg-danger hover:text-white", secondary: "bg-surface-2 text-fg hover:bg-line" }[variant || "primary"];
+    return "relative inline-flex items-center justify-center gap-2 whitespace-nowrap font-semibold select-none transition-colors duration-150 disabled:pointer-events-none disabled:opacity-50 " + sz + " " + v;
   };
   UI.btn = function (label, o) {
     o = o || {};

@@ -382,19 +382,19 @@ function client_home(Actor $actor): array
         $l = $latest[$p['id']] ?? null;
         $st = $p['status'];
         if ($st === 'ONBOARDING') {
-            $attention[] = ['key' => "s-{$p['id']}", 'kind' => 'setup', 'title' => 'Set up your project', 'detail' => "{$p['name']} — tell us exactly what you want", 'cta' => 'Continue project setup', 'href' => "/dashboard/projects/{$p['id']}/setup", 'tone' => 'accent'];
+            $attention[] = ['key' => "s-{$p['id']}", 'kind' => 'setup', 'title' => 'Set up your project', 'detail' => "{$p['name']} — tell me exactly what you want", 'cta' => 'Continue project setup', 'href' => "/dashboard/projects/{$p['id']}/setup", 'tone' => 'accent'];
         }
         if ($st === 'AWAITING_ASSETS') {
-            $attention[] = ['key' => "a-{$p['id']}", 'kind' => 'files', 'title' => 'Upload your files', 'detail' => "{$p['name']} — we start as soon as your footage arrives", 'cta' => 'Upload files', 'href' => "/dashboard/projects/{$p['id']}?tab=files", 'tone' => 'warning'];
+            $attention[] = ['key' => "a-{$p['id']}", 'kind' => 'files', 'title' => 'Upload your files', 'detail' => "{$p['name']} — I start as soon as your footage arrives", 'cta' => 'Upload files', 'href' => "/dashboard/projects/{$p['id']}?tab=files", 'tone' => 'warning'];
         }
         if (in_array($st, ['CLIENT_REVIEW', 'FINAL_REVIEW'], true) && $l) {
             $attention[] = ['key' => "r-{$p['id']}", 'kind' => $st === 'FINAL_REVIEW' ? 'approve' : 'review', 'title' => $st === 'FINAL_REVIEW' ? 'Your final video is ready for approval' : 'Your draft is waiting for review', 'detail' => "{$p['name']} · {$l['label']}", 'cta' => 'Review video', 'href' => "/dashboard/projects/{$p['id']}/review/{$l['id']}", 'tone' => 'warning'];
         }
         if ($st === 'APPROVED') {
-            $attention[] = ['key' => "dl-{$p['id']}", 'kind' => 'download', 'title' => "We're preparing your final files", 'detail' => $p['name'], 'cta' => 'Open project', 'href' => "/dashboard/projects/{$p['id']}?tab=delivery", 'tone' => 'success'];
+            $attention[] = ['key' => "dl-{$p['id']}", 'kind' => 'download', 'title' => "I’m preparing your final files", 'detail' => $p['name'], 'cta' => 'Open project', 'href' => "/dashboard/projects/{$p['id']}?tab=delivery", 'tone' => 'success'];
         }
         if ($st === 'DELIVERED' && $p['deliveredAt'] && now_ms() - (int)ts_ms($p['deliveredAt']) < 14 * 86400000) {
-            $attention[] = ['key' => "dv-{$p['id']}", 'kind' => 'download', 'title' => 'Your final files are ready', 'detail' => $p['name'], 'cta' => 'Download files', 'href' => "/dashboard/projects/{$p['id']}?tab=delivery", 'tone' => 'success'];
+            $attention[] = ['key' => "dv-{$p['id']}", 'kind' => 'download', 'title' => 'Your final files are ready', 'detail' => $p['name'], 'cta' => 'Download final files', 'href' => "/dashboard/projects/{$p['id']}?tab=delivery", 'tone' => 'success'];
         }
     }
     foreach ($fileReqs as $f) {

@@ -45,7 +45,7 @@
 
   FE.components.uploader = function (root, props) {
     var purpose = props.purpose || "asset", multiple = props.multiple !== false, maxFiles = props.maxFiles || 50, seq = 0, items = [];
-    var zone = FE.h("div", { class: "relative rounded-2xl border-2 border-dashed border-line-strong bg-surface-2/40 text-center transition hover:border-subtle " + (props.compact ? "p-5" : "p-8") });
+    var zone = FE.h("div", { class: "relative rounded-2xl border-2 border-dashed border-line-strong bg-surface-2/40 text-center transition hover:border-subtle " + (props.compact ? "p-6" : "p-8") });
     var input = FE.h("input", { type: "file", class: "sr-only", "aria-label": props.title || "Choose files to upload" });
     if (multiple) input.multiple = true;
     if (props.accept) input.setAttribute("accept", props.accept);

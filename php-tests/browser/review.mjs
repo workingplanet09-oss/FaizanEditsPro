@@ -65,11 +65,11 @@ await page.locator("[data-filter=all]").click();
 const attack = await page.evaluate(async (id) => { const c = document.cookie.match(/fe_csrf=([^;]+)/)[1]; const r = await fetch(`/api/video-comments/${id}`, { method: "PATCH", headers: { "Content-Type": "application/json", "X-CSRF-Token": decodeURIComponent(c) }, body: JSON.stringify({ status: "RESOLVED" }) }); return r.status; }, (await page.locator("article").first().getAttribute("id")).replace("c-", ""));
 check("server refuses a client resolving a note by calling the API directly", attack === 403, String(attack));
 
-console.log("Request changes");
-await page.getByRole("button", { name: /Request changes/ }).click();
+console.log("Leave feedback");
+await page.getByRole("button", { name: /Leave feedback/ }).click();
 check("modal shows the revision round counter", (await page.locator("#changes-modal").innerText()).includes("round 1 of"));
 await page.fill("#f-description", "Overall pacing feels slow in the middle.");
-await page.getByRole("button", { name: "Send changes" }).click();
+await page.getByRole("button", { name: "Send feedback" }).click();
 await page.waitForURL(`**/dashboard/projects/${S.projectId}`, { timeout: 10000 }).catch(() => {});
 check("changes sent and project moved to revision", page.url().endsWith(S.projectId) && (await body(page)).toLowerCase().includes("revision"), page.url());
 await page.goto(`${BASE}/dashboard/projects/${S.projectId}/review/${S.versionId}`, { waitUntil: "load" });

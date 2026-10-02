@@ -68,7 +68,7 @@
       items.forEach(function (m, i) {
         var prev = items[i - 1], grouped = prev && prev.sender.id === m.sender.id && new Date(m.createdAt) - new Date(prev.createdAt) < 300000;
         html += '<div class="flex gap-3 ' + (m.mine ? "flex-row-reverse " : "") + (grouped ? "-mt-2.5" : "") + '"><div class="w-8 shrink-0">' + (grouped ? "" : avatar(m.sender)) + '</div><div class="max-w-[85%] min-w-0 ' + (m.mine ? "text-right" : "") + '">' +
-          (grouped ? "" : '<div class="mb-1 flex items-baseline gap-2 text-xs ' + (m.mine ? "flex-row-reverse" : "") + '"><span class="font-bold">' + (m.mine ? "You" : esc(m.sender.name)) + "</span>" + (m.sender.isStaff && !m.mine ? '<span class="rounded bg-accent-soft px-1.5 py-0.5 text-[10px] font-bold uppercase tracking-wide">Studio</span>' : "") + '<span class="text-subtle" data-ago="' + esc(new Date(m.createdAt).toISOString()) + '"></span></div>') +
+          (grouped ? "" : '<div class="mb-1 flex items-baseline gap-2 text-xs ' + (m.mine ? "flex-row-reverse" : "") + '"><span class="font-bold">' + (m.mine ? "You" : esc(m.sender.name)) + "</span>" + (m.sender.isStaff && !m.mine ? '<span class="rounded bg-accent-soft px-1.5 py-0.5 text-xs font-bold ">Studio</span>' : "") + '<span class="text-subtle" data-ago="' + esc(new Date(m.createdAt).toISOString()) + '"></span></div>') +
           '<div class="inline-block whitespace-pre-wrap break-words rounded-2xl px-4 py-2.5 text-left text-sm leading-relaxed ' + (m.mine ? "rounded-tr-md bg-fg text-bg" : "rounded-tl-md bg-surface-2") + '">' + esc(m.body) + "</div>" +
           (m.attachments && m.attachments.length ? '<ul class="mt-1.5 space-y-1">' + m.attachments.map(function (a) { return '<li class="inline-flex items-center gap-2 rounded-lg border border-line bg-surface px-2.5 py-1.5 text-xs">' + FE.icon("file", 13) + esc(a.name) + "</li>"; }).join("") + "</ul>" : "") + "</div></div>";
       });
@@ -165,17 +165,17 @@
   FE.components["two-factor"] = function (root, p) {
     var inputCls = "h-11 rounded-xl border border-line-strong bg-surface px-3.5 text-sm focus:border-accent focus:outline-none focus:ring-4 focus:ring-accent/20";
     function btn(label, cls, fn, icon) { var b = FE.h("button", { type: "button", class: cls, onclick: function () { fn(b); } }); b.innerHTML = (icon ? FE.icon(icon, 16) : "") + esc(label); return b; }
-    var primary = "inline-flex h-11 items-center justify-center gap-2 whitespace-nowrap rounded-xl bg-accent px-5 text-sm font-semibold text-accent-fg hover:brightness-105 disabled:opacity-50";
+    var primary = "inline-flex h-11 items-center justify-center gap-2 whitespace-nowrap rounded-xl bg-accent px-5 text-base font-semibold text-accent-fg hover:bg-accent-hover disabled:opacity-50";
     function show(node) { root.innerHTML = ""; root.appendChild(node); }
     function errLine(holder, msg) { holder.textContent = msg || ""; holder.classList.toggle("hidden", !msg); }
     function home() {
       if (!p.enabled) { show(btn("Set up two-factor authentication", primary, begin, "shield")); return; }
-      show(btn("Turn off two-factor", "inline-flex h-11 items-center justify-center rounded-xl border border-line-strong px-5 text-sm font-semibold hover:bg-surface-2", off));
+      show(btn("Turn off two-factor", "inline-flex h-11 items-center justify-center rounded-xl border border-line-strong px-5 text-base font-semibold hover:bg-surface-2", off));
     }
     function begin(b) {
       FE.busy(b, true);
       FE.api("/api/auth/2fa/setup", { body: {} }).then(function (r) {
-        var code = FE.h("input", { "aria-label": "6-digit code", inputmode: "numeric", autocomplete: "one-time-code", class: inputCls + " font-mono tracking-widest", placeholder: "123456" }), er = FE.h("p", { role: "alert", class: "hidden text-sm font-medium text-danger" });
+        var code = FE.h("input", { "aria-label": "6-digit code", inputmode: "numeric", autocomplete: "one-time-code", class: inputCls + " font-mono ", placeholder: "123456" }), er = FE.h("p", { role: "alert", class: "hidden text-sm font-medium text-danger" });
         var go = btn("Turn on", primary, function (gb) {
           FE.busy(gb, true);
           FE.api("/api/auth/2fa/enable", { body: { code: code.value.trim() } }).then(function (res) { recovery(res.recoveryCodes); }, function (e) { FE.busy(gb, false); errLine(er, e.message); });
@@ -187,19 +187,19 @@
       }, function (e) { FE.busy(b, false); FE.toast.error("Couldn't start setup", e.message); });
     }
     function recovery(codes) {
-      var box = FE.h("div", { class: "rounded-2xl border border-warning/40 bg-warning-soft/60 p-5" }, FE.h("h3", { class: "font-extrabold" }, "Save your recovery codes"),
+      var box = FE.h("div", { class: "rounded-2xl border border-warning/40 bg-warning-soft/60 p-6" }, FE.h("h3", { class: "font-bold" }, "Save your recovery codes"),
         FE.h("p", { class: "mt-1 text-sm text-muted" }, "Each code works once if you lose your phone. This is the only time they're shown."),
         FE.h("ul", { class: "mt-4 grid grid-cols-2 gap-2 font-mono text-sm sm:grid-cols-4" }, codes.map(function (c) { return FE.h("li", { class: "rounded-lg bg-surface px-3 py-2 text-center" }, c); })),
-        FE.h("div", { class: "mt-4 flex gap-2" }, btn("Copy all", "inline-flex h-11 items-center gap-2 rounded-xl bg-fg px-5 text-sm font-semibold text-bg", function () { if (navigator.clipboard) navigator.clipboard.writeText(codes.join("\n")); FE.toast.success("Copied to clipboard"); }, "copy"),
-          btn("I've saved them", "inline-flex h-11 items-center rounded-xl px-5 text-sm font-semibold text-muted hover:bg-surface-2", function () { FE.refresh(); })));
+        FE.h("div", { class: "mt-4 flex gap-2" }, btn("Copy all", "inline-flex h-11 items-center gap-2 rounded-xl bg-fg px-5 text-base font-semibold text-bg", function () { if (navigator.clipboard) navigator.clipboard.writeText(codes.join("\n")); FE.toast.success("Copied to clipboard"); }, "copy"),
+          btn("I've saved them", "inline-flex h-11 items-center rounded-xl px-5 text-base font-semibold text-muted hover:bg-surface-2", function () { FE.refresh(); })));
       show(box);
     }
     function off() {
       var pw = FE.h("input", { type: "password", autocomplete: "current-password", class: inputCls + " w-full", "aria-label": "Password" }), code = FE.h("input", { inputmode: "numeric", class: inputCls + " w-full", "aria-label": "Authenticator code" }), er = FE.h("p", { role: "alert", class: "hidden text-sm font-medium text-danger" });
       show(FE.h("div", { class: "max-w-md space-y-3" }, er, FE.h("label", { class: "block text-sm font-semibold" }, "Password", pw), FE.h("label", { class: "block text-sm font-semibold" }, "Authenticator code", code),
-        FE.h("div", { class: "flex gap-2" }, btn("Turn off 2FA", "inline-flex h-11 items-center rounded-xl bg-danger-soft px-5 text-sm font-semibold text-danger hover:bg-danger hover:text-white", function (b) {
+        FE.h("div", { class: "flex gap-2" }, btn("Turn off 2FA", "inline-flex h-11 items-center rounded-xl bg-danger-soft px-5 text-base font-semibold text-danger hover:bg-danger hover:text-white", function (b) {
           FE.busy(b, true); FE.api("/api/auth/2fa/disable", { body: { password: pw.value, code: code.value.trim() } }).then(function () { FE.flash("success", "Two-factor authentication turned off"); FE.refresh(); }, function (e) { FE.busy(b, false); errLine(er, e.message); });
-        }), btn("Cancel", "inline-flex h-11 items-center rounded-xl px-5 text-sm font-semibold text-muted hover:bg-surface-2", home))));
+        }), btn("Cancel", "inline-flex h-11 items-center rounded-xl px-5 text-base font-semibold text-muted hover:bg-surface-2", home))));
     }
     home();
   };

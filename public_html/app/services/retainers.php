@@ -145,7 +145,7 @@ function start_retainer_project(Actor $actor, string $retainerId, array $in): ar
     $kind = $in['kind'] ?? 'VIDEO';
     $left = $kind === 'SHORT' ? $allowance['remaining']['shorts'] : $allowance['remaining']['videos'];
     if ($left <= 0) {
-        throw new AppError('CONFLICT', "You've used this month's included edits. Message us and we'll quote the extra work, or wait for your renewal.");
+        throw new AppError('CONFLICT', "You've used this month's included edits. Message me and I’ll quote the extra work, or wait for your renewal.");
     }
     $project = create_project($actor->isStaff ? $actor : system_actor($actor->name), [
         'clientId' => $r['clientId'], 'name' => $in['name'], 'description' => $in['description'] ?? null, 'status' => 'ONBOARDING', 'clientVisible' => true, 'retainerId' => $retainerId,

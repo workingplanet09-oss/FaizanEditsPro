@@ -43,7 +43,7 @@ function client_stepper(string $status, bool $compact = false): string
     foreach (client_steps() as $i => $s) {
         $state = $done || $i < $idx ? 'done' : ($i === $idx ? 'current' : 'todo');
         $h .= '<li' . ($state === 'current' ? ' aria-current="step"' : '') . ' class="min-w-0"><div class="h-1.5 rounded-full ' . ($state === 'todo' ? 'bg-surface-2' : ($state === 'current' ? 'bg-accent' : 'bg-fg')) . '"></div>'
-            . (!$compact ? '<div class="mt-2 truncate text-[11px] font-semibold ' . ($state === 'current' ? 'text-fg' : 'text-subtle') . '"><span class="sr-only">' . ($state === 'done' ? 'Completed: ' : ($state === 'current' ? 'Current: ' : 'Upcoming: ')) . '</span>' . e($s['label']) . '</div>' : '') . '</li>';
+            . (!$compact ? '<div class="mt-2 truncate text-xs font-semibold ' . ($state === 'current' ? 'text-fg' : 'text-subtle') . '"><span class="sr-only">' . ($state === 'done' ? 'Completed: ' : ($state === 'current' ? 'Current: ' : 'Upcoming: ')) . '</span>' . e($s['label']) . '</div>' : '') . '</li>';
     }
     return $h . '</ol>';
 }
@@ -56,14 +56,14 @@ function project_card(array $p, string $base = '/dashboard'): string
     $late = $left !== null && $left < 0 && !in_array($p['status'], ['DELIVERED', 'ARCHIVED', 'CANCELLED', 'APPROVED'], true);
     $reviewable = !empty($p['latestVersion']) && in_array($p['status'], ['CLIENT_REVIEW', 'FINAL_REVIEW'], true);
     $deadline = $p['deadline'] ? (in_array($p['status'], ['DELIVERED', 'ARCHIVED'], true) ? 'Delivered' : relative_deadline($p['deadline'])) : 'No deadline yet';
-    return '<div class="group relative flex flex-col rounded-[var(--radius-card)] border border-line bg-surface p-5 shadow-soft transition duration-300 hover:-translate-y-0.5 hover:border-line-strong hover:shadow-lift">'
-        . '<div class="flex items-start justify-between gap-3"><div class="min-w-0"><div class="text-[11px] font-bold uppercase tracking-wider text-subtle">' . e($p['code'] . (!empty($p['service']) ? ' · ' . $p['service'] : '')) . '</div>'
-        . '<h3 class="mt-1 text-[17px] font-extrabold leading-snug tracking-tight"><a href="' . e($base . '/projects/' . $p['id']) . '" class="after:absolute after:inset-0 after:rounded-[inherit] focus-visible:outline-offset-4">' . e($p['name']) . '</a></h3></div>' . status_badge($p['status'], 'STATUS', true) . '</div>'
+    return '<div class="group relative flex flex-col rounded-[var(--radius-card)] border border-line bg-surface p-6 shadow-soft transition duration-300 hover:-translate-y-0.5 hover:border-line-strong hover:shadow-lift">'
+        . '<div class="flex items-start justify-between gap-3"><div class="min-w-0"><div class="text-xs font-bold text-subtle">' . e($p['code'] . (!empty($p['service']) ? ' · ' . $p['service'] : '')) . '</div>'
+        . '<h3 class="mt-1 text-[17px] font-bold leading-snug tracking-tight"><a href="' . e($base . '/projects/' . $p['id']) . '" class="after:absolute after:inset-0 after:rounded-[inherit] focus-visible:outline-offset-4">' . e($p['name']) . '</a></h3></div>' . status_badge($p['status'], 'STATUS', true) . '</div>'
         . '<p class="mt-2 line-clamp-2 min-h-[2.5rem] text-sm text-muted">' . e($meta['clientNow']) . '</p><div class="mt-4">' . client_stepper($p['status'], true) . '</div>'
         . '<div class="mt-4 flex items-center justify-between gap-3 border-t border-line pt-3 text-xs text-muted"><span class="flex min-w-0 items-center gap-1.5">'
         . (!empty($p['editor']) ? ui_avatar($p['editor'], null, 20) . '<span class="truncate">' . e($p['editor']) . '</span>' : '<span class="text-subtle">Editor being assigned</span>') . '</span>'
         . '<span class="shrink-0 font-semibold ' . ($late ? 'text-danger' : 'text-muted') . '">' . e($deadline) . '</span></div>'
-        . ($reviewable ? '<a href="' . e($base . '/projects/' . $p['id'] . '/review/' . $p['latestVersion']['id']) . '" class="relative z-10 mt-4 inline-flex h-10 items-center justify-center gap-2 rounded-xl bg-accent text-sm font-bold text-accent-fg transition hover:brightness-105">' . icon('play', 15) . ' Review ' . e($p['latestVersion']['label']) . '</a>' : '')
+        . ($reviewable ? '<a href="' . e($base . '/projects/' . $p['id'] . '/review/' . $p['latestVersion']['id']) . '" class="relative z-10 mt-4 inline-flex h-10 items-center justify-center gap-2 rounded-xl bg-accent text-sm font-bold text-accent-fg transition hover:bg-accent-hover">' . icon('play', 15) . ' Review ' . e($p['latestVersion']['label']) . '</a>' : '')
         . '</div>';
 }
 
@@ -76,7 +76,7 @@ function activity_feed(array $items, bool $showProject = true, string $empty = '
     $h = '<ol class="relative space-y-0 px-5 pb-2"><span aria-hidden="true" class="absolute bottom-4 left-[29px] top-3 w-px bg-line"></span>';
     foreach ($items as $a) {
         $h .= '<li class="relative flex gap-3 py-2.5"><span aria-hidden="true" class="z-10 mt-1 h-2.5 w-2.5 shrink-0 rounded-full border-2 border-surface ' . (!empty($a['internal']) ? 'bg-warning' : 'bg-accent') . '" style="box-shadow:0 0 0 3px var(--surface)"></span>'
-            . '<div class="min-w-0 flex-1"><p class="text-sm leading-snug">' . e($a['message']) . (!empty($a['internal']) ? '<span class="ml-2 rounded bg-warning-soft px-1.5 py-0.5 text-[10px] font-bold uppercase text-warning">Internal</span>' : '') . '</p>'
+            . '<div class="min-w-0 flex-1"><p class="text-sm leading-snug">' . e($a['message']) . (!empty($a['internal']) ? '<span class="ml-2 rounded bg-warning-soft px-1.5 py-0.5 text-xs font-bold text-warning">Internal</span>' : '') . '</p>'
             . '<p class="mt-0.5 text-xs text-subtle">' . ago($a['at']) . (!empty($a['by']) ? ' · ' . e($a['by']) : '')
             . ($showProject && !empty($a['project']) ? ' · <a class="hover:text-fg hover:underline" href="' . e($projectBase . $a['project']['id']) . '">' . e($a['project']['name']) . '</a>' : '') . '</p></div></li>';
     }
@@ -91,7 +91,7 @@ function attention_list(array $items): string
     $h = '<ul class="grid grid-cols-1 gap-3 md:grid-cols-2 xl:grid-cols-3">';
     foreach ($items as $a) {
         $h .= '<li><a href="' . e($a['href']) . '" class="group flex h-full items-start gap-3.5 rounded-2xl border p-4 transition hover:-translate-y-0.5 hover:shadow-lift ' . ($tone[$a['tone']] ?? $tone['accent']) . '">'
-            . '<span class="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-surface shadow-soft">' . icon(ATTN_ICON[$a['kind']] ?? 'bell', 18) . '</span><span class="min-w-0 flex-1"><span class="block text-sm font-extrabold leading-snug">' . e($a['title']) . '</span>'
+            . '<span class="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-surface shadow-soft">' . icon(ATTN_ICON[$a['kind']] ?? 'bell', 18) . '</span><span class="min-w-0 flex-1"><span class="block text-sm font-bold leading-snug">' . e($a['title']) . '</span>'
             . '<span class="mt-0.5 block truncate text-xs text-muted">' . e($a['detail']) . '</span><span class="mt-2 inline-flex items-center gap-1 text-xs font-bold group-hover:underline">' . e($a['cta']) . ' ' . icon('arrow', 12) . '</span></span></a></li>';
     }
     return $h . '</ul>';
@@ -113,7 +113,7 @@ function card(string $bodyHtml, string $class = '', ?string $title = null, ?stri
 function checklist_card(array $c): string
 {
     $pct = $c['total'] ? round($c['done'] / $c['total'] * 100) : 0;
-    $h = '<div class="px-5 pb-5"><div class="mb-4 h-1.5 overflow-hidden rounded-full bg-surface-2"><div class="h-full rounded-full bg-accent" style="width:' . $pct . '%"></div></div><ul class="space-y-1.5">';
+    $h = '<div class="px-6 pb-6"><div class="mb-4 h-1.5 overflow-hidden rounded-full bg-surface-2"><div class="h-full rounded-full bg-accent" style="width:' . $pct . '%"></div></div><ul class="space-y-1.5">';
     foreach ($c['items'] as $i) {
         if (!empty($i['done']) || empty($i['href'])) {
             $h .= '<li><div class="flex items-center gap-2.5 py-1 text-sm"><span class="' . (!empty($i['done']) ? 'text-success' : 'text-subtle') . '">' . icon(!empty($i['done']) ? 'check-circle' : 'clock', 16) . '</span><span class="' . (!empty($i['done']) ? 'text-muted line-through decoration-line-strong' : '') . '">' . e($i['label']) . '</span></div></li>';

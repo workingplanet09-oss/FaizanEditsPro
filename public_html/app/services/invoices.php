@@ -181,7 +181,7 @@ function start_checkout(Actor $actor, string $invoiceId): array
         throw new AppError('CONFLICT', $inv['status'] === 'PAID' ? 'This invoice is already paid.' : "This invoice can't be paid right now.");
     }
     if (!online_payments_available()) {
-        throw new AppError('NOT_CONFIGURED', "Online payment isn't set up. Please message us to arrange payment.");
+        throw new AppError('NOT_CONFIGURED', "Online payment isn't set up. Please message me to arrange payment.");
     }
     $client = Db::first('clients', ['id' => $inv['clientId']]);
     return payment_create_checkout([

@@ -103,7 +103,11 @@ function list_public_portfolio(array $opts = []): array
 {
     $sql = "`workspaceId` = ? AND `status` = 'PUBLISHED'" . demo_only_sql();
     $params = [workspace_id()];
-    if (!empty($opts['category'])) {
+    if (!empty($opts['categories'])) {
+        [$ph, $pp] = Db::in((array)$opts['categories']);
+        $sql .= " AND `category` IN {$ph}";
+        array_push($params, ...$pp);
+    } elseif (!empty($opts['category'])) {
         $sql .= ' AND `category` = ?';
         $params[] = $opts['category'];
     }
@@ -112,7 +116,7 @@ function list_public_portfolio(array $opts = []): array
     }
     $rows = Db::find('portfolio_projects', ['sql' => $sql, 'params' => $params], ['order' => '`featured` DESC, `sortOrder` ASC'] + (!empty($opts['limit']) ? ['limit' => (int)$opts['limit']] : []));
     foreach ($rows as &$r) {
-        $cs = Db::first('case_studies', ['portfolioProjectId' => $r['id']], ['cols' => ['slug', 'status']]);
+        $cs = Db::first('case_studies', ['portfolioProjectId' => $r['id']], ['cols' => ['slug', 'status', 'objective', 'strategy', 'deliverables', 'results', 'timeline']]);
         $r['caseStudy'] = $cs;
     }
     return $rows;
@@ -147,7 +151,11 @@ function list_public_faqs(array $opts = []): array
 {
     $sql = '`workspaceId` = ? AND `published` = 1';
     $params = [workspace_id()];
-    if (!empty($opts['category'])) {
+    if (!empty($opts['categories'])) {
+        [$ph, $pp] = Db::in((array)$opts['categories']);
+        $sql .= " AND `category` IN {$ph}";
+        array_push($params, ...$pp);
+    } elseif (!empty($opts['category'])) {
         $sql .= ' AND `category` = ?';
         $params[] = $opts['category'];
     }

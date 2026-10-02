@@ -130,5 +130,5 @@ function donut_chart(array $data, string $label, ?string $centerHtml = null): st
 
 function chart_card(string $title, string $bodyHtml, ?string $subtitle = null, ?string $actionHtml = null, string $class = ''): string
 {
-    return '<section class="' . e(cx('rounded-[var(--radius-card)] border border-line bg-surface p-5 shadow-soft', $class)) . '"><div class="mb-4 flex items-start justify-between gap-3"><div><h3 class="text-base font-extrabold leading-tight">' . e($title) . '</h3>' . ($subtitle ? '<p class="mt-0.5 text-xs text-subtle">' . e($subtitle) . '</p>' : '') . '</div>' . $actionHtml . '</div>' . $bodyHtml . '</section>';
+    return '<section class="' . e(cx('rounded-[var(--radius-card)] border border-line bg-surface p-6 shadow-soft', $class)) . '"><div class="mb-4 flex items-start justify-between gap-3"><div><h3 class="text-base font-bold leading-tight">' . e($title) . '</h3>' . ($subtitle ? '<p class="mt-0.5 text-xs text-subtle">' . e($subtitle) . '</p>' : '') . '</div>' . $actionHtml . '</div>' . $bodyHtml . '</section>';
 }

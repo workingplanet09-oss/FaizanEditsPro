@@ -59,12 +59,12 @@ function card_class(string $extra = '', bool $hover = false): string
 
 function ui_card_header(string $title, ?string $description = null, ?string $actionHtml = null, string $class = ''): string
 {
-    return '<div class="' . e(cx('flex items-start justify-between gap-4 px-5 pt-5 pb-3', $class)) . '"><div class="min-w-0"><h3 class="text-base font-bold leading-tight">' . e($title) . '</h3>'
+    return '<div class="' . e(cx('flex items-start justify-between gap-4 px-6 pt-6 pb-3', $class)) . '"><div class="min-w-0"><h3 class="font-display text-lg font-bold leading-tight">' . e($title) . '</h3>'
         . ($description ? '<p class="mt-1 text-sm text-muted">' . e($description) . '</p>' : '') . '</div>' . ($actionHtml ? '<div class="shrink-0">' . $actionHtml . '</div>' : '') . '</div>';
 }
 
 // ─────────── Badge / Avatar / Progress ───────────
-const TONE_CLASS = ['neutral' => 'bg-surface-2 text-muted', 'info' => 'bg-info-soft text-info', 'warning' => 'bg-warning-soft text-warning', 'success' => 'bg-success-soft text-success', 'danger' => 'bg-danger-soft text-danger', 'accent' => 'bg-accent-soft text-fg'];
+const TONE_CLASS = ['neutral' => 'bg-surface-2 text-fg', 'info' => 'bg-info-soft text-info', 'warning' => 'bg-warning-soft text-warning', 'success' => 'bg-success-soft text-success', 'danger' => 'bg-danger-soft text-danger', 'accent' => 'bg-accent-soft text-fg'];
 const TONE_ICON = ['neutral' => 'clock', 'info' => 'info', 'warning' => 'alert', 'success' => 'check-circle', 'danger' => 'warning', 'accent' => 'sparkles'];
 
 /** Status pill: text + icon, never colour alone. $icon: icon name, false for none. */
@@ -98,14 +98,14 @@ function ui_empty(string $title, ?string $description = null, string $iconName =
 function ui_page_header(string $title, ?string $description = null, ?string $actionsHtml = null, ?string $eyebrow = null, string $class = ''): string
 {
     return '<div class="' . e(cx('mb-6 flex flex-col gap-4 sm:flex-row sm:items-end sm:justify-between', $class)) . '"><div class="min-w-0">' . ($eyebrow ? '<div class="eyebrow mb-1.5">' . e($eyebrow) . '</div>' : '')
-        . '<h1 class="text-2xl font-extrabold tracking-tight sm:text-3xl">' . e($title) . '</h1>' . ($description ? '<p class="mt-1.5 max-w-2xl text-sm text-muted sm:text-[15px]">' . e($description) . '</p>' : '') . '</div>'
+        . '<h1 class="text-2xl font-bold tracking-tight sm:text-3xl">' . e($title) . '</h1>' . ($description ? '<p class="mt-1.5 max-w-2xl text-sm text-muted sm:text-[15px]">' . e($description) . '</p>' : '') . '</div>'
         . ($actionsHtml ? '<div class="flex flex-wrap items-center gap-2">' . $actionsHtml . '</div>' : '') . '</div>';
 }
 
 /** $value / $sub: trusted markup or plain text already escaped by the caller. */
 function ui_stat(string $label, string $valueHtml, ?string $subHtml = null, ?string $tone = null, ?string $iconName = null, ?string $href = null): string
 {
-    $inner = '<div class="flex items-start justify-between gap-3"><div class="min-w-0"><div class="text-xs font-medium text-muted">' . e($label) . '</div><div class="mt-1.5 truncate text-2xl font-extrabold tracking-tight tabular-nums">' . $valueHtml . '</div>'
+    $inner = '<div class="flex items-start justify-between gap-3"><div class="min-w-0"><div class="text-xs font-medium text-muted">' . e($label) . '</div><div class="mt-1.5 truncate text-2xl font-bold tracking-tight tabular-nums">' . $valueHtml . '</div>'
         . ($subHtml ? '<div class="mt-1 text-xs text-subtle">' . $subHtml . '</div>' : '') . '</div>'
         . ($iconName ? '<span class="' . e(cx('flex h-9 w-9 shrink-0 items-center justify-center rounded-xl', $tone ? (TONE_CLASS[$tone] ?? '') : 'bg-surface-2 text-muted')) . '">' . icon($iconName, 18) . '</span>' : '') . '</div>';
     $cls = 'block rounded-[var(--radius-card)] border border-line bg-surface p-4 shadow-soft transition hover:border-line-strong';
@@ -117,7 +117,7 @@ function ui_meta(string $label, ?string $valueHtml, string $class = ''): string
     return '<div class="' . e(cx('min-w-0', $class)) . '"><dt class="text-xs font-medium text-subtle">' . e($label) . '</dt><dd class="mt-0.5 break-words text-sm font-medium">' . (($valueHtml !== null && $valueHtml !== '') ? $valueHtml : '<span class="text-subtle">—</span>') . '</dd></div>';
 }
 
-function ui_kbd(string $text): string { return '<kbd class="rounded-md border border-line-strong bg-surface-2 px-1.5 py-0.5 font-sans text-[11px] font-semibold text-muted">' . e($text) . '</kbd>'; }
+function ui_kbd(string $text): string { return '<kbd class="rounded-md border border-line-strong bg-surface-2 px-1.5 py-0.5 font-sans text-xs font-semibold text-muted">' . e($text) . '</kbd>'; }
 
 /** "5m ago" that the browser keeps fresh; the server-rendered text is the fallback. */
 function ago(mixed $value, string $prefix = '', string $suffix = '', string $class = ''): string
@@ -145,17 +145,17 @@ function local_time(mixed $value, string $format = 'datetime', string $class = '
 function btn_class(string $variant = 'primary', string $size = 'md', string $extra = ''): string
 {
     $hasDisplay = $extra !== '' && preg_match('/(^|\s)(hidden|block|flex|inline|inline-block|inline-flex|grid)(\s|$)/', $extra);
+    // Brand buttons: Inter 600 at 16 px, 12 px radius, 44–48 px tall (xs = dense admin tables only), colour change in 150 ms, clear keyboard focus (global :focus-visible)
     return cx(
         !$hasDisplay ? 'inline-flex' : '',
-        'relative items-center justify-center gap-2 whitespace-nowrap font-semibold select-none transition-[background,transform,box-shadow,color,border-color] duration-200 active:scale-[0.98] disabled:pointer-events-none disabled:opacity-50 rounded-xl',
-        match ($size) { 'xs' => 'h-7 px-2.5 text-xs rounded-lg', 'sm' => 'h-9 px-3.5 text-sm', 'lg' => 'h-13 px-7 text-base rounded-2xl', default => 'h-11 px-5 text-sm' },
+        'relative items-center justify-center gap-2 whitespace-nowrap rounded-xl font-semibold select-none transition-colors duration-150 disabled:pointer-events-none disabled:opacity-50',
+        match ($size) { 'xs' => 'h-9 px-3 text-sm', 'sm' => 'h-11 px-4 text-base', 'lg' => 'h-12 px-6 text-base', default => 'h-11 px-5 text-base' },
         match ($variant) {
-            'primary' => 'bg-accent text-accent-fg shadow-[0_1px_0_rgb(255_255_255/0.35)_inset,0_8px_20px_-8px_color-mix(in_srgb,var(--accent)_70%,transparent)] hover:brightness-105 hover:-translate-y-px',
-            'dark' => 'bg-fg text-bg hover:opacity-90',
-            'secondary' => 'bg-surface-2 text-fg hover:bg-line',
-            'soft' => 'bg-accent-soft text-fg hover:bg-[color-mix(in_srgb,var(--accent)_24%,transparent)]',
-            'outline' => 'border border-line-strong text-fg hover:bg-surface-2',
-            'ghost' => 'text-muted hover:text-fg hover:bg-surface-2',
+            'primary' => 'bg-accent text-accent-fg hover:bg-accent-hover',
+            'dark' => 'bg-accent text-accent-fg hover:bg-accent-hover',
+            'secondary', 'outline' => 'border border-line-strong bg-surface text-fg hover:bg-surface-2',
+            'soft' => 'bg-accent-soft text-fg hover:bg-[color-mix(in_srgb,var(--accent)_20%,transparent)]',
+            'ghost' => 'text-fg hover:bg-surface-2',
             'danger' => 'bg-danger-soft text-danger hover:bg-danger hover:text-white',
             default => '',
         },
@@ -207,7 +207,7 @@ function ui_action(string $url, string $label, array $o = []): string
 }
 
 // ─────────── Form controls ───────────
-const INPUT_BASE = 'w-full rounded-xl border border-line-strong bg-surface px-3.5 text-sm text-fg placeholder:text-subtle transition-[border-color,box-shadow] duration-150 hover:border-subtle focus:border-accent focus:outline-none focus:ring-4 focus:ring-[color-mix(in_srgb,var(--accent)_22%,transparent)] disabled:cursor-not-allowed disabled:opacity-60 aria-[invalid=true]:border-danger aria-[invalid=true]:ring-danger/20';
+const INPUT_BASE = 'w-full rounded-xl border border-line-strong bg-surface px-3.5 text-base text-fg placeholder:text-subtle transition-[border-color,box-shadow] duration-150 hover:border-subtle focus:border-accent focus:outline-none focus:ring-4 focus:ring-[color-mix(in_srgb,var(--accent)_22%,transparent)] disabled:cursor-not-allowed disabled:opacity-60 aria-[invalid=true]:border-danger aria-[invalid=true]:ring-danger/20';
 
 function ui_input(string $name, mixed $value = '', array $a = []): string
 {
@@ -311,7 +311,7 @@ function ui_tabs(array $tabs, string $active, string $basePath, string $param = 
     foreach ($tabs as $t) {
         $on = $t['key'] === $active;
         $li .= '<li><a href="' . e($href($t['key'])) . '"' . ($on ? ' aria-current="page"' : '') . ' class="' . e(cx('relative inline-flex items-center gap-2 whitespace-nowrap px-3.5 py-3 text-sm font-semibold transition-colors', $on ? 'text-fg' : 'text-muted hover:text-fg')) . '">' . e($t['label'])
-            . (!empty($t['count']) ? '<span class="rounded-full bg-surface-2 px-1.5 py-0.5 text-[11px] font-bold leading-none text-muted">' . e($t['count']) . '</span>' : '')
+            . (!empty($t['count']) ? '<span class="rounded-full bg-surface-2 px-1.5 py-0.5 text-xs font-bold leading-none text-muted">' . e($t['count']) . '</span>' : '')
             . (!empty($t['alert']) ? '<span aria-label="needs attention" class="h-2 w-2 rounded-full bg-accent"></span>' : '')
             . ($on ? '<span aria-hidden="true" class="absolute inset-x-2 -bottom-px h-0.5 rounded-full bg-accent"></span>' : '') . '</a></li>';
     }
@@ -450,21 +450,21 @@ function req_path(): string
 
 function theme_toggle(string $class = ''): string
 {
-    return '<button type="button" data-theme-toggle class="' . e(cx('flex h-9 w-9 items-center justify-center rounded-xl text-muted transition hover:bg-surface-2 hover:text-fg', $class)) . '" aria-label="Change theme">' . icon('monitor', 17) . '</button>';
+    return '<button type="button" data-theme-toggle class="' . e(cx('flex h-11 w-11 items-center justify-center rounded-xl text-muted transition-colors duration-150 hover:bg-surface-2 hover:text-fg', $class)) . '" aria-label="Change theme">' . icon('monitor', 17) . '</button>';
 }
 
 /** Centered card used by every sign-in / account screen. $footerHtml is trusted markup. */
 function auth_card(string $title, ?string $description, string $bodyHtml, ?string $footerHtml = null): string
 {
-    return '<div class="mx-auto w-full max-w-md"><div class="rounded-[var(--radius-card)] border border-line bg-surface p-7 shadow-soft sm:p-9"><h1 class="text-[1.75rem] font-extrabold leading-tight tracking-tight">' . e($title) . '</h1>'
-        . ($description ? '<p class="mt-2 text-sm leading-relaxed text-muted">' . e($description) . '</p>' : '') . '<div class="mt-7">' . $bodyHtml . '</div></div>'
-        . ($footerHtml ? '<div class="mt-6 text-center text-sm text-muted">' . $footerHtml . '</div>' : '') . '</div>';
+    return '<div class="mx-auto w-full max-w-md"><div class="rounded-[var(--radius-card)] border border-line bg-surface p-6 shadow-soft sm:p-8"><h1 class="font-display text-[1.75rem] font-bold leading-tight tracking-tight">' . e($title) . '</h1>'
+        . ($description ? '<p class="mt-2 text-base leading-relaxed text-muted">' . e($description) . '</p>' : '') . '<div class="mt-7">' . $bodyHtml . '</div></div>'
+        . ($footerHtml ? '<div class="mt-6 text-center text-base text-muted">' . $footerHtml . '</div>' : '') . '</div>';
 }
 
 function ui_notice(string $text, string $tone = 'info'): string
 {
     $c = ['success' => 'bg-success-soft text-success', 'danger' => 'bg-danger-soft text-danger', 'info' => 'bg-info-soft text-info'][$tone] ?? 'bg-info-soft text-info';
-    return '<p role="' . ($tone === 'danger' ? 'alert' : 'status') . '" class="mb-5 rounded-xl px-4 py-3 text-sm font-medium ' . $c . '">' . e($text) . '</p>';
+    return '<p role="' . ($tone === 'danger' ? 'alert' : 'status') . '" class="mb-5 rounded-xl px-4 py-3 text-base font-medium ' . $c . '">' . e($text) . '</p>';
 }
 
 /** Hidden field group that bots fill in and people never see. */

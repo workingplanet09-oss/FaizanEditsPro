@@ -172,7 +172,7 @@ page('/dashboard/projects/{id}/setup', function (Ctx $c) {
     }
     $prefill = inquiry_prefill($a);
     $props = ['mode' => 'project', 'form' => $data['form'], 'answers' => (object)$data['answers'], 'initialStep' => $data['step'], 'extraCategories' => $data['extraCategories'], 'exitHref' => "/dashboard/projects/{$id}", 'uploads' => ['purpose' => 'asset', 'projectId' => $id, 'folderKey' => 'references'],
-        'firstTime' => (bool)$data['firstTime'], 'submitLabel' => 'Submit project brief', 'previousProjects' => array_values(array_filter($prefill['previousProjects'], fn($p) => $p['id'] !== $id)), 'previousUrl' => '/api/leads/previous?projectId=',
+        'firstTime' => (bool)$data['firstTime'], 'submitLabel' => 'Send project details', 'previousProjects' => array_values(array_filter($prefill['previousProjects'], fn($p) => $p['id'] !== $id)), 'previousUrl' => '/api/leads/previous?projectId=',
         'saveUrl' => "/api/projects/{$id}/onboarding", 'submitUrl' => "/api/projects/{$id}/onboarding", 'projectId' => $id, 'projectName' => $data['project']['name']];
     render_page('portal', 'portal/setup', ['area' => 'client', 'actor' => $a, 'props' => $props, 'project' => $data['project'], 'badges' => [], 'scripts' => ['js/conditions.js', 'js/uploader.js', 'js/portal.js', 'js/wizard.js']], ['title' => 'Project setup', 'path' => req_path(), 'noindex' => true]);
 });

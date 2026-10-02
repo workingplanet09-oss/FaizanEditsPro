@@ -1,6 +1,6 @@
-# FaizanEdits Pro
+# Faizan Ali — website and client portal
 
-A video-editing studio website **and** the system that runs the business behind it: public website, "Start a Project" form, client portal with a video review player, editor workspace, and an admin console (quotes, contracts, invoices, payments, files, blog, analytics and more).
+The website for **Faizan Ali, Video Editor and Content Creator** (project name: FaizanEdits Pro) **and** the system that runs the work behind it: public website, project form, client portal with a video review player, editor workspace, and an admin console (quotes, contracts, invoices, payments, files, blog, analytics and more).
 
 It is a plain **PHP + MySQL** application. It runs on ordinary shared hosting with cPanel. There is nothing to build and nothing to install on the server except the files in the `public_html` folder and one database.
 
@@ -69,6 +69,10 @@ That page disappears once your account exists. That's it — the site is live.
 ---
 
 ## After installing
+
+### Make it yours (brand details)
+
+Admin → **Settings** → *Business* and *Brand*: add your **portrait** (until then the About page and home page show the FA monogram), your **contact e-mail**, and the **verified links** to your social profiles. Publish only real testimonials and results (Admin → Content). Nothing on the site is invented: empty fields stay out of sight.
 
 ### Turn on email (so clients receive notifications)
 

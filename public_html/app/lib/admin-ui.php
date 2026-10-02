@@ -108,13 +108,13 @@ function status_control(array $p, bool $canOverride): string
     $normal = $p['allowedNext'] ? $btns($p['allowedNext'], false) : '<p class="text-sm text-muted">No further steps available from this status.</p>';
     $h = '<div data-fe-component="status-control" data-props="' . json_attr(['projectId' => $id, 'meta' => $meta, 'canOverride' => $canOverride]) . '">';
     $toggle = $canOverride ? '<button type="button" data-override-toggle class="text-xs font-bold text-subtle hover:text-fg">Admin override</button>' : null;
-    $body = '<div class="px-5 pb-5"><div data-group="normal" class="flex flex-wrap gap-2">' . $normal . '</div>'
+    $body = '<div class="px-6 pb-6"><div data-group="normal" class="flex flex-wrap gap-2">' . $normal . '</div>'
         . ($canOverride ? '<div data-group="override" hidden class="flex flex-wrap gap-2">' . $btns(array_values(array_filter(project_statuses(), fn($s) => $s !== $status)), true) . '</div>' : '');
     if ($p['history']) {
         $body .= '<details class="mt-4"><summary class="cursor-pointer text-xs font-bold text-muted hover:text-fg">Status history (' . count($p['history']) . ')</summary><ol class="mt-3 space-y-2 border-l border-line pl-4">';
         foreach (array_reverse($p['history']) as $hst) {
             $body .= '<li class="text-xs"><b>' . ($hst['from'] ? e(status_meta($hst['from'])['label'] . ' → ') : '') . e(status_meta($hst['to'])['label']) . '</b>'
-                . ($hst['override'] ? '<span class="ml-1.5 rounded bg-danger-soft px-1 py-0.5 text-[10px] font-bold uppercase text-danger">override</span>' : '')
+                . ($hst['override'] ? '<span class="ml-1.5 rounded bg-danger-soft px-1 py-0.5 text-xs font-bold text-danger">override</span>' : '')
                 . '<span class="text-subtle"> · ' . e($hst['by']) . ' · ' . ago($hst['at']) . '</span>' . ($hst['comment'] ? '<span class="block text-muted">' . e($hst['comment']) . '</span>' : '') . '</li>';
         }
         $body .= '</ol></details>';
@@ -152,7 +152,7 @@ function assign_team_card(array $p, array $staff, bool $canAssign): string
         . people_select('motionDesignerIds', 'Motion designers', $staff, $role('MOTION_DESIGNER'), fn($r) => in_array('motion_designer', $r, true), !$canAssign)
         . people_select('reviewerIds', 'Internal reviewers', $staff, $role('REVIEWER'), fn($r) => (bool)array_intersect($r, ['reviewer', 'senior_editor', 'project_manager', 'admin', 'super_admin']), !$canAssign)
         . ($canAssign ? submit_button('Save team') : '') . '<p class="text-xs text-subtle">Hold Ctrl/⌘ to select several people.</p>';
-    return card('<form novalidate data-fe-form="/api/projects/' . e($p['id']) . '/assign" data-success="Team updated" data-refresh="0" class="space-y-4 px-5 pb-5">' . $form . '</form>', '', 'Team', 'Assigned editors are notified by email.');
+    return card('<form novalidate data-fe-form="/api/projects/' . e($p['id']) . '/assign" data-success="Team updated" data-refresh="0" class="space-y-4 px-6 pb-6">' . $form . '</form>', '', 'Team', 'Assigned editors are notified by email.');
 }
 
 function project_edit_modal(array $p): string
@@ -173,7 +173,7 @@ function version_upload_card(string $projectId, array $revisions): string
     foreach ($revisions as $r) {
         $revOpts[] = ['value' => $r['id'], 'label' => 'Round ' . $r['roundNumber'] . ' · ' . ($r['versionLabel'] ?? '')];
     }
-    $body = '<div data-fe-component="version-upload" data-props="' . json_attr(['projectId' => $projectId]) . '" class="space-y-4 px-5 pb-5">'
+    $body = '<div data-fe-component="version-upload" data-props="' . json_attr(['projectId' => $projectId]) . '" class="space-y-4 px-6 pb-6">'
         . '<div data-vu-drop><div data-fe-component="uploader" data-props="' . json_attr(['purpose' => 'version', 'projectId' => $projectId, 'multiple' => false, 'accept' => 'video/*', 'compact' => true, 'title' => 'Drop the exported video here', 'hint' => 'MP4 / MOV / WebM — uploads directly to storage']) . '"></div>'
         . '<div class="mt-4 flex items-center gap-3 text-xs text-subtle"><span class="h-px flex-1 bg-line"></span>or paste a link (Frame.io, Vimeo, Drive…)<span class="h-px flex-1 bg-line"></span></div>'
         . '<input aria-label="Video link" data-vu-link type="url" placeholder="https://" class="' . e(cx(INPUT_BASE, 'mt-4 h-11')) . '"></div>'
@@ -191,7 +191,7 @@ function version_upload_card(string $projectId, array $revisions): string
 
 function deliverables_admin_card(string $projectId, int $unpublished, bool $canUpload): string
 {
-    $body = '<div data-fe-component="deliverables-admin" data-props="' . json_attr(['projectId' => $projectId]) . '" class="space-y-4 px-5 pb-5">';
+    $body = '<div data-fe-component="deliverables-admin" data-props="' . json_attr(['projectId' => $projectId]) . '" class="space-y-4 px-6 pb-6">';
     if ($canUpload) {
         $body .= field_input('deliverable-label', 'Label shown to the client', 'Final master — 1080p', ['optional' => false, 'attrs' => ['data-da-label' => true]])
             . '<div data-fe-component="uploader" data-da-uploader data-label="Final master — 1080p" data-props="' . json_attr(['purpose' => 'deliverable', 'projectId' => $projectId, 'compact' => true, 'title' => 'Drop final exports here', 'reload' => true, 'label' => 'Final master — 1080p']) . '"></div>';
@@ -231,7 +231,7 @@ function change_request_review(array $c): string
 /** Internal notes — visible to the team only, never to clients. */
 function notes_panel(string $entityType, string $entityId, array $notes, bool $canWrite): string
 {
-    $h = '<div class="space-y-3 px-5 pb-5">';
+    $h = '<div class="space-y-3 px-6 pb-6">';
     if ($canWrite) {
         $h .= '<form novalidate data-fe-form="/api/notes" data-success="Note added" data-reset><input type="hidden" name="entityType" value="' . e($entityType) . '"><input type="hidden" name="entityId" value="' . e($entityId) . '">'
             . form_error_slot() . '<label for="note-' . e($entityId) . '" class="sr-only">Add an internal note</label>'
@@ -289,7 +289,7 @@ function tasks_panel(array $tasks, array $o): string
             $due = $t['dueDate'] ?? null;
             $late = $due && !$done && days_until($due) !== null && days_until($due) < 0;
             $pr = meta_for('PRIORITY', $t['priority']);
-            $h .= '<li class="flex flex-wrap items-center gap-x-4 gap-y-2 px-5 py-3">'
+            $h .= '<li class="flex flex-wrap items-center gap-x-4 gap-y-2 px-6 py-3.5">'
                 . '<button type="button" ' . ($canWrite ? '' : 'disabled ') . 'data-fe-action="/api/tasks/' . e($t['id']) . '" data-method="PATCH" data-body="' . e(json_enc(['status' => $done ? 'TODO' : 'COMPLETE'])) . '" aria-label="' . ($done ? 'Mark as to do' : 'Mark complete') . '" class="flex h-6 w-6 shrink-0 items-center justify-center rounded-full border-2 transition ' . ($done ? 'border-success bg-success text-white' : 'border-line-strong hover:border-accent') . '">' . ($done ? icon('check', 13, '', 3) : '') . '</button>'
                 . '<div class="min-w-0 flex-1 basis-56"><div class="truncate text-sm font-semibold ' . ($done ? 'text-muted line-through' : '') . '">' . e($t['title']) . '</div><div class="flex flex-wrap gap-x-3 text-xs text-subtle">'
                 . (!empty($o['showProject']) && !empty($t['project']) ? '<a href="' . e($base . '/projects/' . $t['project']['id']) . '" class="hover:text-fg hover:underline">' . e($t['project']['code'] . ' · ' . $t['project']['name']) . '</a>' : '')
@@ -345,7 +345,7 @@ function time_panel(string $projectId, array $entries, ?array $running, bool $ca
     if ($entries) {
         $h .= '<ul class="divide-y divide-line border-t border-line">';
         foreach (array_slice($entries, 0, 30) as $en) {
-            $h .= '<li class="flex items-center gap-3 px-5 py-2.5 text-sm">' . icon('clock', 14, 'text-subtle') . '<span class="w-16 shrink-0 font-semibold tabular-nums">' . ($en['endedAt'] ? e(hm((int)$en['seconds'])) : 'running') . '</span><span class="min-w-0 flex-1 truncate text-muted">' . e($en['note'] ?: '—')
+            $h .= '<li class="flex items-center gap-3 px-6 py-2.5 text-sm">' . icon('clock', 14, 'text-subtle') . '<span class="w-16 shrink-0 font-semibold tabular-nums">' . ($en['endedAt'] ? e(hm((int)$en['seconds'])) : 'running') . '</span><span class="min-w-0 flex-1 truncate text-muted">' . e($en['note'] ?: '—')
                 . '</span><span class="hidden text-xs text-subtle sm:inline">' . e($en['user']['name']) . '</span><span class="text-xs text-subtle">' . e(fmt_date_short($en['startedAt'])) . '</span></li>';
         }
         $h .= '</ul>';
@@ -362,7 +362,7 @@ function timer_widget(?array $running, string $base): string
         return card('<div class="flex items-center gap-3 p-4"><span class="flex h-10 w-10 items-center justify-center rounded-full bg-surface-2 text-subtle">' . icon('clock', 18) . '</span><div class="min-w-0 flex-1"><div class="text-sm font-bold">No timer running</div><div class="text-xs text-muted">Start one from a project’s Time tab.</div></div></div>');
     }
     return card('<div class="flex flex-wrap items-center gap-3 border-accent/40 p-4"><span class="relative flex h-10 w-10 items-center justify-center rounded-full bg-accent-soft text-accent-text">' . icon('clock', 18) . '<span class="absolute right-0 top-0 h-2.5 w-2.5 animate-pulse rounded-full bg-accent"></span></span>'
-        . '<div class="min-w-0 flex-1"><div data-timer="' . e(iso_dt(ts_ms($running['startedAt']))) . '" role="timer" aria-label="Elapsed time" class="text-lg font-extrabold tabular-nums leading-none">00:00:00</div>'
+        . '<div class="min-w-0 flex-1"><div data-timer="' . e(iso_dt(ts_ms($running['startedAt']))) . '" role="timer" aria-label="Elapsed time" class="text-lg font-bold tabular-nums leading-none">00:00:00</div>'
         . '<a href="' . e($base . '/projects/' . $running['project']['id'] . '?tab=time') . '" class="mt-1 block truncate text-xs text-muted hover:text-fg hover:underline">' . e($running['project']['code'] . ' · ' . $running['project']['name'] . ($running['note'] ? ' — ' . $running['note'] : '')) . '</a></div>'
         . ui_action('/api/time/stop', 'Stop', ['variant' => 'danger', 'size' => 'sm', 'icon' => 'pause', 'success' => 'Timer stopped']) . '</div>', 'border-accent/40');
 }
@@ -403,13 +403,13 @@ function lead_controls(array $lead, array $staff, bool $canWrite): string
         $tempOpts .= '<option value="' . e($k) . '"' . ($lead['overridden'] && $lead['temperature'] === $k ? ' selected' : '') . '>Override: ' . e($m['label']) . '</option>';
     }
     $temp = $sel('temperatureOverride', 'Lead temperature', $tempOpts, $lead['overridden'] ? 'Auto-scored as ' . ($tempMeta[$lead['computedTemperature']]['label'] ?? '') . '; you overrode it.' : 'Auto-scored from the answers. Internal only — visitors never see it.');
-    return card('<div class="grid gap-4 px-5 pb-5">' . $status . $assign . $follow . $temp . '</div>', '', 'Manage lead');
+    return card('<div class="grid gap-4 px-6 pb-6">' . $status . $assign . $follow . $temp . '</div>', '', 'Manage lead');
 }
 
 function lead_activity_form(string $leadId): string
 {
     $types = [['value' => 'note', 'label' => 'Note'], ['value' => 'contacted', 'label' => 'Contacted'], ['value' => 'email_sent', 'label' => 'Email sent'], ['value' => 'call_made', 'label' => 'Call made'], ['value' => 'call_scheduled', 'label' => 'Call scheduled'], ['value' => 'meeting', 'label' => 'Meeting']];
-    $form = '<form novalidate data-fe-form="/api/leads/' . e($leadId) . '/activities" data-success="Activity logged" class="grid grid-cols-1 gap-3 px-5 pb-5 sm:grid-cols-[10rem_minmax(0,1fr)]">' . form_error_slot()
+    $form = '<form novalidate data-fe-form="/api/leads/' . e($leadId) . '/activities" data-success="Activity logged" class="grid grid-cols-1 gap-3 px-6 pb-6 sm:grid-cols-[10rem_minmax(0,1fr)]">' . form_error_slot()
         . field_select('type', 'Type', $types, 'note', ['optional' => false]) . field_input('title', 'Summary', '', ['required' => true, 'placeholder' => 'e.g. Called — wants a quote by Friday', 'attrs' => ['data-trim' => true]])
         . field_textarea('note', 'Details', '', ['rows' => 2, 'class' => 'sm:col-span-2']) . field_input('nextFollowUpAt', 'Set follow-up', '', ['type' => 'date'])
         . '<div class="flex items-end justify-end">' . ui_button('Log activity', ['type' => 'submit']) . '</div></form>';
@@ -495,7 +495,7 @@ function doc_builder(string $mode, array $d, array $initial, array $defaults): s
     $props = ['mode' => $mode, 'clients' => $d['clients'], 'projects' => $d['projects'], 'services' => $d['services'], 'currencies' => $d['business']['currencies'], 'initial' => $initial, 'defaults' => $defaults];
     $editing = !empty($initial['id']);
     $dis = $editing ? ['disabled' => true] : [];
-    $details = '<div class="grid grid-cols-1 gap-4 px-5 pb-6 sm:grid-cols-2">'
+    $details = '<div class="grid grid-cols-1 gap-4 px-6 pb-6 sm:grid-cols-2">'
         . field_select('clientId', 'Client', [['value' => '', 'label' => 'Choose a client…']], '', ['required' => true, 'class' => 'sm:col-span-2', 'attrs' => ['data-doc' => 'clientId'] + $dis])
         . field_select('projectId', 'Project', [['value' => '', 'label' => $quote ? 'New project (auto)' : '— none —']], '', ['hint' => $quote ? 'Leave empty to create a project when the quote is accepted.' : null, 'attrs' => ['data-doc' => 'projectId'] + $dis])
         . field_select('currency', 'Currency', array_map(fn($c) => ['value' => $c, 'label' => $c], $d['business']['currencies']), $initial['currency'], ['optional' => false, 'attrs' => ['data-doc' => 'currency'] + $dis])
@@ -503,8 +503,8 @@ function doc_builder(string $mode, array $d, array $initial, array $defaults): s
             ? field_input('title', 'Title', '', ['class' => 'sm:col-span-2', 'placeholder' => 'e.g. Autumn campaign — 6 shorts', 'attrs' => ['data-doc' => 'title']])
             : field_select('kind', 'Type', [['value' => 'OTHER', 'label' => 'One-off'], ['value' => 'DEPOSIT', 'label' => 'Deposit'], ['value' => 'BALANCE', 'label' => 'Balance'], ['value' => 'FULL', 'label' => 'Full payment'], ['value' => 'RETAINER', 'label' => 'Retainer'], ['value' => 'CHANGE_ORDER', 'label' => 'Change order']], 'OTHER', ['optional' => false, 'attrs' => ['data-doc' => 'kind']]))
         . '</div>';
-    $lines = '<div class="space-y-3 px-5 pb-5"><div data-lines class="space-y-3"></div><datalist id="svc-list"></datalist>' . ui_button('Add line', ['variant' => 'outline', 'size' => 'sm', 'icon' => 'plus', 'attrs' => ['data-add-line' => true]]) . '</div>';
-    $pricing = '<div class="grid grid-cols-1 gap-4 px-5 pb-6 sm:grid-cols-3">'
+    $lines = '<div class="space-y-3 px-6 pb-6"><div data-lines class="space-y-3"></div><datalist id="svc-list"></datalist>' . ui_button('Add line', ['variant' => 'outline', 'size' => 'sm', 'icon' => 'plus', 'attrs' => ['data-add-line' => true]]) . '</div>';
+    $pricing = '<div class="grid grid-cols-1 gap-4 px-6 pb-6 sm:grid-cols-3">'
         . field_input('discount', 'Discount', '', ['optional' => false, 'inputmode' => 'decimal', 'placeholder' => '0', 'attrs' => ['data-doc' => 'discount']])
         . field_input('tax', 'Tax rate (%)', '', ['optional' => false, 'inputmode' => 'decimal', 'attrs' => ['data-doc' => 'tax']])
         . ($quote ? field_input('deposit', 'Deposit (%)', '', ['optional' => false, 'type' => 'number', 'min' => 0, 'max' => 100, 'hint' => 'Paid before work starts; the rest is billed on approval.', 'attrs' => ['data-doc' => 'deposit']])
@@ -515,8 +515,8 @@ function doc_builder(string $mode, array $d, array $initial, array $defaults): s
     return '<div data-fe-component="doc-builder" data-props="' . json_attr($props) . '" class="grid grid-cols-1 gap-6 xl:grid-cols-[minmax(0,1fr)_26rem]"><div class="space-y-6">'
         . card($details, '', $quote ? 'Quote details' : 'Invoice details') . card($lines, '', 'Line items', 'Prices are in the document currency.') . card($pricing, '', 'Pricing & terms')
         . '</div><aside class="space-y-4 xl:sticky xl:top-24 xl:self-start">'
-        . card('<div class="p-5"><h3 class="mb-4 text-base font-extrabold">Preview</h3><div data-preview></div></div>')
-        . card('<div class="space-y-3 p-5"><p data-doc-error hidden role="alert" class="rounded-xl bg-danger-soft px-4 py-3 text-sm font-medium text-danger"></p>'
+        . card('<div class="p-6"><h3 class="mb-4 text-base font-bold">Preview</h3><div data-preview></div></div>')
+        . card('<div class="space-y-3 p-6"><p data-doc-error hidden role="alert" class="rounded-xl bg-danger-soft px-4 py-3 text-sm font-medium text-danger"></p>'
             . ui_button($editing ? 'Save & send' : 'Send to client', ['size' => 'lg', 'icon' => 'send', 'class' => 'w-full', 'attrs' => ['data-doc-save' => 'send']])
             . ui_button('Save as draft', ['size' => 'lg', 'variant' => 'outline', 'class' => 'w-full', 'attrs' => ['data-doc-save' => 'draft']]) . '<p data-doc-total class="text-center text-xs text-subtle"></p></div>')
         . '</aside></div>';
@@ -555,7 +555,7 @@ function invoice_actions(array $inv, bool $canWrite, bool $canPay): string
 /** Contract section editor (saves a new version). */
 function contract_editor(array $c): string
 {
-    $h = '<form novalidate data-fe-form="/api/contracts/' . e($c['id']) . '" data-method="PATCH" data-prepare="contractPrep" data-success="Contract saved" class="space-y-4 px-5 pb-5">' . form_error_slot()
+    $h = '<form novalidate data-fe-form="/api/contracts/' . e($c['id']) . '" data-method="PATCH" data-prepare="contractPrep" data-success="Contract saved" class="space-y-4 px-6 pb-6">' . form_error_slot()
         . field_input('title', 'Title', $c['title'], ['optional' => false]);
     foreach ($c['sections'] as $i => $s) {
         $h .= '<div class="space-y-2 rounded-xl border border-line p-4" data-section data-key="' . e($s['key']) . '"><input aria-label="Section title" data-s="title" value="' . e($s['title']) . '" class="' . e(cx(INPUT_BASE, 'h-11 font-bold')) . '">'
@@ -637,7 +637,7 @@ function calendar_range(string $view, ?string $dateParam, DateTimeZone $tz): arr
 function calendar_chip(array $e): string
 {
     [$cls, $ic] = CAL_KINDS[$e['kind']] ?? CAL_KINDS['custom'];
-    $inner = '<span class="flex items-center gap-1.5 truncate rounded-md px-1.5 py-1 text-[11px] font-semibold leading-tight ' . $cls . '" title="' . e($e['title']) . '">' . icon($ic, 11, 'shrink-0')
+    $inner = '<span class="flex items-center gap-1.5 truncate rounded-md px-1.5 py-1 text-xs font-semibold leading-tight ' . $cls . '" title="' . e($e['title']) . '">' . icon($ic, 11, 'shrink-0')
         . '<span class="truncate">' . (empty($e['allDay']) ? local_time($e['at'], 'time') . ' ' : '') . e($e['title']) . '</span></span>';
     return !empty($e['href']) ? '<a href="' . e($e['href']) . '" class="block hover:brightness-95">' . $inner . '</a>' : '<div>' . $inner . '</div>';
 }
@@ -661,7 +661,7 @@ function calendar_view(array $events, string $view, DateTimeImmutable $date, str
     $nav = 'flex h-9 w-9 items-center justify-center rounded-lg border border-line-strong hover:bg-surface-2';
     $h = '<div class="mb-4 flex flex-wrap items-center justify-between gap-3"><div class="flex items-center gap-2">'
         . '<a href="' . e($shift($view, -1)) . '" aria-label="Previous" class="' . $nav . '">' . icon('chevron-left', 16) . '</a><a href="' . e($shift($view, 1)) . '" aria-label="Next" class="' . $nav . '">' . icon('chevron-right', 16) . '</a>'
-        . '<a href="' . e($base . '?view=' . $view . '&date=' . $ymd($today)) . '" class="h-9 rounded-lg border border-line-strong px-3 text-sm font-semibold leading-9 hover:bg-surface-2">Today</a><h2 class="ml-2 text-lg font-extrabold">' . e($title) . '</h2></div>'
+        . '<a href="' . e($base . '?view=' . $view . '&date=' . $ymd($today)) . '" class="h-9 rounded-lg border border-line-strong px-3 text-sm font-semibold leading-9 hover:bg-surface-2">Today</a><h2 class="ml-2 text-lg font-bold">' . e($title) . '</h2></div>'
         . '<div class="inline-flex rounded-xl bg-surface-2 p-1 text-sm font-semibold" role="group" aria-label="Calendar view">';
     foreach (['month', 'week', 'day'] as $v) {
         $h .= '<a href="' . e($base . '?view=' . $v . '&date=' . $ymd($date)) . '"' . ($view === $v ? ' aria-current="page"' : '') . ' class="rounded-lg px-3.5 py-1.5 capitalize ' . ($view === $v ? 'bg-surface shadow-soft' : 'text-muted hover:text-fg') . '">' . $v . '</a>';
@@ -670,7 +670,7 @@ function calendar_view(array $events, string $view, DateTimeImmutable $date, str
     if ($view === 'month') {
         $start = $date->modify('first day of this month')->setTime(0, 0);
         $start = $start->modify('-' . ((int)$start->format('N') - 1) . ' days');
-        $h .= '<div class="overflow-hidden rounded-[var(--radius-card)] border border-line bg-surface shadow-soft"><div class="grid grid-cols-7 border-b border-line bg-surface-2/50 text-center text-[11px] font-bold uppercase tracking-wider text-subtle">';
+        $h .= '<div class="overflow-hidden rounded-[var(--radius-card)] border border-line bg-surface shadow-soft"><div class="grid grid-cols-7 border-b border-line bg-surface-2/50 text-center text-xs font-bold text-subtle">';
         foreach (['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'] as $dn) {
             $h .= '<div class="py-2">' . $dn . '</div>';
         }
@@ -686,7 +686,7 @@ function calendar_view(array $events, string $view, DateTimeImmutable $date, str
                 $h .= calendar_chip($e);
             }
             if (count($list) > 3) {
-                $h .= '<a href="' . e($base . '?view=day&date=' . $ymd($d)) . '" class="block px-1 text-[11px] font-semibold text-muted hover:text-fg">+' . (count($list) - 3) . ' more</a>';
+                $h .= '<a href="' . e($base . '?view=day&date=' . $ymd($d)) . '" class="block px-1 text-xs font-semibold text-muted hover:text-fg">+' . (count($list) - 3) . ' more</a>';
             }
             $h .= '</div>';
             if ($list) {
@@ -701,13 +701,13 @@ function calendar_view(array $events, string $view, DateTimeImmutable $date, str
             $d = $weekStart->modify("+{$i} days");
             $list = $byDay[$ymd($d)] ?? [];
             $isToday = $ymd($d) === $ymd($today);
-            $h .= '<section class="rounded-2xl border bg-surface p-3 ' . ($isToday ? 'border-accent' : 'border-line') . '" aria-label="' . e($d->format('D M j Y')) . '"><h3 class="mb-2 flex items-baseline justify-between text-xs font-bold uppercase tracking-wider text-subtle"><span>' . $d->format('D') . '</span><span class="text-base font-extrabold normal-case tracking-normal ' . ($isToday ? 'text-accent-text' : 'text-fg') . '">' . $d->format('j') . '</span></h3><div class="space-y-1.5">'
+            $h .= '<section class="rounded-2xl border bg-surface p-3 ' . ($isToday ? 'border-accent' : 'border-line') . '" aria-label="' . e($d->format('D M j Y')) . '"><h3 class="mb-2 flex items-baseline justify-between text-xs font-bold text-subtle"><span>' . $d->format('D') . '</span><span class="text-base font-bold normal-case tracking-normal ' . ($isToday ? 'text-accent-text' : 'text-fg') . '">' . $d->format('j') . '</span></h3><div class="space-y-1.5">'
                 . ($list ? implode('', array_map('calendar_chip', $list)) : '<p class="py-3 text-center text-xs text-subtle">—</p>') . '</div></section>';
         }
         $h .= '</div>';
     } else {
         $list = $byDay[$ymd($date)] ?? [];
-        $h .= '<div class="rounded-[var(--radius-card)] border border-line bg-surface p-5 shadow-soft">';
+        $h .= '<div class="rounded-[var(--radius-card)] border border-line bg-surface p-6 shadow-soft">';
         if ($list) {
             $h .= '<ul class="divide-y divide-line">';
             foreach ($list as $e) {

@@ -14,7 +14,7 @@ $desc = $mrr ? 'Monthly recurring: ' . implode(' · ', array_map(fn($c, $v) => m
           <p class="mt-1 text-sm text-muted"><?= e($r['name'] . ' · ' . money((int)$r['monthlyPrice'], $r['currency']) . '/mo · renews ' . fmt_date($r['renewalDate'])) ?></p></div>
         <?= $manage ? '<div class="shrink-0">' . retainer_status_select($r['id'], $r['status']) . '</div>' : '' ?>
       </div>
-      <div class="space-y-4 px-5 pb-5">
+      <div class="space-y-4 px-6 pb-6">
         <?= $r['videosIncluded'] ? progress_row('Videos', $r['usage']['used']['videos'], $r['videosIncluded']) : '' ?>
         <?= $r['shortsIncluded'] ? progress_row('Short-form', $r['usage']['used']['shorts'], $r['shortsIncluded']) : '' ?>
         <?= $r['hoursIncluded'] ? progress_row('Hours', $r['usage']['used']['hours'], $r['hoursIncluded']) : '' ?>

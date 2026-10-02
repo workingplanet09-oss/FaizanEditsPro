@@ -1,12 +1,14 @@
 <?php defined('FEP') or exit;
 /** The HTML document shell shared by every layout. Vars: $meta (seo_meta), $body (html), $scripts (extra JS files), $bodyClass */
 $site = get_site_context();
-$accent = preg_match('/^#[0-9a-f]{6}$/i', $site['theme']['accent'] ?? '') ? $site['theme']['accent'] : '#ff5b2e';
+$accent = preg_match('/^#[0-9a-f]{6}$/i', $site['theme']['accent'] ?? '') ? $site['theme']['accent'] : '#2457e6';
+$lang = preg_match('/^[a-z]{2}(-[A-Za-z]{2,4})?$/', (string)($meta['lang'] ?? '')) ? $meta['lang'] : 'en';
+$dir = in_array(substr($lang, 0, 2), ['ur', 'ar', 'fa', 'he'], true) ? 'rtl' : 'ltr';
 $name = $site['business']['name'];
 $scripts = array_merge(['js/icons.js', 'js/app.js'], $scripts ?? []);
 $favicon = !empty($site['business']['faviconUrl']) ? $site['business']['faviconUrl'] : '/favicon.svg';
 ?><!doctype html>
-<html lang="en">
+<html lang="<?= e($lang) ?>" dir="<?= e($dir) ?>">
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
@@ -33,15 +35,15 @@ $favicon = !empty($site['business']['faviconUrl']) ? $site['business']['faviconU
 <?php if (!empty($meta['image'])): ?><meta name="twitter:image" content="<?= e($meta['image']) ?>">
 <?php endif; ?>
 <meta name="application-name" content="<?= e($name) ?>">
-<meta name="theme-color" media="(prefers-color-scheme: dark)" content="#09090b">
-<meta name="theme-color" media="(prefers-color-scheme: light)" content="#f6f5f1">
+<meta name="theme-color" media="(prefers-color-scheme: dark)" content="#0b1730">
+<meta name="theme-color" media="(prefers-color-scheme: light)" content="#f7f9fc">
 <link rel="icon" href="<?= e($favicon) ?>">
 <link rel="apple-touch-icon" href="/apple-icon">
 <link rel="manifest" href="/manifest.webmanifest">
 <link rel="preload" href="/assets/fonts/inter-latin-wght-normal.woff2" as="font" type="font/woff2" crossorigin>
 <link rel="stylesheet" href="<?= e(asset('css/app.css')) ?>">
 <script src="<?= e(asset('js/theme.js')) ?>"></script>
-<style>:root{--accent:<?= e($accent) ?>;--accent-fg:<?= e(contrast_on($accent)) ?>;--accent-text:<?= e(accent_for_text($accent, '#efeee8', 'black')) ?>}.dark,.dark-zone{--accent-text:<?= e(accent_for_text($accent, '#18181c', 'white')) ?>}</style>
+<style>:root{--accent:<?= e($accent) ?>;--accent-fg:<?= e(contrast_on($accent)) ?>;--accent-hover:<?= e(accent_hover($accent)) ?>;--accent-text:<?= e(accent_for_text($accent, '#eaf0ff', 'black')) ?>;--info:<?= e(accent_hover($accent)) ?>}.dark,.dark-zone{--accent-text:<?= e($accent === '#2457e6' ? '#a9c0ff' : accent_for_text($accent, '#182b4d', 'white')) ?>}</style>
 <?php foreach ($meta['jsonLd'] as $ld) { echo json_ld($ld), "\n"; } ?>
 </head>
 <body class="min-h-dvh antialiased <?= e($bodyClass ?? '') ?>">

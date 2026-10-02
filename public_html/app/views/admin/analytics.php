@@ -26,7 +26,7 @@ $ser = fn(array $x, string $v = 'value') => array_map(fn($d) => ['label' => $d['
     <?= chart_card('Client growth', line_chart($ser($r['clientGrowth']), 'New clients by month', null, 180, 'var(--info)'), 'New clients per month') ?>
     <?= chart_card('Revenue by service', hbar_chart($r['revenueByService'], 'Revenue by service', $m), "In {$cur}") ?>
     <?= chart_card('Where leads come from', hbar_chart($r['leadSources'], 'Lead sources')) ?>
-    <?= chart_card('Project types', donut_chart($r['projectTypes'], 'Projects by type', '<span class="text-2xl font-extrabold">' . (int)$r['projectsCreated'] . '</span><span class="text-[11px] text-subtle">projects</span>')) ?>
+    <?= chart_card('Project types', donut_chart($r['projectTypes'], 'Projects by type', '<span class="text-2xl font-bold">' . (int)$r['projectsCreated'] . '</span><span class="text-xs text-subtle">projects</span>')) ?>
     <?= chart_card('Projects by status', donut_chart(array_map(fn($s) => ['label' => $s['label'], 'value' => $s['value']], $r['statusDistribution']), 'Projects by status'), null, null, 'lg:col-span-2') ?>
   </div>
 <?php endif; ?>
@@ -36,7 +36,7 @@ $ser = fn(array $x, string $v = 'value') => array_map(fn($d) => ['label' => $d['
     ['key' => 'p', 'header' => 'Open projects', 'align' => 'right', 'render' => fn($w) => (string)(int)$w['projects']],
     ['key' => 't', 'header' => 'Open tasks', 'align' => 'right', 'render' => fn($w) => (string)(int)$w['openTasks']],
     ['key' => 'h', 'header' => 'Hours (30d)', 'align' => 'right', 'render' => fn($w) => e((string)$w['hours30d'])],
-], $workload, fn($w) => $w['id'], null, '<p class="px-5 pb-6 text-sm text-muted">No editors or project managers yet.</p>'), 'mt-6', 'Team workload', 'Open projects, tasks and tracked hours (last 30 days).') ?>
+], $workload, fn($w) => $w['id'], null, '<p class="px-6 pb-6 text-sm text-muted">No editors or project managers yet.</p>'), 'mt-6', 'Team workload', 'Open projects, tasks and tracked hours (last 30 days).') ?>
 <?php if ($profit !== null): ?>
   <?= card(ui_table([
       ['key' => 'n', 'header' => 'Project', 'primary' => true, 'render' => fn($p) => '<span class="font-bold">' . e($p['name']) . '<span class="block text-xs font-normal text-muted">' . e($p['code'] . ' · ' . $p['client']) . '</span></span>'],
@@ -44,5 +44,5 @@ $ser = fn(array $x, string $v = 'value') => array_map(fn($d) => ['label' => $d['
       ['key' => 'c', 'header' => 'Cost', 'align' => 'right', 'render' => fn($p) => e(money((int)$p['cost'], $p['currency']))],
       ['key' => 'h', 'header' => 'Hours', 'hideOnMobile' => true, 'align' => 'right', 'render' => fn($p) => e((string)$p['hours'])],
       ['key' => 'm', 'header' => 'Margin', 'align' => 'right', 'render' => fn($p) => '<span class="' . ($p['margin'] < 0 ? 'font-bold text-danger' : 'font-semibold') . '">' . e(money((int)$p['margin'], $p['currency']) . ($p['marginPct'] !== null ? " ({$p['marginPct']}%)" : '')) . '</span>'],
-  ], $profit, fn($p) => $p['id'], null, '<p class="px-5 pb-6 text-sm text-muted">No projects with revenue yet.</p>'), 'mt-6', 'Project profitability', 'Revenue collected minus internal cost and tracked labour. Visible to admins only.') ?>
+  ], $profit, fn($p) => $p['id'], null, '<p class="px-6 pb-6 text-sm text-muted">No projects with revenue yet.</p>'), 'mt-6', 'Project profitability', 'Revenue collected minus internal cost and tracked labour. Visible to admins only.') ?>
 <?php endif; ?>

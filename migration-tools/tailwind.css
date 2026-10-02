@@ -2,83 +2,70 @@
 @source "../public_html/app";
 @source "../public_html/assets/js";
 
-/* Self-hosted variable fonts (Inter for text, Manrope for headings) — no external requests. */
+/* Self-hosted variable fonts — no external requests. Manrope = headings, Inter = text and controls, Noto Nastaliq Urdu = Urdu script only (loaded only when a page contains Urdu). Licences: assets/fonts/LICENSES.md */
 @font-face{font-family:"Inter Variable";font-style:normal;font-display:swap;font-weight:100 900;src:url(/assets/fonts/inter-latin-ext-wght-normal.woff2) format("woff2-variations");unicode-range:U+0100-02BA,U+02BD-02C5,U+02C7-02CC,U+02CE-02D7,U+02DD-02FF,U+0304,U+0308,U+0329,U+1D00-1DBF,U+1E00-1E9F,U+1EF2-1EFF,U+2020,U+20A0-20AB,U+20AD-20C0,U+2113,U+2C60-2C7F,U+A720-A7FF}
 @font-face{font-family:"Inter Variable";font-style:normal;font-display:swap;font-weight:100 900;src:url(/assets/fonts/inter-latin-wght-normal.woff2) format("woff2-variations");unicode-range:U+0000-00FF,U+0131,U+0152-0153,U+02BB-02BC,U+02C6,U+02DA,U+02DC,U+0304,U+0308,U+0329,U+2000-206F,U+20AC,U+2122,U+2191,U+2193,U+2212,U+2215,U+FEFF,U+FFFD}
 @font-face{font-family:"Manrope Variable";font-style:normal;font-display:swap;font-weight:200 800;src:url(/assets/fonts/manrope-latin-ext-wght-normal.woff2) format("woff2-variations");unicode-range:U+0100-02BA,U+02BD-02C5,U+02C7-02CC,U+02CE-02D7,U+02DD-02FF,U+0304,U+0308,U+0329,U+1D00-1DBF,U+1E00-1E9F,U+1EF2-1EFF,U+2020,U+20A0-20AB,U+20AD-20C0,U+2113,U+2C60-2C7F,U+A720-A7FF}
 @font-face{font-family:"Manrope Variable";font-style:normal;font-display:swap;font-weight:200 800;src:url(/assets/fonts/manrope-latin-wght-normal.woff2) format("woff2-variations");unicode-range:U+0000-00FF,U+0131,U+0152-0153,U+02BB-02BC,U+02C6,U+02DA,U+02DC,U+0304,U+0308,U+0329,U+2000-206F,U+20AC,U+2122,U+2191,U+2193,U+2212,U+2215,U+FEFF,U+FFFD}
+@font-face{font-family:"Noto Nastaliq Urdu Variable";font-style:normal;font-display:swap;font-weight:400 700;src:url(/assets/fonts/noto-nastaliq-urdu-arabic-wght-normal.woff2) format("woff2-variations");unicode-range:U+0600-06FF,U+0750-077F,U+0870-088E,U+0890-0891,U+0897-08E1,U+08E3-08FF,U+200C-200E,U+2010-2011,U+204F,U+2E41,U+FB50-FDFF,U+FE70-FE74,U+FE76-FEFC}
 
 @custom-variant dark (&:where(.dark, .dark *));
 
-/* ─────────────────────────── design tokens ───────────────────────────
-   One strong accent (configurable in Admin → Settings → Brand), near-black + off-white neutrals.
-   Semantic tokens flip between light and dark; `.dark-zone` forces the dark set for cinematic sections. */
+/* ─────────────────────────── Faizan Ali brand system (v1, 2 Oct 2026) ───────────────────────────
+   Signature Blue #2457E6 · Ink Navy #10213D · Paper #F7F9FC · White #FFFFFF · Slate #526078 · Mist Blue #EAF0FF
+   Mostly light surfaces, navy text, selective blue; navy for the hero/footer/dark sections.
+   Semantic tokens flip between light and dark; `.dark-zone` forces the navy set for dark sections.
+   The accent can still be changed in Admin → Settings → Brand (the default is Signature Blue). */
 :root {
-  --bg: #f6f5f1;
-  --surface: #ffffff;
-  --surface-2: #efeee8;
-  --line: #e3e1d8;
-  --line-strong: #cfccc0;
-  --fg: #0e0e10;
-  --muted: #4f4f57;
-  --subtle: #6a6a72;
-  --accent: #ff5b2e;
-  --accent-fg: #0b0b0c;
-  /* the accent, adjusted per theme so accent-coloured TEXT meets WCAG AA (set from the configured accent in the root layout) */
-  --accent-text: #b84221;
+  --bg: #f7f9fc;            /* Paper */
+  --surface: #ffffff;       /* White — cards, forms */
+  --surface-2: #eaf0ff;     /* Mist Blue — subtle section backgrounds, badges */
+  --line: #d9e2ef;          /* Border — cards, dividers */
+  --line-strong: #7c8aa6;   /* field and outline-button borders: ≥ 3:1 against white, Paper and Mist Blue (WCAG 1.4.11) */
+  --fg: #10213d;            /* Ink Navy — headings, navigation, text */
+  --muted: #526078;         /* Slate — supporting text */
+  --subtle: #5a6881;
+  --accent: #2457e6;        /* Signature Blue — primary buttons, links, selected controls */
+  --accent-fg: #ffffff;
+  --accent-hover: #1d46bc;  /* button hover */
+  --accent-text: #2457e6;   /* links and blue text on light surfaces (5.1:1 or better) */
   --warning-fg: #ffffff;
-  /* status colours are tuned so their text on the matching soft tint stays ≥ 4.5:1 */
-  --success: #166534;
+  --success: #166534;       /* pair with a written confirmation */
   --warning: #92400e;
-  --danger: #b42318;
-  --info: #1d4ed8;
-  --shadow-color: 24 24 27;
+  --danger: #b42318;        /* pair with a specific error message */
+  --info: #1d46bc;
+  --shadow-color: 16 33 61; /* rgba(16,33,61,…) */
+  --ease-brand: cubic-bezier(0.22, 1, 0.36, 1);
+  --gutter: 1.5rem;         /* 24 px on phones */
   color-scheme: light;
 }
+@media (min-width: 768px) { :root { --gutter: 2.5rem; } }   /* 40 px */
+@media (min-width: 1280px) { :root { --gutter: 4rem; } }    /* 64 px */
 
-.dark {
-  --bg: #09090b;
-  --surface: #111114;
-  --surface-2: #18181c;
-  --line: #26262c;
-  --line-strong: #37373f;
-  --fg: #f4f3ef;
-  --muted: #a1a1aa;
-  --subtle: #8b8b94;
-  --accent-text: var(--accent);
+.dark, .dark-zone {
+  --surface: #10213d;
+  --surface-2: #182b4d;
+  --line: #263d63;
+  --line-strong: #4a6594;
+  --fg: #ffffff;
+  --muted: #c9d6f0;          /* Mist Blue supporting text */
+  --subtle: #9fb1d1;
+  --accent-text: #a9c0ff;    /* light blue for small labels/links on navy — never for body text */
   --warning-fg: #1a1204;
   --success: #4ade80;
   --warning: #fbbf24;
   --danger: #f87171;
-  --info: #60a5fa;
+  --info: #8fb0ff;
   --shadow-color: 0 0 0;
   color-scheme: dark;
 }
-
-.dark-zone {
-  --bg: #09090b;
-  --surface: #111114;
-  --surface-2: #18181c;
-  --line: #26262c;
-  --line-strong: #37373f;
-  --fg: #f4f3ef;
-  --muted: #a1a1aa;
-  --subtle: #8b8b94;
-  --accent-text: var(--accent);
-  --warning-fg: #1a1204;
-  --success: #4ade80;
-  --warning: #fbbf24;
-  --danger: #f87171;
-  --info: #60a5fa;
-  --shadow-color: 0 0 0;
-  color-scheme: dark;
-  background: var(--bg);
-  color: var(--fg);
-}
+.dark { --bg: #0b1730; }
+.dark-zone { --bg: #10213d; --surface: #172a4c; --surface-2: #1d3258; background: var(--bg); color: var(--fg); }
+.dark .dark-zone { --bg: #10213d; }
 
 @theme inline {
-  --font-sans: "Inter Variable", ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
-  --font-display: "Manrope Variable", "Inter Variable", ui-sans-serif, system-ui, sans-serif;
+  --font-sans: "Inter Variable", "Noto Nastaliq Urdu Variable", Arial, ui-sans-serif, system-ui, sans-serif;
+  --font-display: "Manrope Variable", "Inter Variable", "Noto Nastaliq Urdu Variable", Arial, ui-sans-serif, system-ui, sans-serif;
   --color-bg: var(--bg);
   --color-surface: var(--surface);
   --color-surface-2: var(--surface-2);
@@ -89,57 +76,39 @@
   --color-subtle: var(--subtle);
   --color-accent: var(--accent);
   --color-accent-fg: var(--accent-fg);
+  --color-accent-hover: var(--accent-hover);
   --color-accent-text: var(--accent-text);
   --color-warning-fg: var(--warning-fg);
-  --color-accent-soft: color-mix(in srgb, var(--accent) 14%, transparent);
+  --color-accent-soft: color-mix(in srgb, var(--accent) 12%, transparent);
   --color-success: var(--success);
-  --color-success-soft: color-mix(in srgb, var(--success) 14%, transparent);
+  --color-success-soft: color-mix(in srgb, var(--success) 12%, transparent);
   --color-warning: var(--warning);
-  --color-warning-soft: color-mix(in srgb, var(--warning) 16%, transparent);
+  --color-warning-soft: color-mix(in srgb, var(--warning) 14%, transparent);
   --color-danger: var(--danger);
-  --color-danger-soft: color-mix(in srgb, var(--danger) 14%, transparent);
+  --color-danger-soft: color-mix(in srgb, var(--danger) 12%, transparent);
   --color-info: var(--info);
-  --color-info-soft: color-mix(in srgb, var(--info) 14%, transparent);
-  --radius-card: 1.25rem;
-  --shadow-soft: 0 1px 2px rgb(var(--shadow-color) / 0.05), 0 8px 24px -12px rgb(var(--shadow-color) / 0.14);
-  --shadow-lift: 0 2px 4px rgb(var(--shadow-color) / 0.06), 0 24px 48px -20px rgb(var(--shadow-color) / 0.32);
-  --animate-fade-up: fade-up 0.6s cubic-bezier(0.2, 0.7, 0.2, 1) both;
-  --animate-fade-in: fade-in 0.35s ease both;
-  --animate-pop: pop 0.22s cubic-bezier(0.2, 0.9, 0.3, 1.2) both;
-  --animate-float: float 7s ease-in-out infinite;
+  --color-info-soft: color-mix(in srgb, var(--info) 12%, transparent);
+  /* the six brand colours by name, for the few places that must always be exactly these */
+  --color-brand-blue: #2457e6;
+  --color-brand-navy: #10213d;
+  --color-brand-paper: #f7f9fc;
+  --color-brand-mist: #eaf0ff;
+  --color-brand-slate: #526078;
+  --radius-card: 1rem;        /* cards: 16 px */
+  --shadow-soft: 0 8px 24px rgb(var(--shadow-color) / 0.08);
+  --shadow-lift: 0 12px 32px rgb(var(--shadow-color) / 0.14);
+  --animate-fade-up: fade-up 0.45s var(--ease-brand) both;
+  --animate-fade-in: fade-in 0.3s var(--ease-brand) both;
+  --animate-pop: pop 0.25s var(--ease-brand) both;
   --animate-shimmer: shimmer 1.6s linear infinite;
-  --animate-playhead: playhead 9s linear infinite;
-  --animate-slide-in-left: slide-in-left 0.25s cubic-bezier(0.2, 0.8, 0.2, 1) both;
+  --animate-slide-in-left: slide-in-left 0.3s var(--ease-brand) both;
 }
 
-@keyframes fade-up {
-  from { opacity: 0; transform: translateY(14px); }
-  to { opacity: 1; transform: none; }
-}
-@keyframes slide-in-left {
-  from { transform: translateX(-100%); }
-  to { transform: none; }
-}
-@keyframes fade-in {
-  from { opacity: 0; }
-  to { opacity: 1; }
-}
-@keyframes pop {
-  from { opacity: 0; transform: scale(0.96) translateY(6px); }
-  to { opacity: 1; transform: none; }
-}
-@keyframes float {
-  0%, 100% { transform: translateY(0); }
-  50% { transform: translateY(-8px); }
-}
-@keyframes shimmer {
-  from { background-position: 200% 0; }
-  to { background-position: -200% 0; }
-}
-@keyframes playhead {
-  from { left: 6%; }
-  to { left: 94%; }
-}
+@keyframes fade-up { from { opacity: 0; transform: translateY(16px); } to { opacity: 1; transform: none; } }
+@keyframes slide-in-left { from { transform: translateX(-100%); } to { transform: none; } }
+@keyframes fade-in { from { opacity: 0; } to { opacity: 1; } }
+@keyframes pop { from { opacity: 0; transform: translateY(8px) scale(0.98); } to { opacity: 1; transform: none; } }
+@keyframes shimmer { from { background-position: 200% 0; } to { background-position: -200% 0; } }
 
 @layer base {
   * { border-color: var(--line); }
@@ -150,34 +119,55 @@
     background: var(--bg);
     color: var(--fg);
     font-family: var(--font-sans);
-    font-feature-settings: "cv11", "ss01";
+    line-height: 1.5;
     -webkit-font-smoothing: antialiased;
     text-rendering: optimizeLegibility;
   }
-  h1, h2, h3, h4 { font-family: var(--font-display); letter-spacing: -0.02em; }
-  ::selection { background: color-mix(in srgb, var(--accent) 40%, transparent); }
+  h1, h2, h3, h4 { font-family: var(--font-display); letter-spacing: -0.01em; line-height: 1.12; }
+  ::selection { background: color-mix(in srgb, var(--accent) 28%, transparent); }
+  /* a visible keyboard focus everywhere: a 2 px ring in the accent, white on navy */
   :focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; border-radius: 6px; }
+  .dark :focus-visible, .dark-zone :focus-visible { outline-color: #eaf0ff; }
   button, [role="button"], a, select, summary { -webkit-tap-highlight-color: transparent; }
-  dialog::backdrop { background: rgb(0 0 0 / 0.6); backdrop-filter: blur(3px); }
+  dialog::backdrop { background: rgb(16 33 61 / 0.55); }
 }
 
 @layer components {
-  .display { font-family: var(--font-display); font-weight: 800; letter-spacing: -0.04em; line-height: 0.98; }
-  .eyebrow { font-size: 0.75rem; font-weight: 600; letter-spacing: 0.14em; text-transform: uppercase; color: var(--subtle); }
-  .container-page { width: 100%; max-width: 76rem; margin-inline: auto; padding-inline: 1.25rem; }
-  @media (min-width: 640px) { .container-page { padding-inline: 2rem; } }
+  /* ── type hierarchy (desktop / mobile): hero 56–72 / 36–44 · section 36–44 / 28–32 · card 22–26 / 20–24 ── */
+  .display { font-family: var(--font-display); font-weight: 800; letter-spacing: -0.02em; line-height: 1.06; font-size: clamp(2.25rem, 1.5rem + 3.2vw, 4.5rem); }
+  .display-sm { font-family: var(--font-display); font-weight: 800; letter-spacing: -0.02em; line-height: 1.08; font-size: clamp(2rem, 1.4rem + 2.6vw, 3.5rem); }
+  .h-section { font-family: var(--font-display); font-weight: 700; letter-spacing: -0.015em; line-height: 1.1; font-size: clamp(1.75rem, 1.1rem + 2.2vw, 2.75rem); }
+  .h-card { font-family: var(--font-display); font-weight: 700; letter-spacing: -0.01em; line-height: 1.15; font-size: clamp(1.25rem, 1.1rem + 0.6vw, 1.625rem); }
+  .eyebrow { font-size: 0.9375rem; font-weight: 600; letter-spacing: 0; color: var(--accent-text); }
+  .dark-zone .eyebrow, .dark .eyebrow { color: var(--muted); }
+  /* public pages: body text 18 px on desktop, 16 px on phones; comfortable measure of 60–70 characters */
+  .site-copy { font-size: 1rem; line-height: 1.6; }
+  @media (min-width: 768px) { .site-copy { font-size: 1.125rem; line-height: 1.6; } }
+  .measure { max-width: 68ch; }
 
-  /* subtle film grain for cinematic sections */
-  .grain::after {
-    content: "";
-    position: absolute;
-    inset: 0;
-    pointer-events: none;
-    opacity: 0.07;
-    mix-blend-mode: overlay;
-    background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='160' height='160'><filter id='n'><feTurbulence type='fractalNoise' baseFrequency='.9' numOctaves='2' stitchTiles='stitch'/></filter><rect width='100%' height='100%' filter='url(%23n)'/></svg>");
-  }
-  .vignette { background: radial-gradient(120% 90% at 50% 0%, transparent 40%, rgb(0 0 0 / 0.55) 100%); }
+  /* ── layout: content 1200 px max, gutters 24 / 40–64 px, sections 56–72 / 80–112 px ── */
+  .container-page { width: 100%; max-width: calc(1200px + 2 * var(--gutter)); margin-inline: auto; padding-inline: var(--gutter); }
+  .section-y { padding-block: clamp(3.5rem, 2.4rem + 3.6vw, 7rem); }
+
+  /* ── graphic language: a quiet crop corner on selected project images ── */
+  .crop-frame { position: relative; }
+  .crop-frame::before, .crop-frame::after { content: ""; position: absolute; width: 1.5rem; height: 1.5rem; pointer-events: none; border: 0 solid var(--accent); z-index: 2; }
+  .crop-frame::before { top: -0.5rem; left: -0.5rem; border-top-width: 2px; border-left-width: 2px; border-top-left-radius: 0.5rem; }
+  .crop-frame::after { bottom: -0.5rem; right: -0.5rem; border-bottom-width: 2px; border-right-width: 2px; border-bottom-right-radius: 0.5rem; }
+  .dark-zone .crop-frame::before, .dark-zone .crop-frame::after { border-color: #eaf0ff; }
+
+  /* ── wordmark: Faizan Ali in Manrope ExtraBold; navy on light, white on dark; clear space = height of the capital F ── */
+  .wordmark { display: inline-flex; flex-direction: column; font-family: var(--font-display); font-weight: 800; color: var(--fg); line-height: 1; letter-spacing: -0.02em; padding: 0.7em; margin: -0.7em; }
+  .wordmark-name { font-size: 1.375rem; white-space: nowrap; }                      /* ≈ 120–130 px wide */
+  .wordmark-lg .wordmark-name { font-size: 2.5rem; }                                  /* ≈ 225 px wide → the descriptor is allowed */
+  .wordmark-desc { display: none; margin-top: 0.5rem; font-family: var(--font-sans); font-weight: 500; font-size: 0.875rem; letter-spacing: 0; color: var(--muted); white-space: nowrap; }
+  .wordmark-lg .wordmark-desc { display: block; }
+
+  /* ── links: blue on light, underlined inside paragraphs ── */
+  .prose-lite a, p a:not([class]), li a:not([class]), .link { color: var(--accent-text); text-decoration: underline; text-underline-offset: 3px; text-decoration-thickness: 1px; }
+  .dark-zone .prose-lite a, .dark-zone p a:not([class]), .dark .prose-lite a, .dark p a:not([class]) { color: #fff; }
+  .prose-lite a:hover, p a:not([class]):hover, .link:hover { text-decoration-thickness: 2px; }
+
   .skeleton {
     background: linear-gradient(90deg, var(--surface-2) 25%, color-mix(in srgb, var(--surface-2) 70%, var(--fg) 6%) 37%, var(--surface-2) 63%);
     background-size: 400% 100%;
@@ -186,29 +176,34 @@
   }
   .scroll-x { overflow-x: auto; scrollbar-width: thin; }
   .thin-scroll { scrollbar-width: thin; scrollbar-color: var(--line-strong) transparent; }
-  .prose-lite p { margin: 0 0 1em; line-height: 1.7; }
-  .prose-lite h2 { font-size: 1.5rem; font-weight: 700; margin: 1.8em 0 0.6em; }
-  .prose-lite h3 { font-size: 1.15rem; font-weight: 700; margin: 1.5em 0 0.5em; }
+  .prose-lite p { margin: 0 0 1em; line-height: 1.65; }
+  .prose-lite h2 { font-size: 1.75rem; font-weight: 700; margin: 1.8em 0 0.6em; }
+  .prose-lite h3 { font-size: 1.3rem; font-weight: 700; margin: 1.5em 0 0.5em; }
   .prose-lite ul { list-style: disc; padding-left: 1.3em; margin: 0 0 1em; }
   .prose-lite ol { list-style: decimal; padding-left: 1.3em; margin: 0 0 1em; }
   .prose-lite li { margin: 0.25em 0; line-height: 1.65; }
-  .prose-lite a { color: var(--accent); text-decoration: underline; text-underline-offset: 3px; }
   .prose-lite blockquote { border-left: 3px solid var(--accent); padding-left: 1em; color: var(--muted); margin: 1.2em 0; }
   .prose-lite code { background: var(--surface-2); padding: 0.1em 0.35em; border-radius: 4px; font-size: 0.9em; }
   .prose-lite img { border-radius: 12px; margin: 1.2em 0; }
   .prose-lite hr { border: 0; border-top: 1px solid var(--line); margin: 2em 0; }
 }
 
-@media (prefers-reduced-motion: reduce) {
-  *, *::before, *::after { animation-duration: 0.001ms !important; animation-iteration-count: 1 !important; transition-duration: 0.001ms !important; scroll-behavior: auto !important; }
-}
+/* Unlayered on purpose: wins over utility classes. Section and card headings are Manrope 700; only page titles and the hero are 800. */
+h2, h3, h4, h5 { font-weight: 700; }
 
-/* Tables collapse to cards on small screens (opt-in via .responsive-table) */
-@media (max-width: 767px) {
-  .responsive-table thead { display: none; }
-  .responsive-table tbody tr { display: block; padding: 0.9rem 1rem; border-bottom: 1px solid var(--line); }
-  .responsive-table tbody td { display: flex; justify-content: space-between; gap: 1rem; padding: 0.2rem 0; border: 0; text-align: right; }
-  .responsive-table tbody td::before { content: attr(data-label); color: var(--subtle); font-size: 0.75rem; font-weight: 500; text-align: left; flex-shrink: 0; }
-  .responsive-table tbody td[data-primary] { display: block; text-align: left; font-weight: 600; padding-bottom: 0.4rem; }
-  .responsive-table tbody td[data-primary]::before { display: none; }
+/* Content stays visible if JavaScript or the animation never runs: elements wait for their reveal only once the page script has marked <html class="js">. */
+html.js [data-reveal]:not(.animate-fade-up) { opacity: 0; }
+html.reveal-all [data-reveal] { opacity: 1 !important; }
+
+/* ── Urdu: Noto Nastaliq Urdu, right-to-left, generous line spacing; never letter-spaced (it would break connected script) ── */
+:lang(ur), [dir="rtl"], .rtl-text { font-family: var(--font-sans); line-height: 2; letter-spacing: 0 !important; word-spacing: normal; }
+:lang(ur) :is(h1, h2, h3, h4, .display, .h-section, .h-card), [dir="rtl"] :is(h1, h2, h3, h4, .display, .h-section, .h-card), .rtl-text { line-height: 1.9; letter-spacing: 0 !important; }
+:lang(ur) *, [dir="rtl"] * { letter-spacing: 0 !important; }
+[lang="en-roman-ur"], .roman-urdu { font-family: "Inter Variable", Arial, sans-serif; } /* Roman Urdu and Hinglish stay in Inter */
+bdi, [dir="auto"] { unicode-bidi: plaintext; }
+
+@media (prefers-reduced-motion: reduce) {
+  html { scroll-behavior: auto; }
+  *, *::before, *::after { animation-duration: 0.01ms !important; animation-iteration-count: 1 !important; transition-duration: 0.01ms !important; scroll-behavior: auto !important; }
+  html.js [data-reveal], html.js [data-reveal]:not(.animate-fade-up) { opacity: 1; }
 }

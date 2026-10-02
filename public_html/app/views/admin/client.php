@@ -8,7 +8,7 @@ if ($actor->can('notes:read')) { $tabs[] = ['notes', 'Notes']; }
 ?>
 <?= back_link('/admin/clients', 'Clients') ?>
 <div class="mb-6 flex flex-col gap-4 lg:flex-row lg:items-end lg:justify-between">
-  <div class="min-w-0"><h1 class="flex flex-wrap items-center gap-3 text-2xl font-extrabold tracking-tight sm:text-3xl"><?= e($c['companyName']) ?><?= meta_badge('CLIENT_STATUS', $c['status']) ?></h1>
+  <div class="min-w-0"><h1 class="flex flex-wrap items-center gap-3 text-2xl font-bold tracking-tight sm:text-3xl"><?= e($c['companyName']) ?><?= meta_badge('CLIENT_STATUS', $c['status']) ?></h1>
     <p class="mt-1.5 max-w-2xl text-sm text-muted sm:text-[15px]"><?= e($desc) ?></p></div>
   <div class="flex flex-wrap items-center gap-2"><?= $actions ?></div>
 </div>
@@ -19,11 +19,11 @@ if ($actor->can('notes:read')) { $tabs[] = ['notes', 'Notes']; }
   <div class="grid grid-cols-1 gap-6 xl:grid-cols-[minmax(0,1fr)_24rem]">
     <div class="space-y-6">
       <div class="grid grid-cols-1 gap-3 sm:grid-cols-3">
-        <?= card('<div class="p-4"><div class="text-xs font-medium text-muted">Lifetime revenue</div><div class="mt-1.5 text-2xl font-extrabold tabular-nums">' . money_map($life['revenue']) . '</div></div>') ?>
-        <?= card('<div class="p-4"><div class="text-xs font-medium text-muted">Projects</div><div class="mt-1.5 text-2xl font-extrabold tabular-nums">' . (int)$life['totalProjects'] . '</div><div class="text-xs text-subtle">' . (int)$life['activeProjects'] . ' active</div></div>') ?>
-        <?= card('<div class="p-4"><div class="text-xs font-medium text-muted">Avg. project value</div><div class="mt-1.5 text-2xl font-extrabold tabular-nums">' . money_map($life['averageProjectValue']) . '</div></div>') ?>
+        <?= card('<div class="p-4"><div class="text-xs font-medium text-muted">Lifetime revenue</div><div class="mt-1.5 text-2xl font-bold tabular-nums">' . money_map($life['revenue']) . '</div></div>') ?>
+        <?= card('<div class="p-4"><div class="text-xs font-medium text-muted">Projects</div><div class="mt-1.5 text-2xl font-bold tabular-nums">' . (int)$life['totalProjects'] . '</div><div class="text-xs text-subtle">' . (int)$life['activeProjects'] . ' active</div></div>') ?>
+        <?= card('<div class="p-4"><div class="text-xs font-medium text-muted">Avg. project value</div><div class="mt-1.5 text-2xl font-bold tabular-nums">' . money_map($life['averageProjectValue']) . '</div></div>') ?>
       </div>
-      <?php ob_start(); ?><dl class="grid grid-cols-1 gap-4 px-5 pb-5 sm:grid-cols-3">
+      <?php ob_start(); ?><dl class="grid grid-cols-1 gap-4 px-6 pb-6 sm:grid-cols-3">
         <?= ui_meta('Industry', e((string)$c['industry'])) ?><?= ui_meta('Country', e((string)$c['country'])) ?><?= ui_meta('Time zone', e((string)$c['timezone'])) ?>
         <?= ui_meta('Website', $c['website'] ? '<a class="text-accent-text hover:underline" href="' . e($c['website']) . '" target="_blank" rel="noreferrer noopener">' . e($c['website']) . '</a>' : null) ?>
         <?= ui_meta('Source', e((string)$c['source'])) ?><?= ui_meta('Client since', e(fmt_date($c['createdAt']))) ?>
@@ -32,11 +32,11 @@ if ($actor->can('notes:read')) { $tabs[] = ['notes', 'Notes']; }
         <?= ui_meta('Billing email', e((string)($c['organization']['billingEmail'] ?? ''))) ?><?= ui_meta('Last project', $life['lastProject'] ? '<a class="hover:underline" href="/admin/projects/' . e($life['lastProject']['id']) . '">' . e($life['lastProject']['name']) . '</a>' : null) ?></dl>
       <?= card(ob_get_clean(), '', 'Company') ?>
       <?php if ($life['currentRetainer']): $r = $life['currentRetainer']; ?>
-        <?= card('<div class="flex items-center gap-3 p-5">' . icon('repeat', 18) . '<div class="flex-1"><div class="font-bold">' . e($r['name']) . '</div><div class="text-xs text-muted">' . e(money((int)$r['monthlyPrice'], $r['currency']) . ' / month · renews ' . fmt_date($r['renewalDate'])) . '</div></div>' . text_link('/admin/retainers', 'Manage') . '</div>') ?>
+        <?= card('<div class="flex items-center gap-3 p-6">' . icon('repeat', 18) . '<div class="flex-1"><div class="font-bold">' . e($r['name']) . '</div><div class="text-xs text-muted">' . e(money((int)$r['monthlyPrice'], $r['currency']) . ' / month · renews ' . fmt_date($r['renewalDate'])) . '</div></div>' . text_link('/admin/retainers', 'Manage') . '</div>') ?>
       <?php endif; ?>
     </div>
     <aside class="space-y-6">
-      <?php ob_start(); ?><ul class="space-y-2 px-5 pb-5"><?php foreach ($checklist['items'] as $i): ?><li class="flex items-center gap-2.5 text-sm"><?= icon($i['done'] ? 'check-circle' : 'clock', 16, $i['done'] ? 'text-success' : 'text-subtle') ?><span class="<?= $i['done'] ? 'text-muted' : 'font-medium' ?>"><?= e($i['label']) ?></span></li><?php endforeach; ?></ul>
+      <?php ob_start(); ?><ul class="space-y-2 px-6 pb-6"><?php foreach ($checklist['items'] as $i): ?><li class="flex items-center gap-2.5 text-sm"><?= icon($i['done'] ? 'check-circle' : 'clock', 16, $i['done'] ? 'text-success' : 'text-subtle') ?><span class="<?= $i['done'] ? 'text-muted' : 'font-medium' ?>"><?= e($i['label']) ?></span></li><?php endforeach; ?></ul>
       <?= card(ob_get_clean(), '', 'Onboarding checklist', $checklist['done'] . ' of ' . $checklist['total'] . ' complete') ?>
     </aside>
   </div>
@@ -57,23 +57,23 @@ if ($actor->can('notes:read')) { $tabs[] = ['notes', 'Notes']; }
         ['key' => 'p', 'header' => 'Project', 'hideOnMobile' => true, 'render' => fn($i) => e($i['project']['name'] ?? '—')],
         ['key' => 's', 'header' => 'Status', 'render' => fn($i) => meta_badge('INVOICE_STATUS', $i['status'])],
         ['key' => 'a', 'header' => 'Amount', 'align' => 'right', 'render' => fn($i) => '<span class="font-semibold tabular-nums">' . e(money((int)$i['total'], $i['currency'])) . '</span>'],
-    ], $invoices, fn($i) => $i['id'], fn($i) => '/admin/invoices/' . $i['id'], '<p class="px-5 pb-6 text-sm text-muted">No invoices yet.</p>'), '', 'Invoices') ?>
+    ], $invoices, fn($i) => $i['id'], fn($i) => '/admin/invoices/' . $i['id'], '<p class="px-6 pb-6 text-sm text-muted">No invoices yet.</p>'), '', 'Invoices') ?>
     <?= card(ui_table([
         ['key' => 'n', 'header' => 'Quote', 'primary' => true, 'render' => fn($q) => '<span class="font-bold">' . e($q['number']) . '</span>'],
         ['key' => 'p', 'header' => 'Project', 'hideOnMobile' => true, 'render' => fn($q) => e($q['project']['name'] ?? $q['title'] ?? '—')],
         ['key' => 's', 'header' => 'Status', 'render' => fn($q) => meta_badge('QUOTE_STATUS', $q['status'])],
         ['key' => 'a', 'header' => 'Total', 'align' => 'right', 'render' => fn($q) => '<span class="font-semibold tabular-nums">' . e(money((int)$q['total'], $q['currency'])) . '</span>'],
-    ], $quotes, fn($q) => $q['id'], fn($q) => '/admin/quotes/' . $q['id'], '<p class="px-5 pb-6 text-sm text-muted">No quotes yet.</p>'), '', 'Quotes') ?>
-    <?php if ($retainers): ?><?= card('<ul class="divide-y divide-line">' . implode('', array_map(fn($r) => '<li class="flex items-center justify-between gap-3 px-5 py-3 text-sm"><span class="font-bold">' . e($r['name']) . '</span><span class="tabular-nums">' . e(money((int)$r['monthlyPrice'], $r['currency'])) . '/mo</span>' . meta_badge('RETAINER_STATUS', $r['status']) . '</li>', $retainers)) . '</ul>', '', 'Retainers') ?><?php endif; ?>
+    ], $quotes, fn($q) => $q['id'], fn($q) => '/admin/quotes/' . $q['id'], '<p class="px-6 pb-6 text-sm text-muted">No quotes yet.</p>'), '', 'Quotes') ?>
+    <?php if ($retainers): ?><?= card('<ul class="divide-y divide-line">' . implode('', array_map(fn($r) => '<li class="flex items-center justify-between gap-3 px-6 py-3.5 text-sm"><span class="font-bold">' . e($r['name']) . '</span><span class="tabular-nums">' . e(money((int)$r['monthlyPrice'], $r['currency'])) . '/mo</span>' . meta_badge('RETAINER_STATUS', $r['status']) . '</li>', $retainers)) . '</ul>', '', 'Retainers') ?><?php endif; ?>
   </div>
 
 <?php elseif ($tab === 'files'):
   $colors = (array)($kit['colors'] ?? []); $fonts = (array)($kit['fonts'] ?? []); ?>
   <div class="space-y-6">
-    <?php ob_start(); ?><div class="grid grid-cols-1 gap-6 px-5 pb-6 md:grid-cols-2">
-      <div><h4 class="mb-2 text-xs font-bold uppercase tracking-wider text-subtle">Colours</h4><?php if ($colors): ?><ul class="flex flex-wrap gap-3"><?php foreach ($colors as $col): ?><li class="flex items-center gap-2 text-sm"><span class="h-7 w-7 rounded-lg border border-line" style="background:<?= e(preg_match('/^#[0-9a-fA-F]{3,8}$/', (string)($col['hex'] ?? '')) ? $col['hex'] : 'transparent') ?>"></span><?= e($col['name'] ?: $col['hex']) ?><span class="font-mono text-xs text-subtle"><?= e($col['hex']) ?></span></li><?php endforeach; ?></ul><?php else: ?><p class="text-sm text-muted">None saved.</p><?php endif; ?></div>
-      <div><h4 class="mb-2 text-xs font-bold uppercase tracking-wider text-subtle">Fonts</h4><?php if ($fonts): ?><ul class="space-y-1 text-sm"><?php foreach ($fonts as $f): ?><li><b><?= e($f['name']) ?></b> <span class="text-muted"><?= e($f['usage'] ?? '') ?></span></li><?php endforeach; ?></ul><?php else: ?><p class="text-sm text-muted">None saved.</p><?php endif; ?></div>
-      <?= !empty($kit['musicPreference']) ? '<div class="md:col-span-2"><h4 class="mb-1 text-xs font-bold uppercase tracking-wider text-subtle">Music</h4><p class="text-sm">' . e($kit['musicPreference']) . '</p></div>' : '' ?></div>
+    <?php ob_start(); ?><div class="grid grid-cols-1 gap-6 px-6 pb-6 md:grid-cols-2">
+      <div><h4 class="mb-2 text-xs font-bold text-subtle">Colours</h4><?php if ($colors): ?><ul class="flex flex-wrap gap-3"><?php foreach ($colors as $col): ?><li class="flex items-center gap-2 text-sm"><span class="h-7 w-7 rounded-lg border border-line" style="background:<?= e(preg_match('/^#[0-9a-fA-F]{3,8}$/', (string)($col['hex'] ?? '')) ? $col['hex'] : 'transparent') ?>"></span><?= e($col['name'] ?: $col['hex']) ?><span class="font-mono text-xs text-subtle"><?= e($col['hex']) ?></span></li><?php endforeach; ?></ul><?php else: ?><p class="text-sm text-muted">None saved.</p><?php endif; ?></div>
+      <div><h4 class="mb-2 text-xs font-bold text-subtle">Fonts</h4><?php if ($fonts): ?><ul class="space-y-1 text-sm"><?php foreach ($fonts as $f): ?><li><b><?= e($f['name']) ?></b> <span class="text-muted"><?= e($f['usage'] ?? '') ?></span></li><?php endforeach; ?></ul><?php else: ?><p class="text-sm text-muted">None saved.</p><?php endif; ?></div>
+      <?= !empty($kit['musicPreference']) ? '<div class="md:col-span-2"><h4 class="mb-1 text-xs font-bold text-subtle">Music</h4><p class="text-sm">' . e($kit['musicPreference']) . '</p></div>' : '' ?></div>
     <?= card(ob_get_clean(), '', 'Brand kit', 'Maintained by the client; you can edit it too.') ?>
     <?= file_manager($assets, ['canUpload' => false, 'canDelete' => $canWrite && $actor->can('files:delete')]) ?>
   </div>

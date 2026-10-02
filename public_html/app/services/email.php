@@ -29,18 +29,26 @@ function email_safe_url(string $u): string
 
 function render_email_html(string $text, array $brand): string
 {
+    // Brand email: navy header with the white wordmark, Paper background, white card, blue (accent) button. Email clients get Arial as the safe fallback.
+    $accent = preg_match('/^#[0-9a-f]{6}$/i', (string)($brand['accent'] ?? '')) ? $brand['accent'] : '#2457E6';
+    $btnText = contrast_on($accent);
+    $linkColor = accent_for_text($accent, '#ffffff', 'black');
+    $font = "Inter,Arial,'Helvetica Neue',Helvetica,sans-serif";
     $out = '';
     foreach (preg_split('/\n{2,}/', trim($text)) ?: [] as $block) {
         if (preg_match('/^\[\[(.+?)\|(.+?)\]\]$/s', $block, $m)) {
-            $out .= '<p style="margin:24px 0"><a href="' . e(email_safe_url($m[2])) . '" style="background:' . e($brand['accent']) . ';color:#0b0b0c;text-decoration:none;font-weight:600;padding:12px 22px;border-radius:10px;display:inline-block">' . e($m[1]) . '</a></p>';
+            $out .= '<p style="margin:24px 0"><a href="' . e(email_safe_url($m[2])) . '" style="background:' . e($accent) . ';color:' . $btnText . ';text-decoration:none;font-weight:600;font-size:16px;padding:14px 24px;border-radius:12px;display:inline-block;line-height:1.2">' . e($m[1]) . '</a></p>';
             continue;
         }
         $html = e($block);
-        $html = preg_replace_callback('/\[([^\]]+)\]\(([^)]+)\)/', fn($m) => '<a href="' . e(email_safe_url(str_replace('&amp;', '&', $m[2]))) . '" style="color:' . e($brand['accent']) . '">' . $m[1] . '</a>', $html);
-        $out .= '<p style="margin:0 0 16px;line-height:1.6">' . str_replace("\n", '<br>', $html) . '</p>';
+        $html = preg_replace_callback('/\[([^\]]+)\]\(([^)]+)\)/', fn($m) => '<a href="' . e(email_safe_url(str_replace('&amp;', '&', $m[2]))) . '" style="color:' . e($linkColor) . ';text-decoration:underline">' . $m[1] . '</a>', $html);
+        $out .= '<p style="margin:0 0 16px;font-size:16px;line-height:1.6;color:#10213d">' . str_replace("\n", '<br>', $html) . '</p>';
     }
     $name = e($brand['name']);
-    return '<!doctype html><html><body style="margin:0;background:#f4f3ef;font-family:Inter,-apple-system,Segoe UI,Roboto,sans-serif;color:#151517"><div style="max-width:560px;margin:0 auto;padding:32px 20px"><div style="font-weight:800;font-size:18px;margin-bottom:24px;letter-spacing:-.01em">' . $name . '</div><div style="background:#fff;border-radius:16px;padding:28px 28px 12px;border:1px solid #e6e4dc">' . $out . '</div><div style="color:#8a8a8f;font-size:12px;margin-top:18px;line-height:1.5">You\'re receiving this because of activity on your ' . $name . ' account. Manage notification preferences in your portal settings.</div></div></body></html>';
+    return '<!doctype html><html lang="en"><body style="margin:0;background:#f7f9fc;font-family:' . $font . ';color:#10213d"><div style="max-width:600px;margin:0 auto;padding:24px 16px">'
+        . '<div style="background:#10213d;border-radius:16px 16px 0 0;padding:20px 28px"><span style="font-family:Manrope,Arial,sans-serif;font-weight:800;font-size:22px;letter-spacing:-.01em;color:#ffffff">' . $name . '</span></div>'
+        . '<div style="background:#ffffff;border-radius:0 0 16px 16px;padding:28px 28px 12px;border:1px solid #d9e2ef;border-top:0">' . $out . '</div>'
+        . '<div style="color:#526078;font-size:14px;margin-top:18px;line-height:1.5">You are receiving this because of activity on your ' . $name . ' account. You can manage notification preferences in your portal settings.</div></div></body></html>';
 }
 
 function render_email_text(string $text): string
@@ -97,7 +105,7 @@ function deliver_email(string $emailLogId): void
         return;
     }
     $meta = $log['metadata'] ?? [];
-    $brand = ['name' => $meta['brand'] ?? 'Studio', 'accent' => $meta['accent'] ?? '#FF5B2E'];
+    $brand = ['name' => $meta['brand'] ?? 'Faizan Ali', 'accent' => $meta['accent'] ?? '#2457E6'];
     try {
         $res = send_via_driver(['from' => email_config()['from'], 'to' => $log['toEmail'], 'subject' => $log['subject'], 'html' => render_email_html($log['body'], $brand), 'text' => render_email_text($log['body'])]);
         // The `log` driver has no real inbox — the log IS the inbox in demo/trial mode — so it keeps the full body.

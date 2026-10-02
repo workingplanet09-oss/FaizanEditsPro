@@ -38,9 +38,9 @@
       '<div class="mb-8"><div class="mb-2 flex items-center justify-between text-xs font-semibold text-muted"><span data-step aria-live="polite"></span><span data-save class="flex items-center gap-1.5" role="status"></span></div>' +
       '<div data-bar role="progressbar" aria-valuemin="0" aria-valuemax="100" class="h-1.5 w-full overflow-hidden rounded-full bg-surface-2"><div class="h-full rounded-full bg-accent transition-[width] duration-700 ease-out" style="width:0%"></div></div></div>' +
       '<div data-resume></div>' +
-      '<form novalidate class="space-y-8" data-wizard-form><header><h1 data-title tabindex="-1" class="text-[clamp(1.7rem,4vw,2.5rem)] font-extrabold leading-tight tracking-tight outline-none"></h1><p data-desc class="mt-2 text-muted"></p></header>' +
+      '<form novalidate class="space-y-8" data-wizard-form><header><h1 data-title tabindex="-1" class="text-[clamp(1.7rem,4vw,2.5rem)] font-bold leading-tight tracking-tight outline-none"></h1><p data-desc class="mt-2 text-muted"></p></header>' +
       '<div data-extras></div><div data-body class="space-y-7"></div><p data-submit-error role="alert" class="hidden items-start gap-2 rounded-xl bg-danger-soft px-4 py-3 text-sm font-medium text-danger"></p>' +
-      '<div class="sticky bottom-0 -mx-4 flex items-center justify-between gap-3 border-t border-line bg-bg/90 px-4 py-4 backdrop-blur sm:static sm:mx-0 sm:border-0 sm:bg-transparent sm:px-0 sm:py-0 sm:backdrop-blur-none"><div data-left class="flex items-center gap-2"></div><div data-right class="flex items-center gap-2"></div></div></form>';
+      '<div class="sticky bottom-0 -mx-4 flex items-center justify-between gap-3 border-t border-line bg-bg/90 px-4 py-4 sm:static sm:mx-0 sm:border-0 sm:bg-transparent sm:px-0 sm:py-0 sm:backdrop-blur-none"><div data-left class="flex items-center gap-2"></div><div data-right class="flex items-center gap-2"></div></div></form>';
     ["step", "save", "bar", "resume", "title", "desc", "extras", "body", "submit-error", "left", "right"].forEach(function (k) { el[k] = root.querySelector("[data-" + k + "]"); });
     el.form = root.querySelector("[data-wizard-form]");
 
@@ -78,11 +78,11 @@
       el.title.textContent = review ? "Review & submit" : (sec ? sec.title : "");
       el.desc.textContent = review ? "Everything look right? You can edit any section before sending." : (sec && sec.description) || "";
       el.left.innerHTML = i > 0
-        ? '<button type="button" data-back class="inline-flex h-11 items-center justify-center gap-2 rounded-xl px-5 text-sm font-semibold text-muted transition hover:bg-surface-2 hover:text-fg">' + FE.icon("chevron-left", 16) + "Back</button>"
+        ? '<button type="button" data-back class="inline-flex h-11 items-center justify-center gap-2 rounded-xl px-5 text-base font-semibold text-muted transition hover:bg-surface-2 hover:text-fg">' + FE.icon("chevron-left", 16) + "Back</button>"
         : '<a href="' + esc(p.exitHref) + '" class="inline-flex h-11 items-center px-3 text-sm font-semibold text-muted hover:text-fg">Cancel</a>';
       el.right.innerHTML = '<a href="' + esc(p.exitHref) + '" class="hidden h-11 items-center px-3 text-sm font-semibold text-muted hover:text-fg sm:inline-flex" title="Your progress is saved automatically">Save &amp; exit</a>' +
-        '<button type="submit" data-next class="relative inline-flex h-13 items-center justify-center gap-2 whitespace-nowrap rounded-2xl bg-accent px-7 text-base font-semibold text-accent-fg shadow-[0_8px_20px_-8px_color-mix(in_srgb,var(--accent)_70%,transparent)] transition hover:-translate-y-px hover:brightness-105 active:scale-[0.98] disabled:pointer-events-none disabled:opacity-50">' +
-        (review ? esc(p.submitLabel || "Submit request") + FE.icon("send", 16) : (i === total - 2 ? "Review" : "Continue") + FE.icon("arrow", 16)) + "</button>";
+        '<button type="submit" data-next class="relative inline-flex h-13 items-center justify-center gap-2 whitespace-nowrap rounded-2xl bg-accent px-7 text-base font-semibold text-accent-fg shadow-[0_8px_20px_-8px_color-mix(in_srgb,var(--accent)_70%,transparent)] transition hover:-translate-y-px hover:bg-accent-hover  disabled:pointer-events-none disabled:opacity-50">' +
+        (review ? esc(p.submitLabel || "Send project details") + FE.icon("send", 16) : (i === total - 2 ? "Review" : "Continue") + FE.icon("arrow", 16)) + "</button>";
     }
     function showSubmitError(msg) { el["submit-error"].textContent = msg || ""; el["submit-error"].classList.toggle("hidden", !msg); el["submit-error"].classList.toggle("flex", !!msg); }
 
@@ -117,13 +117,13 @@
           return label(q) + '<div class="relative"><select ' + id + ' class="' + INPUT + ' h-11 appearance-none pr-9"><option value="">Select…</option>' + q.options.map(function (o) { return '<option value="' + esc(o.value) + '"' + (String(v) === o.value ? " selected" : "") + ">" + esc(o.label) + "</option>"; }).join("") + "</select>" + FE.icon("chevron-down", 16, "pointer-events-none absolute right-3 top-1/2 -translate-y-1/2 text-subtle") + "</div>" + tail(q);
         case "TEXTAREA":
           return label(q) + "<div><textarea " + id + ' class="' + INPUT + ' min-h-28 py-3 leading-relaxed" rows="' + (q.key === "project_description" ? 7 : 4) + '" maxlength="' + (meta.maxLength || 8000) + '"' + ph + ">" + esc(v == null ? "" : v) + "</textarea>" +
-            (meta.minLength ? '<div data-count class="mt-1 text-right text-[11px] text-subtle"></div>' : "") + "</div>" + tail(q);
+            (meta.minLength ? '<div data-count class="mt-1 text-right text-xs text-subtle"></div>' : "") + "</div>" + tail(q);
         case "CHECKBOX":
           return '<label class="flex cursor-pointer items-start gap-3 rounded-xl p-2 -m-2 hover:bg-surface-2/60"><span class="relative mt-0.5 inline-flex shrink-0"><input type="checkbox" ' + id + (v ? " checked" : "") + ' class="peer h-[18px] w-[18px] shrink-0 cursor-pointer appearance-none rounded-md border border-line-strong bg-surface transition checked:border-accent checked:bg-accent focus-visible:ring-4 focus-visible:ring-accent/25">' +
             FE.icon("check", 13, "pointer-events-none absolute left-[2.5px] top-[2.5px] hidden text-accent-fg peer-checked:block", 3) + '</span><span class="min-w-0"><span class="block text-sm font-medium leading-snug">' + esc(q.text) + "</span>" + (q.helpText ? '<span class="mt-0.5 block text-xs text-muted">' + esc(q.helpText) + "</span>" : "") + "</span></label>" +
             '<p data-err role="alert" class="mt-1.5 hidden items-center gap-1.5 text-xs font-medium text-danger"></p>';
         case "COLOR":
-          return label(q) + '<div class="flex items-center gap-3"><input type="color" data-color aria-label="' + esc(q.text) + ' colour picker" value="' + (/^#[0-9a-f]{6}$/i.test(v || "") ? esc(v) : "#ff5b2e") + '" class="h-11 w-14 cursor-pointer rounded-xl border border-line-strong bg-surface p-1"><input type="text" ' + id + ' value="' + esc(v == null ? "" : v) + '" placeholder="#FF5B2E" class="' + INPUT + ' h-11 max-w-40 font-mono"></div>' + tail(q);
+          return label(q) + '<div class="flex items-center gap-3"><input type="color" data-color aria-label="' + esc(q.text) + ' colour picker" value="' + (/^#[0-9a-f]{6}$/i.test(v || "") ? esc(v) : "#2457e6") + '" class="h-11 w-14 cursor-pointer rounded-xl border border-line-strong bg-surface p-1"><input type="text" ' + id + ' value="' + esc(v == null ? "" : v) + '" placeholder="#2457E6" class="' + INPUT + ' h-11 max-w-40 font-mono"></div>' + tail(q);
         case "RATING":
           return legend(q) + '<div class="flex gap-1" role="radiogroup" aria-labelledby="q-' + esc(q.key) + '">' + [1, 2, 3, 4, 5].map(function (n) {
             return '<button type="button" role="radio" data-rate="' + n + '" aria-checked="' + (Number(v) === n) + '" aria-label="' + n + " star" + (n > 1 ? "s" : "") + '" class="rounded-lg p-1 text-accent-text transition hover:scale-110">' + FE.icon("star", 28, Number(v) >= n ? "fill-current" : "opacity-30") + "</button>";
@@ -149,7 +149,7 @@
     }
     function updateCount(q, w) {
       var c = w.querySelector("[data-count]"), min = q.meta && q.meta.minLength; if (!c || !min) return;
-      var n = String(answers[q.key] || "").length; c.textContent = n + " / " + min + "+ characters"; c.className = "mt-1 text-right text-[11px] " + (n >= min ? "text-success" : "text-subtle");
+      var n = String(answers[q.key] || "").length; c.textContent = n + " / " + min + "+ characters"; c.className = "mt-1 text-right text-xs " + (n >= min ? "text-success" : "text-subtle");
     }
     function questionOf(key) { for (var i = 0; i < form.sections.length; i++) for (var j = 0; j < form.sections[i].questions.length; j++) if (form.sections[i].questions[j].key === key) return form.sections[i].questions[j]; return null; }
     function setError(key, msg) {
@@ -189,14 +189,14 @@
         h += '<div class="rounded-2xl border border-line bg-surface p-4"><label class="text-sm font-bold" for="prev-project">Use previous project settings</label><p class="text-xs text-muted">Start from an earlier project and change only what\'s different.</p>' +
           '<select id="prev-project" class="mt-2 h-10 w-full rounded-xl border border-line-strong bg-surface px-3 text-sm"><option value="">Choose a project…</option>' + p.previousProjects.map(function (x) { return '<option value="' + esc(x.id) + '">' + esc(x.name) + "</option>"; }).join("") + "</select></div>";
       }
-      if (p.firstTime && mode === "project") h += '<div class="flex gap-3 rounded-2xl bg-info-soft p-4 text-sm text-info">' + FE.icon("info", 18, "mt-0.5 shrink-0") + "<p><b>First project with us?</b> Take a few minutes here — the more detail you give, the fewer revisions you'll need. Every answer is saved automatically and can be edited before production starts.</p></div>";
+      if (p.firstTime && mode === "project") h += '<div class="flex gap-3 rounded-2xl bg-info-soft p-4 text-sm text-info">' + FE.icon("info", 18, "mt-0.5 shrink-0") + "<p><b>First project with me?</b> Take a few minutes here — the more detail you give, the fewer revisions you'll need. Every answer is saved automatically and can be edited before production starts.</p></div>";
       el.extras.innerHTML = h;
     }
     function renderReview() {
       var out = sections().map(function (s) {
         var qs = visQ(s).filter(function (q) { var v = answers[q.key]; return v !== undefined && v !== "" && !(Array.isArray(v) && !v.length); });
         if (!qs.length) return "";
-        return '<section class="rounded-2xl border border-line bg-surface p-5"><div class="mb-3 flex items-center justify-between"><h2 class="text-sm font-extrabold">' + (qs.length === 1 && qs[0].text === s.title ? "" : esc(s.title)) + '</h2><button type="button" data-edit="' + esc(s.key) + '" class="text-xs font-bold text-accent-text hover:underline">Edit</button></div><dl class="space-y-2.5">' +
+        return '<section class="rounded-2xl border border-line bg-surface p-6"><div class="mb-3 flex items-center justify-between"><h2 class="text-sm font-bold">' + (qs.length === 1 && qs[0].text === s.title ? "" : esc(s.title)) + '</h2><button type="button" data-edit="' + esc(s.key) + '" class="text-xs font-bold text-accent-text hover:underline">Edit</button></div><dl class="space-y-2.5">' +
           qs.map(function (q) {
             var v = answers[q.key], lab = function (x) { var o = q.options.filter(function (o) { return o.value === String(x); })[0]; return o ? o.label : String(x); };
             var shown = q.type === "FILE" ? (uploadedNames[q.key] || []).join(", ") || "Files attached" : Array.isArray(v) ? v.map(lab).join(", ") : typeof v === "boolean" ? (v ? "Yes" : "No") : lab(v);
@@ -205,7 +205,7 @@
       }).join("");
       var box = document.createElement("div");
       box.className = "space-y-4";
-      box.innerHTML = out + (mode === "inquiry" ? '<p class="text-xs text-subtle">By submitting you agree to our <a class="underline" href="/privacy" target="_blank" rel="noopener">Privacy Policy</a>. We\'ll only use your details to respond to this request.</p>' : "") +
+      box.innerHTML = out + (mode === "inquiry" ? '<p class="text-xs text-subtle">By submitting you agree to my <a class="underline" href="/privacy" target="_blank" rel="noopener">Privacy Policy</a>. I\'ll only use your details to respond to this request.</p>' : "") +
         (p.turnstileSiteKey ? '<input type="hidden" name="turnstile"><div data-fe-component="turnstile" data-props="' + esc(JSON.stringify({ siteKey: p.turnstileSiteKey })) + '" class="min-h-[65px]"></div>' : "") +
         '<div aria-hidden="true" class="absolute -left-[9999px] h-0 w-0 overflow-hidden"><label>Leave empty<input tabindex="-1" autocomplete="off" name="hp"></label></div>';
       el.body.appendChild(box);
@@ -266,14 +266,14 @@
     function renderDone(r) {
       var tick = '<span class="mx-auto flex h-16 w-16 items-center justify-center rounded-full bg-success-soft text-success">' + FE.icon("check", 30) + "</span>";
       if (mode === "inquiry") {
-        root.innerHTML = '<div class="mx-auto max-w-xl text-center">' + tick + '<h1 class="mt-6 text-[clamp(1.8rem,4vw,2.6rem)] font-extrabold tracking-tight">Request received</h1><p class="mt-3 text-muted">Thanks — your project brief is with the studio. Expect to hear from us — <b class="text-fg">' + esc(r.responseTime || "soon") + "</b>.</p>" +
-          '<dl class="mx-auto mt-8 grid max-w-md gap-px overflow-hidden rounded-2xl border border-line bg-line text-left">' + [["Request ID", r.requestCode], ["Project type", r.projectType], ["Expected reply", r.responseTime || "Soon"]].map(function (x) { return '<div class="flex items-center justify-between gap-4 bg-surface px-5 py-3.5"><dt class="text-xs font-semibold uppercase tracking-wider text-subtle">' + x[0] + '</dt><dd class="text-sm font-bold">' + esc(x[1]) + "</dd></div>"; }).join("") + "</dl>" +
+        root.innerHTML = '<div class="mx-auto max-w-xl text-center">' + tick + '<h1 class="mt-6 text-[clamp(1.8rem,4vw,2.6rem)] font-bold tracking-tight">Request received</h1><p class="mt-3 text-muted">Thank you. Your project brief is with me. Expect to hear from me <b class="text-fg">' + esc(r.responseTime || "soon") + "</b>.</p>" +
+          '<dl class="mx-auto mt-8 grid max-w-md gap-px overflow-hidden rounded-2xl border border-line bg-line text-left">' + [["Request ID", r.requestCode], ["Project type", r.projectType], ["Expected reply", r.responseTime || "Soon"]].map(function (x) { return '<div class="flex items-center justify-between gap-4 bg-surface px-6 py-3.5.5"><dt class="text-xs font-semibold text-subtle">' + x[0] + '</dt><dd class="text-sm font-bold">' + esc(x[1]) + "</dd></div>"; }).join("") + "</dl>" +
           '<p class="mx-auto mt-6 max-w-md rounded-2xl bg-surface-2 p-4 text-sm text-muted"><b class="text-fg">What happens next:</b> ' + esc(r.nextStep) + " A confirmation email with your request ID is on its way.</p>" +
-          '<div class="mt-8 flex flex-wrap justify-center gap-3"><a href="' + esc(p.signedIn ? p.portalHref : "/") + '" class="inline-flex h-11 items-center justify-center rounded-xl bg-fg px-5 text-sm font-semibold text-bg hover:opacity-90">' + (p.signedIn ? "Go to my dashboard" : "Back to home") + '</a><a href="/work" class="inline-flex h-11 items-center justify-center rounded-xl border border-line-strong px-5 text-sm font-semibold hover:bg-surface-2">See recent work</a></div>' +
-          '<p class="mt-6 text-xs text-subtle">Need to add something? Reply to the confirmation email, or <a class="underline" href="/contact">contact us</a> quoting ' + esc(r.requestCode) + ".</p></div>";
+          '<div class="mt-8 flex flex-wrap justify-center gap-3"><a href="' + esc(p.signedIn ? p.portalHref : "/") + '" class="inline-flex h-11 items-center justify-center rounded-xl bg-fg px-5 text-base font-semibold text-bg hover:opacity-90">' + (p.signedIn ? "Go to my dashboard" : "Back to home") + '</a><a href="/work" class="inline-flex h-11 items-center justify-center rounded-xl border border-line-strong px-5 text-base font-semibold hover:bg-surface-2">See recent work</a></div>' +
+          '<p class="mt-6 text-xs text-subtle">Need to add something? Reply to the confirmation email, or <a class="underline" href="/contact">contact me</a> quoting ' + esc(r.requestCode) + ".</p></div>";
       } else {
-        root.innerHTML = '<div class="mx-auto max-w-xl text-center">' + tick + '<h1 class="mt-6 text-[clamp(1.8rem,4vw,2.4rem)] font-extrabold tracking-tight">Your brief is in</h1><p class="mt-3 text-muted">Thanks — we\'ve turned your answers into a project brief for <b class="text-fg">' + esc(p.projectName) + "</b>. Next, upload your footage and assets so your editor can begin.</p>" +
-          '<div class="mt-8 flex flex-wrap justify-center gap-3"><a href="/dashboard/projects/' + esc(p.projectId) + '?tab=files" class="inline-flex h-13 items-center justify-center gap-2 rounded-2xl bg-accent px-7 text-base font-semibold text-accent-fg hover:brightness-105">' + FE.icon("upload", 16) + 'Upload files</a><a href="/dashboard/projects/' + esc(p.projectId) + '" class="inline-flex h-13 items-center justify-center rounded-2xl border border-line-strong px-7 text-base font-semibold hover:bg-surface-2">Back to project</a></div></div>';
+        root.innerHTML = '<div class="mx-auto max-w-xl text-center">' + tick + '<h1 class="mt-6 text-[clamp(1.8rem,4vw,2.4rem)] font-bold tracking-tight">Your brief is in</h1><p class="mt-3 text-muted">Thanks — I\'ve turned your answers into a project brief for <b class="text-fg">' + esc(p.projectName) + "</b>. Next, upload your footage and assets so I can begin.</p>" +
+          '<div class="mt-8 flex flex-wrap justify-center gap-3"><a href="/dashboard/projects/' + esc(p.projectId) + '?tab=files" class="inline-flex h-13 items-center justify-center gap-2 rounded-2xl bg-accent px-7 text-base font-semibold text-accent-fg hover:bg-accent-hover">' + FE.icon("upload", 16) + 'Upload files</a><a href="/dashboard/projects/' + esc(p.projectId) + '" class="inline-flex h-13 items-center justify-center rounded-2xl border border-line-strong px-7 text-base font-semibold hover:bg-surface-2">Back to project</a></div></div>';
       }
     }
 
@@ -338,8 +338,8 @@
       FE.api(p.draftUrl + "?token=" + encodeURIComponent(token)).then(function (r) {
         var d = r && r.draft; if (!d || !Object.keys(plainObject(d.data)).length || same(d.data, initial)) return;
         resume = d;
-        el.resume.innerHTML = '<div role="region" aria-label="Saved progress" class="mb-6 flex flex-col gap-3 rounded-2xl border border-accent/40 bg-accent-soft p-4 sm:flex-row sm:items-center sm:justify-between"><div class="text-sm"><span class="font-bold">Continue where you left off?</span> <span class="text-muted">We saved your earlier answers.</span></div>' +
-          '<div class="flex gap-2"><button type="button" data-resume-yes class="inline-flex h-9 items-center justify-center rounded-xl bg-accent px-3.5 text-sm font-semibold text-accent-fg hover:brightness-105">Continue</button><button type="button" data-resume-no class="inline-flex h-9 items-center justify-center rounded-xl px-3.5 text-sm font-semibold text-muted hover:bg-surface-2 hover:text-fg">Start over</button></div></div>';
+        el.resume.innerHTML = '<div role="region" aria-label="Saved progress" class="mb-6 flex flex-col gap-3 rounded-2xl border border-accent/40 bg-accent-soft p-4 sm:flex-row sm:items-center sm:justify-between"><div class="text-sm"><span class="font-bold">Continue where you left off?</span> <span class="text-muted">I saved your earlier answers.</span></div>' +
+          '<div class="flex gap-2"><button type="button" data-resume-yes class="inline-flex h-9 items-center justify-center rounded-xl bg-accent px-3.5 text-sm font-semibold text-accent-fg hover:bg-accent-hover">Continue</button><button type="button" data-resume-no class="inline-flex h-9 items-center justify-center rounded-xl px-3.5 text-sm font-semibold text-muted hover:bg-surface-2 hover:text-fg">Start over</button></div></div>';
       }, function () {});
     }
     el.resume.addEventListener("click", function (e) {

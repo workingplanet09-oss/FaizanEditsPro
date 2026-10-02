@@ -376,8 +376,8 @@
    "tone": "neutral",
    "progress": 3,
    "needsClient": false,
-   "clientNow": "We've received your request.",
-   "clientNext": "We'll review it and prepare a quote."
+   "clientNow": "I have received your request.",
+   "clientNext": "I will review it and prepare a quote."
   },
   "AWAITING_QUOTE": {
    "label": "Awaiting Quote",
@@ -386,7 +386,7 @@
    "tone": "info",
    "progress": 8,
    "needsClient": false,
-   "clientNow": "We're preparing your quote.",
+   "clientNow": "I am preparing your quote.",
    "clientNext": "You'll be notified as soon as it's ready to review."
   },
   "AWAITING_CONTRACT": {
@@ -417,7 +417,7 @@
    "progress": 32,
    "needsClient": true,
    "clientNow": "Payment received — your project is active.",
-   "clientNext": "Complete the project brief so we edit exactly what you want."
+   "clientNext": "Complete the project brief so I edit exactly what you want."
   },
   "AWAITING_ASSETS": {
    "label": "Awaiting Assets",
@@ -426,8 +426,8 @@
    "tone": "warning",
    "progress": 40,
    "needsClient": true,
-   "clientNow": "We're ready to start once your files arrive.",
-   "clientNext": "Upload your footage and assets, then tell us you're done."
+   "clientNow": "I am ready to start once your files arrive.",
+   "clientNext": "Upload your footage and assets, then tell me you are done."
   },
   "QUEUED": {
    "label": "Queued",
@@ -436,7 +436,7 @@
    "tone": "info",
    "progress": 46,
    "needsClient": false,
-   "clientNow": "Everything is in — your project is queued for an editor.",
+   "clientNow": "Everything is in. Your project is queued for editing.",
    "clientNext": "Editing starts shortly."
   },
   "EDITING": {
@@ -446,7 +446,7 @@
    "tone": "accent",
    "progress": 58,
    "needsClient": false,
-   "clientNow": "Your editor is working on the first draft.",
+   "clientNow": "I am working on the first draft.",
    "clientNext": "You'll be notified the moment a draft is ready to review."
   },
   "INTERNAL_REVIEW": {
@@ -456,7 +456,7 @@
    "tone": "info",
    "progress": 68,
    "needsClient": false,
-   "clientNow": "The draft is going through our internal quality check.",
+   "clientNow": "I am checking the draft before it reaches you.",
    "clientNext": "It will be released to you right after."
   },
   "CLIENT_REVIEW": {
@@ -476,7 +476,7 @@
    "tone": "accent",
    "progress": 72,
    "needsClient": false,
-   "clientNow": "Your feedback is with the editor.",
+   "clientNow": "I am working through your feedback.",
    "clientNext": "A new version will be uploaded for you to review."
   },
   "FINAL_REVIEW": {
@@ -497,7 +497,7 @@
    "progress": 94,
    "needsClient": false,
    "clientNow": "You approved the final version.",
-   "clientNext": "We're preparing your final deliverables."
+   "clientNext": "I am preparing your final files."
   },
   "DELIVERED": {
    "label": "Delivered",

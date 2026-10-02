@@ -71,7 +71,7 @@ function first_client_for_orgs(array $orgIds): ?array
  */
 function submit_inquiry(array $in): array
 {
-    rate_limit("inquiry:{$in['ip']}", 6, 15 * 60000, "You've sent several requests recently. Please wait a few minutes or email us directly.");
+    rate_limit("inquiry:{$in['ip']}", 6, 15 * 60000, "You've sent several requests recently. Please wait a few minutes or email me directly.");
     $ws = workspace_id();
     $form = get_form_def($ws, 'inquiry');
     if (!$form) {
@@ -160,7 +160,7 @@ function submit_inquiry(array $in): array
     emit('lead.created', ['workspaceId' => $ws, 'leadId' => $lead['id'], 'data' => ['temperature' => $scored['temperature']]]);
     return [
         'requestCode' => $requestCode, 'projectType' => $projectLabel, 'responseTime' => $contact['responseTime'],
-        'nextStep' => $existingClientId ? "We'll prepare a quote and share it in your portal." : "We'll review your request and reply by email with next steps — usually a short call or a quote.",
+        'nextStep' => $existingClientId ? "I’ll prepare a quote and share it in your portal." : "I’ll review your request and reply by email with next steps — usually a short call or a quote.",
     ];
 }
 

@@ -18,69 +18,53 @@ page('/', function (Ctx $c) {
     $s = get_settings($site['workspaceId'], ['hero', 'process']);
     site_page('home', [
         'site' => $site, 'hero' => $s['hero'], 'process' => $s['process'], 'stats' => get_public_stats(), 'services' => list_public_services(),
-        'work' => portfolio_items(['featured' => true, 'limit' => 6]), 'testimonials' => list_public_testimonials(['limit' => 3]), 'plans' => list_public_plans(), 'faqs' => list_public_faqs(),
+        'work' => portfolio_items(['featured' => true, 'limit' => 3]), 'testimonials' => list_public_testimonials(['limit' => 3]), 'plans' => list_public_plans(), 'faqs' => list_public_faqs(),
     ], [
-        'title' => $site['business']['name'] . ' — Professional video editing for creators and brands', 'absoluteTitle' => true, 'description' => $site['seo']['defaultDescription'], 'path' => '/', 'image' => $site['seo']['ogImage'] ?: null,
-        'jsonLd' => ld(array_filter(['@type' => 'ProfessionalService', 'name' => $site['business']['name'], 'description' => $site['business']['tagline'], 'url' => app_url(), 'email' => $site['business']['email'] ?: null, 'telephone' => $site['business']['phone'] ?: null,
+        'title' => $site['business']['name'] . ($site['business']['descriptor'] ? ' — ' . $site['business']['descriptor'] : ' — Video editing'), 'absoluteTitle' => true, 'description' => $site['seo']['defaultDescription'], 'path' => '/', 'image' => $site['seo']['ogImage'] ?: null,
+        'jsonLd' => ld(array_filter(['@type' => 'ProfessionalService', 'name' => $site['business']['name'], 'alternateName' => $site['business']['handle'] ?: null, 'description' => $site['business']['tagline'], 'image' => $site['business']['portraitUrl'] ?: null, 'url' => app_url(), 'email' => $site['business']['email'] ?: null, 'telephone' => $site['business']['phone'] ?: null,
             'sameAs' => array_values(array_filter((array)($site['business']['socials'] ?? [])))])),
     ]);
 });
 
 page('/services', function (Ctx $c) {
-    site_page('services', ['services' => list_public_services()], ['title' => 'Video editing services', 'description' => 'Short-form, YouTube, podcast, real estate, corporate, SaaS, VSL, UGC, motion graphics and more — each with a fixed-scope quote and a transparent process.', 'path' => '/services']);
+    site_page('services', ['services' => list_public_services()], ['title' => 'Video editing services', 'description' => 'Short-form editing, long-form and podcast editing, and motion graphics, each with clear deliverables and a fixed-scope quote.', 'path' => '/services']);
 });
 
 page('/services/{slug}', function (Ctx $c) {
     $slug = $c->params['slug'];
     $s = get_public_service($slug) ?? Pages::notFound();
     $site = get_site_context();
-    $categoryFor = ['short-form-video-editing' => 'Short Form', 'youtube-video-editing' => 'Long Form', 'podcast-editing' => 'Podcast', 'real-estate-video-editing' => 'Real Estate', 'vsl-editing' => 'VSL', 'saas-video-editing' => 'SaaS',
-        'corporate-video-editing' => 'Corporate', 'gaming-content-editing' => 'Gaming', 'ugc-editing' => 'Ads', 'ad-creative-editing' => 'Ads'];
+    // which portfolio categories show up as examples under each service
+    $categoryFor = ['short-form-video-editing' => ['Short-form'], 'long-form-podcast-editing' => ['YouTube', 'Podcast'], 'youtube-video-editing' => ['YouTube'], 'podcast-editing' => ['Podcast'], 'real-estate-video-editing' => ['Real Estate'],
+        'vsl-editing' => ['VSL'], 'saas-video-editing' => ['SaaS'], 'corporate-video-editing' => ['Corporate'], 'ugc-editing' => ['Ads'], 'ad-creative-editing' => ['Ads']];
     $byService = list_public_faqs(['serviceSlug' => $slug]);
     $byCategory = $s['faqCategory'] ? list_public_faqs(['category' => $s['faqCategory']]) : [];
     $have = array_column($byService, 'id');
     $faqs = array_slice(array_merge($byService, array_values(array_filter($byCategory, fn($f) => !in_array($f['id'], $have, true)))), 0, 8);
     $looking = app_data('site-defaults')['SERVICE_TO_LOOKING_FOR'][$slug] ?? null;
     site_page('service', [
-        's' => $s, 'site' => $site, 'faqs' => $faqs, 'work' => isset($categoryFor[$slug]) ? portfolio_items(['category' => $categoryFor[$slug], 'limit' => 3]) : [],
+        's' => $s, 'site' => $site, 'faqs' => $faqs, 'work' => isset($categoryFor[$slug]) ? portfolio_items(['categories' => $categoryFor[$slug], 'limit' => 3]) : [],
         'startHref' => '/start-project?service=' . rawurlencode($slug) . ($looking ? '&looking_for=' . rawurlencode($looking) : ''),
     ], [
-        'title' => $s['seoTitle'] ?: $s['title'] . ' — video editing service', 'description' => $s['seoDescription'] ?: $s['shortDescription'], 'path' => '/services/' . $s['slug'], 'image' => $s['heroImage'] ?: null,
-        'jsonLd' => ld(['@type' => 'Service', 'name' => $s['title'], 'description' => $s['shortDescription'], 'provider' => ['@type' => 'ProfessionalService', 'name' => $site['business']['name'], 'url' => app_url()], 'areaServed' => 'Worldwide', 'serviceType' => 'Video editing']),
+        'title' => $s['seoTitle'] ?: $s['title'], 'description' => $s['seoDescription'] ?: $s['shortDescription'], 'path' => '/services/' . $s['slug'], 'image' => $s['heroImage'] ?: null,
+        'jsonLd' => ld(['@type' => 'Service', 'name' => $s['title'], 'description' => $s['shortDescription'], 'provider' => ['@type' => 'ProfessionalService', 'name' => $site['business']['name'], 'url' => app_url()], 'areaServed' => 'Worldwide', 'serviceType' => $s['title']]),
     ]);
 });
 
 page('/work', function (Ctx $c) {
     $cats = array_column(list_portfolio_categories(), 'category');
     sort($cats);
-    site_page('work', ['items' => portfolio_items(), 'categories' => $cats], ['title' => 'Our work — video editing portfolio', 'description' => 'Browse recent projects across real estate, podcasts, finance, SaaS, gaming, ads and more, with before/after comparisons and case studies.', 'path' => '/work']);
+    site_page('work', ['items' => portfolio_items(), 'categories' => $cats], ['title' => 'View my work', 'description' => 'Selected video editing projects: short-form, long-form, podcast and business content, with before/after comparisons and case studies.', 'path' => '/work']);
 });
 
 page('/case-studies', function (Ctx $c) {
-    site_page('cases', ['cases' => list_public_case_studies()], ['title' => 'Case studies', 'description' => 'How we solved real content problems: the brief, the strategy, and the results — with only verified numbers.', 'path' => '/case-studies']);
+    site_page('cases', ['cases' => list_public_case_studies()], ['title' => 'Case studies', 'description' => 'The client goal, my process, the deliverables and the results, using only numbers the client has verified.', 'path' => '/case-studies']);
 });
 
 page('/case-studies/{slug}', function (Ctx $c) {
     $cs = get_public_case_study($c->params['slug']) ?? Pages::notFound();
-    // Only metrics the admin actually entered are shown — nothing is inferred or filled in.
-    $results = [];
-    $add = function ($k, $v) use (&$results) {
-        if (is_string($k) && trim($k) !== '' && (is_string($v) || is_int($v) || is_float($v)) && trim((string)$v) !== '') {
-            $results[] = [$k, (string)$v];
-        }
-    };
-    $raw = $cs['results'];
-    if (is_array($raw)) {
-        if (array_is_list($raw)) {
-            foreach ($raw as $r) {
-                $add(is_array($r) ? ($r['label'] ?? null) : null, is_array($r) ? ($r['value'] ?? null) : null);
-            }
-        } else {
-            foreach ($raw as $k => $v) {
-                $add($k, $v);
-            }
-        }
-    }
+    // Only metrics the owner actually entered are shown — nothing is inferred or filled in.
+    $results = public_results($cs['results']);
     site_page('case', ['c' => $cs, 'results' => $results], [
         'title' => $cs['seoTitle'] ?: $cs['title'] . ' — case study', 'description' => $cs['seoDescription'] ?: excerpt_text($cs['summary'] ?? $cs['problem']), 'path' => '/case-studies/' . $cs['slug'], 'image' => $cs['heroImage'] ?: null, 'type' => 'article',
         'jsonLd' => ld(array_filter(['@type' => 'Article', 'headline' => $cs['title'], 'description' => excerpt_text($cs['summary'] ?? $cs['problem']), 'image' => $cs['heroImage'] ?: null, 'datePublished' => $cs['createdAt'], 'dateModified' => $cs['updatedAt']])),
@@ -89,23 +73,23 @@ page('/case-studies/{slug}', function (Ctx $c) {
 
 page('/process', function (Ctx $c) {
     $p = get_settings(workspace_id(), ['process'])['process'];
-    site_page('process', ['process' => $p], ['title' => 'Our process — from brief to final delivery', 'description' => 'Seven clear steps: tell us what you need, get a quote, onboard, edit, review with timestamped feedback, and download your final files.', 'path' => '/process']);
+    site_page('process', ['process' => $p], ['title' => 'My process: brief, footage, editing, feedback, delivery', 'description' => 'Five clear steps from your first message to final files: brief, footage, editing, timestamped feedback and delivery.', 'path' => '/process']);
 });
 
 page('/pricing', function (Ctx $c) {
     site_page('pricing', ['plans' => list_public_plans(), 'faqs' => list_public_faqs(['category' => 'Pricing']), 'site' => get_site_context()],
-        ['title' => 'Pricing', 'description' => 'Flexible video editing pricing: one-time projects, per-video or per-short rates, monthly retainers, hourly work and custom quotes.', 'path' => '/pricing']);
+        ['title' => 'Pricing', 'description' => 'Video editing pricing: one-time projects, per-video or per-short rates, monthly retainers and custom quotes, always with a fixed-scope quote first.', 'path' => '/pricing']);
 });
 
 page('/about', function (Ctx $c) {
     $site = get_site_context();
-    site_page('about', ['about' => get_settings($site['workspaceId'], ['about'])['about'], 'site' => $site], ['title' => 'About the studio', 'description' => 'A video editing studio with its own production system — built for clarity, craft and honest scope.', 'path' => '/about']);
+    site_page('about', ['about' => get_settings($site['workspaceId'], ['about'])['about'], 'site' => $site], ['title' => 'About me', 'description' => $site['business']['tagline'] . ' ' . ($site['business']['descriptor'] ?? '') . '. How I work, and who I work with.', 'path' => '/about']);
 });
 
 page('/blog', function (Ctx $c) {
     $category = preg_match('/^[a-z0-9-]{1,80}$/', (string)($c->query['category'] ?? '')) ? $c->query['category'] : null;
     $posts = list_public_posts(['category' => $category, 'page' => (int)($c->query['page'] ?? 1)]);
-    site_page('blog', ['posts' => $posts, 'cats' => list_blog_categories(), 'category' => $category], ['title' => 'Blog & resources', 'description' => 'Editing tips, creator resources, video marketing insights and guides.', 'path' => '/blog']);
+    site_page('blog', ['posts' => $posts, 'cats' => list_blog_categories(), 'category' => $category], ['title' => 'Blog', 'description' => 'Editing tips, creator resources and guides from Faizan Ali.', 'path' => '/blog']);
 });
 
 page('/blog/{slug}', function (Ctx $c) {
@@ -133,7 +117,7 @@ page('/faq', function (Ctx $c) {
 page('/contact', function (Ctx $c) {
     $reason = strtoupper((string)($c->query['reason'] ?? ''));
     site_page('contact', ['site' => get_site_context(), 'reason' => in_array($reason, ['GENERAL', 'PROJECT', 'PARTNERSHIP', 'AGENCY', 'CAREER'], true) ? $reason : 'GENERAL'],
-        ['title' => 'Contact', 'description' => 'Get in touch about a project, a partnership, or working together.', 'path' => '/contact']);
+        ['title' => 'Contact', 'description' => 'Discuss your project with Faizan Ali, or ask a question about working together.', 'path' => '/contact']);
 });
 
 page('/book', function (Ctx $c) {

@@ -205,7 +205,7 @@ function validate_answer(array $q, mixed $value): ?string
         case 'PHONE':
             return preg_match('/^[+()\-.\s\d]{6,24}$/', js_str($s)) ? null : 'Enter a valid phone number.';
         case 'COLOR':
-            return preg_match('/^#?[0-9a-f]{3,8}$/i', js_str($s)) ? null : 'Enter a valid color like #FF5B2E.';
+            return preg_match('/^#?[0-9a-f]{3,8}$/i', js_str($s)) ? null : 'Enter a valid color like #2457E6.';
         case 'NUMBER':
         case 'CURRENCY':
             if (!is_numeric($s) || !is_finite((float)$s)) {

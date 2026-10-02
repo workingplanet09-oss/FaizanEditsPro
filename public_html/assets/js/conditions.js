@@ -82,7 +82,7 @@
       case "EMAIL": return EMAIL_RE.test(String(s)) ? null : "Enter a valid email address.";
       case "URL": return URL_RE.test(String(s)) ? null : "Enter a valid URL starting with http:// or https://";
       case "PHONE": return PHONE_RE.test(String(s)) ? null : "Enter a valid phone number.";
-      case "COLOR": return COLOR_RE.test(String(s)) ? null : "Enter a valid color like #FF5B2E.";
+      case "COLOR": return COLOR_RE.test(String(s)) ? null : "Enter a valid color like #2457E6.";
       case "NUMBER": case "CURRENCY":
         n = Number(s);
         if (!isFinite(n)) return "Enter a number.";

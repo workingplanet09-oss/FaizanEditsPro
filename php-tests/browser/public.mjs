@@ -3,7 +3,7 @@ const { browser, page, errors } = await launch();
 const go = (p) => page.goto(BASE + p, { waitUntil: "networkidle" });
 
 console.log("Public pages render with real content");
-for (const [path, needle] of [["/", "Your Footage"], ["/services", "Editing for every kind of content"], ["/work", "A look at what we've made"], ["/case-studies", "The problem, the edit, the result"], ["/process", "Tell us what you need"], ["/pricing", "Pay for the outcome"], ["/about", "About"], ["/blog", "Editing tips"], ["/faq", "Everything you'd want to know first"], ["/contact", "Send message"], ["/book", "Pick a time"], ["/help", "How do I"], ["/privacy", "Privacy policy"], ["/terms", "Terms of service"]]) {
+for (const [path, needle] of [["/", "Video editing that brings your message into focus"], ["/services", "Short-form, long-form and podcast editing"], ["/work", "A look at what I have edited"], ["/case-studies", "The goal, the edit, the result"], ["/process", "Brief, footage, editing, feedback, delivery"], ["/pricing", "Clear pricing before I start"], ["/about", "About Faizan Ali"], ["/blog", "Editing notes for creators"], ["/faq", "Answers before you ask"], ["/contact", "Send message"], ["/book", "Pick a time"], ["/help", "How do I"], ["/privacy", "Privacy policy"], ["/terms", "Terms of service"]]) {
   const r = await page.goto(BASE + path, { waitUntil: "networkidle" });
   check(`${path} 200 and shows "${needle}"`, r.status() === 200 && (await page.content()).includes(needle));
 }
@@ -12,7 +12,7 @@ check("unknown service gives a real 404 page", r404.status() === 404 && (await p
 
 console.log("Head metadata");
 await go("/services/short-form-video-editing");
-check("unique <title>", /Short.*\| FaizanEdits Pro/.test(await page.title()), await page.title());
+check("unique <title>", /Short.*\| Faizan Ali/.test(await page.title()), await page.title());
 check("meta description present", (await page.locator('meta[name=description]').getAttribute("content"))?.length > 30);
 check("canonical has no localhost-less relative URL", /^https?:\/\//.test(await page.locator('link[rel=canonical]').getAttribute("href")));
 check("og:image present", !!(await page.locator('meta[property="og:image"]').getAttribute("content")));

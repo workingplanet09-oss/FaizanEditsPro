@@ -34,6 +34,7 @@ run qa-links          $Q node php-tests/qa/links.mjs
 run qa-seo            $Q node php-tests/qa/seo.mjs
 run qa-keyboard       $Q node php-tests/qa/keyboard.mjs
 run qa-timezone       $Q node php-tests/qa/timezone.mjs
+run qa-brand          $Q node php-tests/qa/brand.mjs
 if [[ " $* " == *" --full "* ]]; then
   run qa-layout         $Q node php-tests/qa/layout.mjs
   run qa-layout-dark    $Q node php-tests/qa/layout.mjs --dark

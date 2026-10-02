@@ -259,7 +259,7 @@ function update_brief_answers(Actor $actor, string $projectId, array $answers): 
     }
     $brief = Db::first('project_briefs', ['projectId' => $projectId]);
     if (($brief['status'] ?? null) === 'LOCKED') {
-        throw new AppError('GATED', "Production has started, so the brief is locked. Submit a change request and we'll review it.");
+        throw new AppError('GATED', "Production has started, so the brief is locked. Submit a change request and I’ll review it.");
     }
     $form = get_form_def($actor->workspaceId, FEP_PROJECT_FORM);
     if (!$form) {

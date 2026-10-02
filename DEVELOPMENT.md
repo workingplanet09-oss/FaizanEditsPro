@@ -56,8 +56,16 @@ bash php-tests/run-attacks.sh        # only the hostile-input suites (starts 6 s
 | `php-tests/email-smtp.php` | The SMTP driver against `php-tests/smtp-sink.py`: auth, MIME, UTF-8, header/recipient smuggling, the queue → worker → SMTP path. |
 | `php-tests/demo-cycle.php` | Load sample data → use it → remove it → database is clean again → load again. |
 | `php-tests/browser/<name>.mjs` | Real-browser flows (Chromium via `playwright-core`): `public`, `wizard`, `portal-client`, `review`, `admin`, `admin-studio`, `editor`, `setup`, `xss` (payloads in every user-controlled field, nothing may execute and the CSP may not have to block anything). |
-| `php-tests/qa/*.mjs` | `links` (every notification link opens in the recipient's own area), `seo` (robots, sitemap, titles, descriptions, canonical, Open Graph, alt text, JSON-LD, no loopback URLs with `PUBLIC_ORIGIN`), `layout` (8 viewports from 320 px to 1920 px, light and `--dark`: overflow, labels, headings, landmarks), `axe` (WCAG 2.1 A/AA), `keyboard` (skip link, focus rings, dialog focus), `timezone` (Karachi / Los Angeles / Kiritimati / Pago Pago), `empty` (every page on an empty database). |
+| `php-tests/qa/*.mjs` | `links` (every notification link opens in the recipient's own area), `seo` (robots, sitemap, titles, descriptions, canonical, Open Graph, alt text, JSON-LD, no loopback URLs with `PUBLIC_ORIGIN`), `layout` (8 viewports from 320 px to 1920 px, light and `--dark`: overflow, labels, headings, landmarks), `axe` (WCAG 2.1 A/AA), `keyboard` (skip link, focus rings, dialog focus), `timezone` (Karachi / Los Angeles / Kiritimati / Pago Pago), `empty` (every page on an empty database), `brand` (the personal-brand specification measured on the rendered pages: palette, fonts, type scale, spacing, buttons, wordmark, contrast, motion, wording — see `BRANDING.md`). |
 | `php migration-tools/verify-migration.php …` | Value-by-value comparison of an old PostgreSQL database and the new MySQL one. |
+
+## Static preview (all pages as plain HTML)
+
+`migration-tools/make-preview.mjs` crawls a running copy of the site in demo mode (public pages, then the client portal, admin console and editor workspace as the demo accounts see them) and writes a folder of static `.html` files plus the assets. Actions that need PHP are switched off in that copy and say so. It is for showing the design, not for running the business.
+
+```bash
+BASE=http://127.0.0.1:8081 OUT=preview node migration-tools/make-preview.mjs
+```
 
 ## Styles and icons
 

@@ -147,9 +147,9 @@
       FE.api("/api/booking/slots?type=" + encodeURIComponent(type)).then(function (r) {
         (r.slots || []).forEach(function (s) { var d = dayKey(s); (state.byDay[d] = state.byDay[d] || []).push(s); });
         var days = Object.keys(state.byDay);
-        if (!days.length) { slotBox.innerHTML = '<p class="col-span-full rounded-xl bg-surface-2 p-5 text-sm text-muted">No open slots in the next few weeks. Please send us a message and we\'ll find a time.</p>'; return; }
+        if (!days.length) { slotBox.innerHTML = '<p class="col-span-full rounded-xl bg-surface-2 p-6 text-sm text-muted">No open slots in the next few weeks. Please send me a message and we\'ll find a time.</p>'; return; }
         state.day = days[0]; paintDays(); paintSlots();
-      }, function () { slotBox.innerHTML = '<p class="col-span-full rounded-xl bg-surface-2 p-5 text-sm text-muted">We couldn\'t load times just now. Please reload the page.</p>'; });
+      }, function () { slotBox.innerHTML = '<p class="col-span-full rounded-xl bg-surface-2 p-6 text-sm text-muted">I couldn\'t load times just now. Please reload the page.</p>'; });
     }
     typeInputs.forEach(function (i) { i.addEventListener("change", function () { paintTypes(); load(); }); });
     form.addEventListener("fe:error", function (e) { });
@@ -160,7 +160,7 @@
     var root = form.closest("[data-fe-component]");
     var when = new Date(data.startsAt).toLocaleString(undefined, { dateStyle: "full", timeStyle: "short" });
     $("[data-booking-when]", root).textContent = data.typeLabel + " · " + when;
-    $("[data-booking-mail]", root).textContent = "We've emailed your confirmation" + (data.meetingUrl ? " with the meeting link" : "") + ".";
+    $("[data-booking-mail]", root).textContent = "I’ve emailed your confirmation" + (data.meetingUrl ? " with the meeting link" : "") + ".";
     var link = $("[data-booking-link]", root);
     if (data.meetingUrl && /^https?:\/\//i.test(data.meetingUrl)) { link.href = data.meetingUrl; link.hidden = false; }
     $("[data-booking-form]", root).hidden = true; $("[data-booking-done]", root).hidden = false;
