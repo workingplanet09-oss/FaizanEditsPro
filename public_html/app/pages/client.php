@@ -167,7 +167,7 @@ page('/dashboard/projects/{id}/setup', function (Ctx $c) {
     if (!$open || $data['locked']) {
         $locked = (bool)$data['locked'];
         Pages::error(200, $locked ? 'Locked' : 'Not yet', $locked ? 'lock' : 'clock', $locked ? 'The brief is locked — production has started' : 'Project setup opens after payment',
-            $locked ? "To keep the edit on track, the brief can't change once editing begins. Send a change request and we'll confirm scope and cost." : 'Once your quote is accepted, the contract is signed and the deposit is paid, this form opens so you can tell us exactly what you want.',
+            $locked ? "To keep the edit on track, the brief can't change once editing begins. Send a change request and I'll confirm scope and cost." : 'Once your quote is accepted, the contract is signed and the deposit is paid, this form opens so you can tell us exactly what you want.',
             [[$locked ? 'Change requests' : 'Back to project', "/dashboard/projects/{$id}" . ($locked ? '?tab=changes' : ''), true]]);
     }
     $prefill = inquiry_prefill($a);

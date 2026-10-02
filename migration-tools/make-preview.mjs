@@ -20,6 +20,7 @@ rmSync(OUT, { recursive: true, force: true });
 mkdirSync(OUT, { recursive: true });
 cpSync(join(root, "public_html", "assets"), join(OUT, "assets"), { recursive: true });
 cpSync(join(root, "public_html", "favicon.svg"), join(OUT, "favicon.svg"));
+cpSync(join(root, "public_html", "assets", "img", "favicon-32.png"), join(OUT, "favicon.ico"));
 
 // ── URL helpers ──
 const SKIP = /^\/(api|logout|s\/|setup|cron|sitemap|robots|manifest|opengraph|apple-icon|favicon|auth\/|download|uploads|storage)/;
@@ -35,7 +36,10 @@ function canon(href) {
   if (p.startsWith("/start-project")) return "/start-project";
   return p + (tab && /^[a-z-]+$/.test(tab) ? "?tab=" + tab : "");
 }
-const fileFor = (c) => (c === "/" ? "home" : c.split("?")[0].slice(1) + (c.includes("?") ? "__" + c.split("?")[1].replace(/[^a-z0-9=-]/gi, "-") : "")) + "/index.html"; // index.html at the top is the preview hub
+// record ids (25-character cuids) become their last 8 characters in file names; collisions get a counter
+const shortIds = new Map(), usedShort = new Set();
+const shortId = (id) => { if (!shortIds.has(id)) { let t = id.slice(-8), n = 2; while (usedShort.has(t)) t = id.slice(-8) + n++; usedShort.add(t); shortIds.set(id, t); } return shortIds.get(id); };
+const fileFor = (c) => (c === "/" ? "home" : c.split("?")[0].replace(/[a-z0-9]{18,}/gi, shortId).slice(1) + (c.includes("?") ? "__" + c.split("?")[1].replace(/[^a-z0-9=-]/gi, "-") : "")) + "/index.html"; // index.html at the top is the preview hub
 const groupKey = (c) => c.split("?")[0].replace(/[a-z0-9]{18,}/gi, ":id");
 
 // ── crawl ──
@@ -79,7 +83,7 @@ for (const [role, landing, prefix, max, label] of [["client", "/dashboard", /^\/
   const page = await ctx.newPage();
   await page.goto(BASE + "/login", { waitUntil: "networkidle" });
   await page.getByRole("button", { name: new RegExp("^" + role + "$", "i") }).click();
-  await page.waitForURL(prefix, { timeout: 15000 });
+  await page.waitForURL((u) => prefix.test(u.pathname), { timeout: 15000 });
   const n = await crawl(ctx.request, [landing], label, { prefix, max, perGroup: 3 });
   console.log(label + ":", n);
   await ctx.close();
@@ -166,7 +170,8 @@ for (const [c, { html, area }] of pages) {
   const f = written.get(c);
   mkdirSync(dirname(join(OUT, f)), { recursive: true });
   writeFileSync(join(OUT, f), rewrite(c, html));
-  const title = (html.match(/<title>([^<]*)<\/title>/) || [, c])[1].replace(/\s*\|\s*Faizan Ali\s*$/, "").replace(/&amp;/g, "&").replace(/&#0?39;/g, "'");
+  const LABEL = { "/": "Home", "/login": "Sign in", "/start-project": "Discuss your project (project form)" };
+  const title = LABEL[c] || (html.match(/<title>([^<]*)<\/title>/) || [, c])[1].replace(/\s*\|\s*Faizan Ali\s*$/, "").replace(/&amp;/g, "&").replace(/&#0?39;/g, "'");
   (index[area] ||= []).push({ title: title + (c.includes("?tab=") ? " (" + c.split("tab=")[1] + ")" : ""), file: f, path: c });
 }
 writeFileSync(join(OUT, "preview-pages.json"), JSON.stringify(index, null, 1));

@@ -54,4 +54,8 @@ bash php-tests/run-all.sh --full                         # everything, including
 
 `php-tests/qa/brand.mjs` reads computed styles in a real browser: palette, fonts, type sizes at 1440 px and 390 px, container and gutters, radii, button size/colour/hover, wordmark rules, contrast of the main text pairs, focus visibility, transition timing, reduced motion, content visible without JavaScript, no glow/grain, the specified call-to-action wording, form-field size and borders, and the client dashboard.
 
+## Static preview (every screen as a plain HTML file)
+
+`preview/` holds a generated static copy of the finished site (public pages, client portal, admin console and editor workspace, as the demo accounts see them). Open `preview/index.html` in a browser, or serve the folder with any static host (`python3 -m http.server -d preview`). It exists to look at the design; actions that need PHP (saving, uploading, paying, sending) are switched off and say so. Rebuild it with `BASE=http://127.0.0.1:8081 OUT=preview node migration-tools/make-preview.mjs` against a site running in demo mode.
+
 What is **not** verified by a test: how the typography feels with the owner's real portrait and logo, Urdu pages with real Urdu copy (the font/RTL plumbing is in place and was checked on a sample), and the live behaviour on cPanel hosting.

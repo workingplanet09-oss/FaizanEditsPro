@@ -27,7 +27,7 @@ $n = count($home['attention']);
       <div class="mb-3 flex items-center justify-between"><h2 id="proj" class="text-lg font-bold tracking-tight">Your projects</h2><a href="/dashboard/projects" class="text-sm font-semibold text-accent-text hover:underline">View all</a></div>
       <div class="grid grid-cols-1 gap-4 md:grid-cols-2">
         <?php foreach (array_slice($open, 0, 6) as $p): ?><?= project_card($p) ?><?php endforeach; ?>
-        <?php if (!$open): ?><div class="md:col-span-2"><?= card(ui_empty('No active projects', 'Everything is delivered. Ready for the next one?', 'film', ui_link('/start-project', 'Start a project'))) ?></div><?php endif; ?>
+        <?php if (!$open): ?><div class="md:col-span-2"><?= card(ui_empty('No active projects', 'Everything is delivered. Ready for the next one?', 'film', ui_link('/start-project', 'Discuss your project'))) ?></div><?php endif; ?>
       </div>
     </section>
     <aside class="space-y-6">

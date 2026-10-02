@@ -88,13 +88,13 @@ staff_get('admin', '/admin/emails', 'automations:manage', 'Email outbox', 'admin
 
 // ── settings ──
 const SETTING_GROUPS = [
-    ['business', 'Business', 'building', 'Studio name, contact details, currencies, revision policy.'],
+    ['business', 'Business', 'building', 'Name, descriptor, handle, portrait, contact details, currencies, revision policy.'],
     ['theme', 'Brand colour', 'palette', 'The single accent colour used across the site and apps.'],
     ['hero', 'Homepage hero', 'sparkles', 'Headline, sub-headline, buttons and trust points.'],
     ['stats', 'Homepage stats', 'chart', 'Real (auto) or hand-typed figures. Empty ones are hidden.'],
     ['nav', 'Navigation', 'menu', 'Header links and buttons.'],
     ['footer', 'Footer', 'panel', 'Footer columns, description and newsletter.'],
-    ['process', 'Process page', 'workflow', 'The 7-step process shown on the website.'],
+    ['process', 'Process page', 'workflow', 'The steps shown on the Process page and the home page.'],
     ['about', 'About page', 'users', 'Story, values and team.'],
     ['contactInfo', 'Contact page', 'mail', 'Heading, intro and promised response time.'],
     ['legal', 'Legal', 'file', 'Terms of service and privacy policy text.'],

@@ -91,8 +91,14 @@ def edit_table(text, table, fn, comment=True):
     m = block_re(table).search(text)
     assert m, "no INSERT block for " + table
     cols = [c.strip("` ") for c in m.group("cols").split(",")]
-    rows = [dict(zip(cols, r)) for r in _tokens(m.group("body"))]
-    rows = fn(rows)
+    orig = [dict(zip(cols, r)) for r in _tokens(m.group("body"))]
+    rows = fn([dict(r) for r in orig])
+    # str methods on a Raw cell (NULL, numbers) return a plain str, which would then be written quoted ('NULL'):
+    # a cell whose text did not change keeps its original, unquoted form
+    for r, o in zip(rows, orig):
+        for k, ov in o.items():
+            if isinstance(ov, Raw) and k in r and not isinstance(r[k], Raw) and r[k] == str(ov):
+                r[k] = ov
     out = "INSERT INTO `%s` (%s) VALUES\n%s;\n" % (
         table, m.group("cols"),
         ",\n".join("(" + ", ".join(lit(r.get(c)) if c in r else "NULL" for c in cols) + ")" for r in rows),

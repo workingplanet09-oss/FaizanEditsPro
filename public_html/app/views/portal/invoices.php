@@ -12,7 +12,7 @@ echo ui_table([
     ['key' => 'k', 'header' => 'Type', 'hideOnMobile' => true, 'render' => fn($i) => '<span class="capitalize">' . e(strtolower($i['kind'])) . '</span>'],
     ['key' => 'd', 'header' => 'Due', 'hideOnMobile' => true, 'render' => fn($i) => $i['dueDate'] ? e(fmt_date_short($i['dueDate'])) : '—'],
     ['key' => 's', 'header' => 'Status', 'render' => fn($i) => meta_badge('INVOICE_STATUS', $i['status'])],
-    ['key' => 'a', 'header' => 'Amount', 'align' => 'right', 'render' => fn($i) => '<span class="font-semibold tabular-nums">' . e(money((int)$i['total'], $i['currency'])) . '</span>'],
+    ['key' => 'a', 'header' => 'Amount', 'align' => 'right', 'render' => fn($i) => '<span class="font-semibold tabular-nums">' . e(money((int)$i['total'], $i['currency'])) . '</span> <span class="text-sm text-muted">' . e(strtoupper($i['currency'])) . '</span>'],
 ], $rows, fn($i) => $i['id'], fn($i) => '/dashboard/invoices/' . $i['id'], ui_empty($tab === 'due' ? 'Nothing to pay' : 'No invoices yet', $tab === 'due' ? "You're all paid up." : 'Invoices appear here once your contract is signed.', 'receipt'));
 echo ui_pagination($res['page'], $res['pages'], '/dashboard/invoices', ['tab' => $tab === 'all' ? null : $tab], $res['total']);
 echo card(ob_get_clean()); ?>

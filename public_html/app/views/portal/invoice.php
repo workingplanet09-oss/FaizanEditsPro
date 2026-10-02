@@ -4,8 +4,8 @@ $payable = in_array($inv['status'], ['SENT', 'VIEWED', 'PARTIALLY_PAID', 'OVERDU
 ?>
 <div class="mb-2"><a href="/dashboard/invoices" class="inline-flex items-center gap-1 text-sm font-semibold text-muted hover:text-fg print:hidden"><?= icon('chevron-left', 14) ?> Invoices</a></div>
 <?= ui_page_header($inv['number'], $inv['project'] ? 'For ' . $inv['project']['name'] : null, meta_badge('INVOICE_STATUS', $inv['status']) . ui_button('Print / save PDF', ['variant' => 'outline', 'icon' => 'download', 'class' => 'print:hidden', 'attrs' => ['data-print' => true]])) ?>
-<?php if ($paid && $inv['status'] === 'PAID'): ?><p role="status" class="mb-5 flex items-center gap-2 rounded-2xl bg-success-soft px-6 py-3.5.5 text-sm font-semibold text-success"><?= icon('check-circle', 18) ?> Payment received — thank you! Your project is moving forward.</p><?php endif; ?>
-<?php if ($cancelled): ?><p role="status" class="mb-5 rounded-2xl bg-warning-soft px-6 py-3.5.5 text-sm font-semibold text-warning">Checkout was cancelled. You haven't been charged.</p><?php endif; ?>
+<?php if ($paid && $inv['status'] === 'PAID'): ?><p role="status" class="mb-5 flex items-center gap-2 rounded-2xl bg-success-soft px-6 py-3.5 text-sm font-semibold text-success"><?= icon('check-circle', 18) ?> Payment received — thank you! Your project is moving forward.</p><?php endif; ?>
+<?php if ($cancelled): ?><p role="status" class="mb-5 rounded-2xl bg-warning-soft px-6 py-3.5 text-sm font-semibold text-warning">Checkout was cancelled. You haven't been charged.</p><?php endif; ?>
 <div class="grid grid-cols-1 gap-6 lg:grid-cols-[minmax(0,1fr)_22rem]">
   <?php ob_start(); ?>
     <div class="mb-6 flex flex-wrap justify-between gap-6 border-b border-line pb-6 text-sm">
@@ -24,7 +24,7 @@ $payable = in_array($inv['status'], ['SENT', 'VIEWED', 'PARTIALLY_PAID', 'OVERDU
   <aside class="space-y-4 print:hidden">
     <?php if ($payable): ?>
       <?php ob_start(); ?>
-        <div class="text-xs font-bold text-subtle">Amount due</div><div class="mt-1 text-3xl font-bold tracking-tight tabular-nums"><?= e(money((int)$due, $inv['currency'])) ?></div>
+        <div class="text-sm font-semibold text-muted">Amount due</div><div class="mt-1 text-3xl font-bold tracking-tight tabular-nums"><?= e(money((int)$due, $inv['currency'])) ?> <span class="text-base font-semibold text-muted"><?= e(strtoupper($inv['currency'])) ?></span></div>
         <?= $inv['status'] === 'OVERDUE' ? '<p class="mt-1 text-sm font-semibold text-danger">Overdue since ' . e($inv['dueDate'] ? fmt_date($inv['dueDate']) : '') . '</p>' : '' ?>
         <div class="mt-5">
           <?php if (!$canPay): ?><p class="text-sm text-muted">Only account owners and billing contacts can pay invoices.</p>

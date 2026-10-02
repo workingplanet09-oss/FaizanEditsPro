@@ -2,7 +2,7 @@
 
 **How to read this.** *Old* = the feature in the previous version. *PHP* = where it lives now. *Verified by* names the automated run that exercised it on this machine (PHP 8.4 + MariaDB 10.11 behind PHP's built-in web server, Chromium for the browser runs). **PASS** is written only where such a run really exercised the feature and passed. Anything that could not be exercised here says **NOT VERIFIED** or **CHANGED**, with the reason. Nothing in this file was tested on a real cPanel account.
 
-Run counts are from the last full run (`bash php-tests/run-all.sh`, **0 suites failed**, on PHP 8.4.19 and again on PHP 8.3.6); the slow sweeps (`qa:layout` light + dark, `qa:axe` light + dark) were run on the final code one by one and are clean. Numbers in brackets are checks per suite.
+Run counts are from the last full run (`bash php-tests/run-all.sh`, **0 suites failed**, on PHP 8.4.19 and again on PHP 8.3.6); the slow sweeps (`qa:layout` light + dark, `qa:axe`) were run again with `--full` after the brand change and are clean (one SMTP test flaked once in that run; its cause is fixed, see section 13). After the brand change the regular run was repeated on both PHP versions: **0 suites failed** on 8.3.6 and on 8.4.19. Numbers in brackets are checks per suite.
 
 | Short name | What it is |
 | --- | --- |
@@ -205,3 +205,16 @@ Run counts are from the last full run (`bash php-tests/run-all.sh`, **0 suites f
 | Old uploaded files copied by key | MIGRATION.md | documented; **NOT VERIFIED** with an S3 bucket |
 | Runs on PHP 8.4.19 and 8.3.6 | every suite run on both; every file lints under 8.3 | PASS (PHP **8.2 itself NOT VERIFIED**; a search found no 8.3+-only syntax or functions) |
 | Runs on cPanel / Apache / LiteSpeed | — | **NOT VERIFIED** — see README "If something goes wrong" |
+
+## 13. Brand (Faizan Ali specification)
+
+| Feature | Verified by | Result |
+| --- | --- | --- |
+| Palette, Manrope/Inter type scale (desktop and 390 px), 1200 px column and gutters, 16 px cards, 12 px buttons at 44–48 px, hover `#1D46BC`, wordmark rules, navy footer, contrast of the main pairs, focus ring, 120–180 ms hover timing, reduced motion, content visible without JavaScript, no glow/grain, specified call-to-action wording, first-person copy, no stray `NULL`/`undefined` text | qa:brand [78] | PASS |
+| Urdu: Nastaliq font loads only on pages that contain Urdu; Arabic-script blocks get `lang="ur"`, `dir="rtl"`, line height 1.8–2.2, no letter-spacing | qa:brand (sample sentence injected into a page) | PASS — **no real Urdu copy exists yet**; the interface itself is English only |
+| Layout at 320–1920 px, light and dark; WCAG 2.1 A/AA after the brand change | qa:layout, qa:layout --dark, qa:axe | PASS |
+| Client billing shows the currency code next to amounts and a labelled status | browser-portal-client, screenshot review | PASS |
+| E-mails use the navy header, white wordmark and blue button | email-smtp, `render_email_html()` read; rendered in no real mail client | PASS for the markup, **NOT VERIFIED** in Gmail/Outlook/Apple Mail |
+| Portrait, finished logo files, contact e-mail, social links, real testimonials and results | — | **NOT PROVIDED** — placeholders until the owner supplies them (see `BRANDING.md`) |
+| SMTP driver refuses recipient/sender addresses that could carry a second SMTP command | email-smtp (30 consecutive runs after the fix; 1 failure in 25 before it, caused by a race in the test plus the unvalidated recipient) | PASS |
+| Static HTML copy of every screen (`preview/`) | `make-preview.mjs`, opened from a local static server in Chromium: pages load, no script errors, no missing local files | PASS for rendering; actions that need PHP are switched off by design |

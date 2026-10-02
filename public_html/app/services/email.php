@@ -193,6 +193,14 @@ function mail_header_addr(string $name, string $addr): string
 /** Sends one message over SMTP (implicit TLS on 465, STARTTLS on 587, or plain). Returns the Message-ID. */
 function smtp_send(array $cfg, array $m): string
 {
+    // Addresses go straight into SMTP commands, so refuse anything that could carry a second command or recipient before connecting.
+    [$fromName, $fromAddr] = parse_mailbox($m['from']);
+    [, $toAddr] = parse_mailbox($m['to']);
+    foreach ([$fromAddr, $toAddr] as $addr) {
+        if (!preg_match('/^[^\s<>"\\,;]+@[^\s<>"\\,;]+$/D', $addr)) {
+            throw new RuntimeException('That does not look like a valid e-mail address.');
+        }
+    }
     $host = (string)($cfg['host'] ?? 'localhost');
     $port = (int)($cfg['port'] ?? 465);
     $enc = strtolower((string)($cfg['encryption'] ?? 'ssl'));
@@ -245,8 +253,6 @@ function smtp_send(array $cfg, array $m): string
             $cmd(base64_encode((string)$cfg['user']), [334]);
             $cmd(base64_encode((string)($cfg['password'] ?? '')), [235]);
         }
-        [$fromName, $fromAddr] = parse_mailbox($m['from']);
-        [, $toAddr] = parse_mailbox($m['to']);
         $cmd("MAIL FROM:<{$fromAddr}>", [250]);
         $cmd("RCPT TO:<{$toAddr}>", [250, 251]);
         $cmd('DATA', [354]);

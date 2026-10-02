@@ -29,13 +29,13 @@ $box = 'rounded-[var(--radius-card)] border border-line bg-surface p-6 sm:p-8';
     <aside class="space-y-5">
       <div class="<?= $box ?>"><?= icon('clock', 20, 'text-accent-text') ?><h2 class="h-card mt-3 text-xl">Response time</h2><p class="mt-1 text-base text-muted"><?= e($site['contactInfo']['responseTime']) ?></p></div>
       <?php if ($site['booking']['enabled']): ?><div class="<?= $box ?>"><?= icon('calendar', 20, 'text-accent-text') ?><h2 class="h-card mt-3 text-xl">Prefer to talk?</h2><p class="mt-1 text-base text-muted">Book a free discovery call and pick a time that suits you.</p><?= ui_link('/book', 'Book a call', ['variant' => 'outline', 'class' => 'mt-4']) ?></div><?php endif; ?>
-      <div class="<?= $box ?> text-base"><h2 class="h-card text-xl">Direct</h2>
+      <?php if ($b['email'] || $b['phone'] || $b['address'] || $socials): ?><div class="<?= $box ?> text-base"><h2 class="h-card text-xl">Direct</h2>
         <ul class="mt-3 space-y-3 text-muted">
           <?php if ($b['email']): ?><li class="flex gap-2.5"><?= icon('mail', 16, 'mt-0.5') ?><a class="min-h-11 underline decoration-line-strong underline-offset-4 hover:text-fg" href="mailto:<?= e($b['email']) ?>"><?= e($b['email']) ?></a></li><?php endif; ?>
           <?php if ($b['phone']): ?><li class="flex gap-2.5"><?= icon('phone', 16, 'mt-0.5') ?><?= e($b['phone']) ?></li><?php endif; ?>
           <?php if ($b['address']): ?><li class="flex gap-2.5"><?= icon('globe', 16, 'mt-0.5') ?><?= e($b['address']) ?></li><?php endif; ?>
           <?php foreach ($socials as $k => $v): ?><li class="flex gap-2.5"><?= icon('link', 16, 'mt-0.5') ?><a class="min-h-11 capitalize underline decoration-line-strong underline-offset-4 hover:text-fg" href="<?= e($v) ?>" target="_blank" rel="noopener noreferrer"><?= e($k) ?></a></li><?php endforeach; ?>
-        </ul></div>
+        </ul></div><?php endif; ?>
     </aside>
   </div>
 <?= sec_close() ?>

@@ -26,5 +26,5 @@ page('/start-project', function (Ctx $c) {
             'turnstileSiteKey' => turnstile_enabled() ? cfg('turnstile.site_key') : null,
         ],
         'scripts' => ['js/site.js', 'js/conditions.js', 'js/uploader.js', 'js/wizard.js'],
-    ], ['title' => 'Start a project', 'description' => 'Tell us about your video — it takes a few minutes and every answer is saved as you go.', 'path' => '/start-project']);
+    ], ['title' => 'Discuss your project', 'description' => 'Tell me about your video. It takes a few minutes and every answer is saved as you go.', 'path' => '/start-project']);
 });

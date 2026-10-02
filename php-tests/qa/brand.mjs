@@ -175,12 +175,30 @@ console.log("Motion");
   await ctx.close();
 }
 
+console.log("Urdu / right-to-left text");
+{
+  const { ctx, page } = await open(1280, "/faq");
+  await page.evaluate(() => {
+    const p = document.createElement("p"); p.id = "ur-sample"; p.textContent = "میں ویڈیو ایڈیٹر ہوں اور آپ کے خام فوٹیج کو دلچسپ مواد میں بدلتا ہوں۔";
+    const q = document.createElement("p"); q.id = "en-sample"; q.textContent = "This English paragraph must not change."; document.querySelector("main").append(p, q); window.FE.rtl(document.body);
+  });
+  await page.waitForTimeout(600);
+  const ur = await page.locator("#ur-sample").evaluate((el) => { const s = getComputedStyle(el); return { dir: el.dir, lang: el.lang, lh: parseFloat(s.lineHeight) / parseFloat(s.fontSize), ls: s.letterSpacing, align: s.textAlign, font: s.fontFamily }; });
+  ok("Urdu text is detected and set right-to-left with lang=ur", ur.dir === "rtl" && ur.lang === "ur", JSON.stringify(ur));
+  ok("Urdu line-height is 1.8–2.2 and letter-spacing is off", ur.lh >= 1.8 && ur.lh <= 2.2 && /normal|0px/.test(ur.ls), JSON.stringify(ur));
+  ok("Noto Nastaliq Urdu is in the font stack and loaded for it", /Nastaliq/.test(ur.font) && (await page.evaluate(() => document.fonts.check("16px 'Noto Nastaliq Urdu Variable'", "ویڈیو"))));
+  const en = await page.locator("#en-sample").evaluate((el) => ({ dir: el.dir, lang: el.lang }));
+  ok("English text next to it is left untouched", en.dir === "" || en.dir === "ltr", JSON.stringify(en));
+  await ctx.close();
+}
+
 // ───────────────────────────── other pages ─────────────────────────────
 console.log("Other pages share the system");
 for (const [path, needle] of [["/services", "Short-form editing"], ["/work", "View my work|Work"], ["/process", "Brief"], ["/about", "Faizan Ali"], ["/pricing", "Pricing"], ["/faq", "FAQ"], ["/contact", "Send message"], ["/start-project", "Discuss your project|Send project details|Continue"]]) {
   const { ctx, page } = await open(1280, path);
   const t = await page.locator("body").innerText();
   const f = await style(page, "h1", ["font-family", "color"]).catch(() => null);
+  ok(`${path} shows no stray NULL / undefined / [object Object] text`, !/\b(NULL|undefined|\[object Object\])\b/.test(t), (t.match(/.{20}\b(NULL|undefined)\b.{10}/) || [""])[0]);
   ok(`${path} renders in Manrope/navy and mentions "${needle}"`, new RegExp(needle).test(t) && (!f || (/^"?Manrope/.test(f["font-family"]) && same(rgb(f.color), hex(P.navy)))), JSON.stringify(f));
   await ctx.close();
 }

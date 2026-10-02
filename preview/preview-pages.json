@@ -1,0 +1,620 @@
+{
+ "Public site": [
+  {
+   "title": "Home",
+   "file": "home/index.html",
+   "path": "/"
+  },
+  {
+   "title": "Sign in",
+   "file": "login/index.html",
+   "path": "/login"
+  },
+  {
+   "title": "Discuss your project (project form)",
+   "file": "start-project/index.html",
+   "path": "/start-project"
+  },
+  {
+   "title": "Book a call",
+   "file": "book/index.html",
+   "path": "/book"
+  },
+  {
+   "title": "Blog",
+   "file": "blog/index.html",
+   "path": "/blog"
+  },
+  {
+   "title": "Help center",
+   "file": "help/index.html",
+   "path": "/help"
+  },
+  {
+   "title": "Terms of service",
+   "file": "terms/index.html",
+   "path": "/terms"
+  },
+  {
+   "title": "Privacy policy",
+   "file": "privacy/index.html",
+   "path": "/privacy"
+  },
+  {
+   "title": "Video editing services",
+   "file": "services/index.html",
+   "path": "/services"
+  },
+  {
+   "title": "View my work",
+   "file": "work/index.html",
+   "path": "/work"
+  },
+  {
+   "title": "Case studies",
+   "file": "case-studies/index.html",
+   "path": "/case-studies"
+  },
+  {
+   "title": "My process: brief, footage, editing, feedback, delivery",
+   "file": "process/index.html",
+   "path": "/process"
+  },
+  {
+   "title": "Pricing",
+   "file": "pricing/index.html",
+   "path": "/pricing"
+  },
+  {
+   "title": "About me",
+   "file": "about/index.html",
+   "path": "/about"
+  },
+  {
+   "title": "Contact",
+   "file": "contact/index.html",
+   "path": "/contact"
+  },
+  {
+   "title": "Short-form editing",
+   "file": "services/short-form-video-editing/index.html",
+   "path": "/services/short-form-video-editing"
+  },
+  {
+   "title": "Long-form and podcast editing",
+   "file": "services/long-form-podcast-editing/index.html",
+   "path": "/services/long-form-podcast-editing"
+  },
+  {
+   "title": "Motion graphics",
+   "file": "services/motion-graphics/index.html",
+   "path": "/services/motion-graphics"
+  },
+  {
+   "title": "How Northwind cut listing video turnaround from 2 weeks to 3 days — case study",
+   "file": "case-studies/how-northwind-cut-listing-video-turnaround-from-2-weeks-to-3/index.html",
+   "path": "/case-studies/how-northwind-cut-listing-video-turnaround-from-2-weeks-to-3"
+  },
+  {
+   "title": "Turning raw podcast audio into a season trailer — case study",
+   "file": "case-studies/turning-raw-podcast-audio-into-a-season-trailer/index.html",
+   "path": "/case-studies/turning-raw-podcast-audio-into-a-season-trailer"
+  },
+  {
+   "title": "A launch explainer that lifted trial sign-ups — case study",
+   "file": "case-studies/a-launch-explainer-that-lifted-trial-sign-ups/index.html",
+   "path": "/case-studies/a-launch-explainer-that-lifted-trial-sign-ups"
+  },
+  {
+   "title": "Frequently asked questions",
+   "file": "faq/index.html",
+   "path": "/faq"
+  },
+  {
+   "title": "Reset your password",
+   "file": "forgot-password/index.html",
+   "path": "/forgot-password"
+  },
+  {
+   "title": "Create your account",
+   "file": "register/index.html",
+   "path": "/register"
+  },
+  {
+   "title": "How to brief a video editor so you get it right the first time",
+   "file": "blog/how-to-brief-a-video-editor-so-you-get-it-right-the-first-time/index.html",
+   "path": "/blog/how-to-brief-a-video-editor-so-you-get-it-right-the-first-time"
+  },
+  {
+   "title": "Short-form vs long-form: where should your budget go?",
+   "file": "blog/short-form-vs-long-form-where-should-your-budget-go/index.html",
+   "path": "/blog/short-form-vs-long-form-where-should-your-budget-go"
+  },
+  {
+   "title": "The anatomy of a great podcast trailer",
+   "file": "blog/the-anatomy-of-a-great-podcast-trailer/index.html",
+   "path": "/blog/the-anatomy-of-a-great-podcast-trailer"
+  },
+  {
+   "title": "Revision rounds explained: what counts and what doesn't",
+   "file": "blog/revision-rounds-explained-what-counts-and-what-doesn-t/index.html",
+   "path": "/blog/revision-rounds-explained-what-counts-and-what-doesn-t"
+  }
+ ],
+ "Client portal": [
+  {
+   "title": "Dashboard",
+   "file": "dashboard/index.html",
+   "path": "/dashboard"
+  },
+  {
+   "title": "Projects",
+   "file": "dashboard/projects/index.html",
+   "path": "/dashboard/projects"
+  },
+  {
+   "title": "Files",
+   "file": "dashboard/files/index.html",
+   "path": "/dashboard/files"
+  },
+  {
+   "title": "Messages",
+   "file": "dashboard/messages/index.html",
+   "path": "/dashboard/messages"
+  },
+  {
+   "title": "Quotes",
+   "file": "dashboard/quotes/index.html",
+   "path": "/dashboard/quotes"
+  },
+  {
+   "title": "Contracts",
+   "file": "dashboard/contracts/index.html",
+   "path": "/dashboard/contracts"
+  },
+  {
+   "title": "Invoices",
+   "file": "dashboard/invoices/index.html",
+   "path": "/dashboard/invoices"
+  },
+  {
+   "title": "Retainers",
+   "file": "dashboard/retainers/index.html",
+   "path": "/dashboard/retainers"
+  },
+  {
+   "title": "Brand kit",
+   "file": "dashboard/brand-kit/index.html",
+   "path": "/dashboard/brand-kit"
+  },
+  {
+   "title": "Settings",
+   "file": "dashboard/settings/index.html",
+   "path": "/dashboard/settings"
+  },
+  {
+   "title": "Review video",
+   "file": "dashboard/projects/owphv7mm/review/ka3dt1wh/index.html",
+   "path": "/dashboard/projects/cmuojmwfa009uzs7dowphv7mm/review/cmuojmx0f00fszs7dka3dt1wh"
+  },
+  {
+   "title": "Projects (delivered)",
+   "file": "dashboard/projects__tab=delivered/index.html",
+   "path": "/dashboard/projects?tab=delivered"
+  },
+  {
+   "title": "September Reels Pack (6 shorts)",
+   "file": "dashboard/projects/9f0r2mvv/index.html",
+   "path": "/dashboard/projects/cmuojmx3600gmzs7d9f0r2mvv"
+  },
+  {
+   "title": "Harbor View Estate — Listing Tour",
+   "file": "dashboard/projects/owphv7mm/index.html",
+   "path": "/dashboard/projects/cmuojmwfa009uzs7dowphv7mm"
+  },
+  {
+   "title": "Lakeside Estate — Launch Film",
+   "file": "dashboard/projects/7opuoqj7/index.html",
+   "path": "/dashboard/projects/cmuojmuxe0013zs7d7opuoqj7"
+  },
+  {
+   "title": "Quote Q-1003",
+   "file": "dashboard/quotes/27gzm5d7/index.html",
+   "path": "/dashboard/quotes/cmuojmx3t00h0zs7d27gzm5d7"
+  },
+  {
+   "title": "Quote Q-1002",
+   "file": "dashboard/quotes/ruermco9/index.html",
+   "path": "/dashboard/quotes/cmuojmwg400a9zs7druermco9"
+  },
+  {
+   "title": "Quote Q-1001",
+   "file": "dashboard/quotes/ixpyyr2k/index.html",
+   "path": "/dashboard/quotes/cmuojmuz2001hzs7dixpyyr2k"
+  },
+  {
+   "title": "Contract C-1003",
+   "file": "dashboard/contracts/08c6qmvl/index.html",
+   "path": "/dashboard/contracts/cmuojmx5700hjzs7d08c6qmvl"
+  },
+  {
+   "title": "Contract C-1002",
+   "file": "dashboard/contracts/wjdl1pws/index.html",
+   "path": "/dashboard/contracts/cmuojmwhx00aszs7dwjdl1pws"
+  },
+  {
+   "title": "Contract C-1001",
+   "file": "dashboard/contracts/yyfgdxqz/index.html",
+   "path": "/dashboard/contracts/cmuojmv3m0020zs7dyyfgdxqz"
+  },
+  {
+   "title": "Invoices (due)",
+   "file": "dashboard/invoices__tab=due/index.html",
+   "path": "/dashboard/invoices?tab=due"
+  },
+  {
+   "title": "Invoice INV-1004",
+   "file": "dashboard/invoices/me3si6fi/index.html",
+   "path": "/dashboard/invoices/cmuojmx6k00i2zs7dme3si6fi"
+  },
+  {
+   "title": "Invoice INV-1003",
+   "file": "dashboard/invoices/yp5kuhhr/index.html",
+   "path": "/dashboard/invoices/cmuojmwjt00bfzs7dyp5kuhhr"
+  },
+  {
+   "title": "Invoice INV-1002",
+   "file": "dashboard/invoices/sipd0c9b/index.html",
+   "path": "/dashboard/invoices/cmuojmw6o0082zs7dsipd0c9b"
+  },
+  {
+   "title": "Settings (company)",
+   "file": "dashboard/settings__tab=company/index.html",
+   "path": "/dashboard/settings?tab=company"
+  }
+ ],
+ "Admin console": [
+  {
+   "title": "Command center",
+   "file": "admin/index.html",
+   "path": "/admin"
+  },
+  {
+   "title": "Calendar",
+   "file": "admin/calendar/index.html",
+   "path": "/admin/calendar"
+  },
+  {
+   "title": "Tasks",
+   "file": "admin/tasks/index.html",
+   "path": "/admin/tasks"
+  },
+  {
+   "title": "Projects",
+   "file": "admin/projects/index.html",
+   "path": "/admin/projects"
+  },
+  {
+   "title": "Revisions",
+   "file": "admin/revisions/index.html",
+   "path": "/admin/revisions"
+  },
+  {
+   "title": "Files",
+   "file": "admin/files/index.html",
+   "path": "/admin/files"
+  },
+  {
+   "title": "Messages",
+   "file": "admin/messages/index.html",
+   "path": "/admin/messages"
+  },
+  {
+   "title": "Leads & CRM",
+   "file": "admin/leads/index.html",
+   "path": "/admin/leads"
+  },
+  {
+   "title": "Clients",
+   "file": "admin/clients/index.html",
+   "path": "/admin/clients"
+  },
+  {
+   "title": "Quotes",
+   "file": "admin/quotes/index.html",
+   "path": "/admin/quotes"
+  },
+  {
+   "title": "Contracts",
+   "file": "admin/contracts/index.html",
+   "path": "/admin/contracts"
+  },
+  {
+   "title": "Invoices",
+   "file": "admin/invoices/index.html",
+   "path": "/admin/invoices"
+  },
+  {
+   "title": "Payments",
+   "file": "admin/payments/index.html",
+   "path": "/admin/payments"
+  },
+  {
+   "title": "Retainers",
+   "file": "admin/retainers/index.html",
+   "path": "/admin/retainers"
+  },
+  {
+   "title": "Website content",
+   "file": "admin/content/index.html",
+   "path": "/admin/content"
+  },
+  {
+   "title": "Project form",
+   "file": "admin/forms/index.html",
+   "path": "/admin/forms"
+  },
+  {
+   "title": "Submissions",
+   "file": "admin/submissions/index.html",
+   "path": "/admin/submissions"
+  },
+  {
+   "title": "Analytics",
+   "file": "admin/analytics/index.html",
+   "path": "/admin/analytics"
+  },
+  {
+   "title": "Automations",
+   "file": "admin/automations/index.html",
+   "path": "/admin/automations"
+  },
+  {
+   "title": "Team",
+   "file": "admin/team/index.html",
+   "path": "/admin/team"
+  },
+  {
+   "title": "Exports",
+   "file": "admin/exports/index.html",
+   "path": "/admin/exports"
+  },
+  {
+   "title": "Audit log",
+   "file": "admin/audit-log/index.html",
+   "path": "/admin/audit-log"
+  },
+  {
+   "title": "Settings",
+   "file": "admin/settings/index.html",
+   "path": "/admin/settings"
+  },
+  {
+   "title": "My account",
+   "file": "admin/account/index.html",
+   "path": "/admin/account"
+  },
+  {
+   "title": "New project",
+   "file": "admin/projects/new/index.html",
+   "path": "/admin/projects/new"
+  },
+  {
+   "title": "New quote",
+   "file": "admin/quotes/new/index.html",
+   "path": "/admin/quotes/new"
+  },
+  {
+   "title": "New invoice",
+   "file": "admin/invoices/new/index.html",
+   "path": "/admin/invoices/new"
+  },
+  {
+   "title": "Weekly Highlights — Sep wk 4",
+   "file": "admin/projects/eul0nplt/index.html",
+   "path": "/admin/projects/cmuojmz1j015fzs7deul0nplt"
+  },
+  {
+   "title": "Episode 42 — Full Episode + 5 Clips",
+   "file": "admin/projects/dl972j52/index.html",
+   "path": "/admin/projects/cmuojmy8800uhzs7ddl972j52"
+  },
+  {
+   "title": "Harbor View Estate — Listing Tour",
+   "file": "admin/projects/owphv7mm/index.html",
+   "path": "/admin/projects/cmuojmwfa009uzs7dowphv7mm"
+  },
+  {
+   "title": "INV-1012",
+   "file": "admin/invoices/kiass1kn/index.html",
+   "path": "/admin/invoices/cmuojmzx901glzs7dkiass1kn"
+  },
+  {
+   "title": "INV-1010",
+   "file": "admin/invoices/x944ak74/index.html",
+   "path": "/admin/invoices/cmuojmzln01chzs7dx944ak74"
+  },
+  {
+   "title": "INV-1011",
+   "file": "admin/invoices/qxqy2ksf/index.html",
+   "path": "/admin/invoices/cmuojmzs201epzs7dqxqy2ksf"
+  },
+  {
+   "title": "Tasks (mine)",
+   "file": "admin/tasks__tab=mine/index.html",
+   "path": "/admin/tasks?tab=mine"
+  },
+  {
+   "title": "Revisions (all)",
+   "file": "admin/revisions__tab=all/index.html",
+   "path": "/admin/revisions?tab=all"
+  },
+  {
+   "title": "Review video",
+   "file": "admin/projects/dl972j52/review/003imp78/index.html",
+   "path": "/admin/projects/cmuojmy8800uhzs7ddl972j52/review/cmuojmylp00zbzs7d003imp78"
+  },
+  {
+   "title": "Nadia Volkova",
+   "file": "admin/leads/j38l7ezo/index.html",
+   "path": "/admin/leads/cmuojn04n01iyzs7dj38l7ezo"
+  },
+  {
+   "title": "Hannah Brooks",
+   "file": "admin/leads/e7jolyhm/index.html",
+   "path": "/admin/leads/cmuojn03701idzs7de7jolyhm"
+  },
+  {
+   "title": "Tomás Herrera",
+   "file": "admin/leads/ri8u63y4/index.html",
+   "path": "/admin/leads/cmuojn03d01ifzs7dri8u63y4"
+  },
+  {
+   "title": "New client",
+   "file": "admin/clients/new/index.html",
+   "path": "/admin/clients/new"
+  },
+  {
+   "title": "Lumen Podcast Co.",
+   "file": "admin/clients/pxvv1ryz/index.html",
+   "path": "/admin/clients/cmuojmuv6000jzs7dpxvv1ryz"
+  },
+  {
+   "title": "Northwind Realty Group",
+   "file": "admin/clients/z6ufopz3/index.html",
+   "path": "/admin/clients/cmuojmuuk000ezs7dz6ufopz3"
+  },
+  {
+   "title": "Arcadia Software",
+   "file": "admin/clients/3spyy348/index.html",
+   "path": "/admin/clients/cmuojmuvh000ozs7d3spyy348"
+  },
+  {
+   "title": "Q-1009",
+   "file": "admin/quotes/puop0a1e/index.html",
+   "path": "/admin/quotes/cmuojmzv601fyzs7dpuop0a1e"
+  },
+  {
+   "title": "Q-1008",
+   "file": "admin/quotes/3mem3aix/index.html",
+   "path": "/admin/quotes/cmuojmzp101dmzs7d3mem3aix"
+  },
+  {
+   "title": "Q-1006",
+   "file": "admin/quotes/czrfapfl/index.html",
+   "path": "/admin/quotes/cmuojmype010tzs7dczrfapfl"
+  },
+  {
+   "title": "C-1008",
+   "file": "admin/contracts/z6yc6vm9/index.html",
+   "path": "/admin/contracts/cmuojmzqf01e5zs7dz6yc6vm9"
+  },
+  {
+   "title": "C-1006",
+   "file": "admin/contracts/t6y5lokj/index.html",
+   "path": "/admin/contracts/cmuojmyrd011mzs7dt6y5lokj"
+  },
+  {
+   "title": "C-1003",
+   "file": "admin/contracts/08c6qmvl/index.html",
+   "path": "/admin/contracts/cmuojmx5700hjzs7d08c6qmvl"
+  },
+  {
+   "title": "Submissions (yes)",
+   "file": "admin/submissions__tab=yes/index.html",
+   "path": "/admin/submissions?tab=yes"
+  },
+  {
+   "title": "My account (notifications)",
+   "file": "admin/account__tab=notifications/index.html",
+   "path": "/admin/account?tab=notifications"
+  },
+  {
+   "title": "Review video",
+   "file": "admin/projects/eul0nplt/review/y8rr4jt1/index.html",
+   "path": "/admin/projects/cmuojmz1j015fzs7deul0nplt/review/cmuojmzj001bhzs7dy8rr4jt1"
+  },
+  {
+   "title": "Review video",
+   "file": "admin/projects/owphv7mm/review/ka3dt1wh/index.html",
+   "path": "/admin/projects/cmuojmwfa009uzs7dowphv7mm/review/cmuojmx0f00fszs7dka3dt1wh"
+  }
+ ],
+ "Editor workspace": [
+  {
+   "title": "My work",
+   "file": "editor/index.html",
+   "path": "/editor"
+  },
+  {
+   "title": "My projects",
+   "file": "editor/projects/index.html",
+   "path": "/editor/projects"
+  },
+  {
+   "title": "My tasks",
+   "file": "editor/tasks/index.html",
+   "path": "/editor/tasks"
+  },
+  {
+   "title": "Revisions",
+   "file": "editor/revisions/index.html",
+   "path": "/editor/revisions"
+  },
+  {
+   "title": "Files",
+   "file": "editor/files/index.html",
+   "path": "/editor/files"
+  },
+  {
+   "title": "My account",
+   "file": "editor/account/index.html",
+   "path": "/editor/account"
+  },
+  {
+   "title": "Episode 42 — Full Episode + 5 Clips (tasks)",
+   "file": "editor/projects/dl972j52__tab=tasks/index.html",
+   "path": "/editor/projects/cmuojmy8800uhzs7ddl972j52?tab=tasks"
+  },
+  {
+   "title": "September Reels Pack (6 shorts) (tasks)",
+   "file": "editor/projects/9f0r2mvv__tab=tasks/index.html",
+   "path": "/editor/projects/cmuojmx3600gmzs7d9f0r2mvv?tab=tasks"
+  },
+  {
+   "title": "Episode 42 — Full Episode + 5 Clips",
+   "file": "editor/projects/dl972j52/index.html",
+   "path": "/editor/projects/cmuojmy8800uhzs7ddl972j52"
+  },
+  {
+   "title": "My tasks (today)",
+   "file": "editor/tasks__tab=today/index.html",
+   "path": "/editor/tasks?tab=today"
+  },
+  {
+   "title": "Revisions (all)",
+   "file": "editor/revisions__tab=all/index.html",
+   "path": "/editor/revisions?tab=all"
+  },
+  {
+   "title": "Review video",
+   "file": "editor/projects/dl972j52/review/003imp78/index.html",
+   "path": "/editor/projects/cmuojmy8800uhzs7ddl972j52/review/cmuojmylp00zbzs7d003imp78"
+  },
+  {
+   "title": "My account (notifications)",
+   "file": "editor/account__tab=notifications/index.html",
+   "path": "/editor/account?tab=notifications"
+  },
+  {
+   "title": "Review video",
+   "file": "editor/projects/eul0nplt/review/7ma93u8v/index.html",
+   "path": "/editor/projects/cmuojmz1j015fzs7deul0nplt/review/cmuojmzf001aezs7d7ma93u8v"
+  },
+  {
+   "title": "Review video",
+   "file": "editor/projects/mwgx7pgt/review/6ap1xu84/index.html",
+   "path": "/editor/projects/cmuojmxiz00ljzs7dmwgx7pgt/review/cmuojmxx600qpzs7d6ap1xu84"
+  }
+ ]
+}

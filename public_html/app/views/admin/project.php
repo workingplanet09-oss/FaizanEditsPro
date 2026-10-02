@@ -96,12 +96,12 @@ $actions = ($latest ? ui_link("{$here}/review/{$latest['id']}", 'Open review · 
 <?php elseif ($tab === 'revisions'): $canManage = $actor->can('revisions:manage'); ?>
   <div class="grid grid-cols-1 gap-6 lg:grid-cols-2">
     <?php ob_start(); if ($revisions): ?><ul class="divide-y divide-line"><?php foreach ($revisions as $r): ?>
-      <li class="flex flex-wrap items-center gap-3 px-6 py-3.5.5"><div class="min-w-0 flex-1"><div class="text-sm font-bold">Round <?= (int)$r['roundNumber'] ?> · <?= e($r['versionLabel'] ?? '') ?></div><div class="truncate text-xs text-muted"><?= e(($r['description'] ?: 'Timestamped notes') . ' · ' . (int)($r['commentCount'] ?? 0) . ' note(s)') ?> · <?= ago($r['createdAt']) ?></div></div>
+      <li class="flex flex-wrap items-center gap-3 px-6 py-3.5"><div class="min-w-0 flex-1"><div class="text-sm font-bold">Round <?= (int)$r['roundNumber'] ?> · <?= e($r['versionLabel'] ?? '') ?></div><div class="truncate text-xs text-muted"><?= e(($r['description'] ?: 'Timestamped notes') . ' · ' . (int)($r['commentCount'] ?? 0) . ' note(s)') ?> · <?= ago($r['createdAt']) ?></div></div>
         <?= priority_badge($r['priority']) ?><?= meta_badge('REVISION_STATUS', $r['status']) ?><?= revision_buttons($r['id'], $r['status'], $canManage) ?><a class="text-xs font-bold text-accent-text hover:underline" href="<?= e("{$here}/review/{$r['versionId']}") ?>">Open</a></li>
     <?php endforeach; ?></ul><?php else: ?><?= ui_empty('No revision requests', 'When the client requests changes, each round appears here.', 'refresh') ?><?php endif; ?>
     <?= card(ob_get_clean(), '', 'Revision rounds', 'Feedback batches sent by the client.') ?>
     <?php ob_start(); if ($changeRequests): $ccls = ['PENDING' => 'warning', 'INCLUDED' => 'success']; ?><ul class="divide-y divide-line"><?php foreach ($changeRequests as $cr): ?>
-      <li class="space-y-1.5 px-6 py-3.5.5"><div class="flex items-start justify-between gap-3"><p class="text-sm font-semibold"><?= e($cr['whatChanged']) ?></p><?= ui_badge(strtolower(str_replace('_', ' ', $cr['classification'])), $ccls[$cr['classification']] ?? 'neutral') ?></div>
+      <li class="space-y-1.5 px-6 py-3.5"><div class="flex items-start justify-between gap-3"><p class="text-sm font-semibold"><?= e($cr['whatChanged']) ?></p><?= ui_badge(strtolower(str_replace('_', ' ', $cr['classification'])), $ccls[$cr['classification']] ?? 'neutral') ?></div>
         <?= $cr['why'] ? '<p class="text-xs text-muted">' . e($cr['why']) . '</p>' : '' ?>
         <div class="flex items-center justify-between text-xs text-subtle"><span><?= e($cr['submittedBy']['name']) ?> · <?= ago($cr['createdAt']) ?></span><?= $canWrite ? change_request_review($cr) : '' ?></div></li>
     <?php endforeach; ?></ul><?php else: ?><?= ui_empty('No change requests', null, 'pencil') ?><?php endif; ?>

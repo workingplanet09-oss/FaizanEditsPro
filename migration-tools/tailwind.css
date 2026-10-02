@@ -197,6 +197,7 @@ html.reveal-all [data-reveal] { opacity: 1 !important; }
 
 /* ── Urdu: Noto Nastaliq Urdu, right-to-left, generous line spacing; never letter-spaced (it would break connected script) ── */
 :lang(ur), [dir="rtl"], .rtl-text { font-family: var(--font-sans); line-height: 2; letter-spacing: 0 !important; word-spacing: normal; }
+.rtl-text:not(:is(h1, h2, h3, h4, h5, h6)) { font-size: 1.1em; } /* Nastaliq reads small at the same size as Latin text */
 :lang(ur) :is(h1, h2, h3, h4, .display, .h-section, .h-card), [dir="rtl"] :is(h1, h2, h3, h4, .display, .h-section, .h-card), .rtl-text { line-height: 1.9; letter-spacing: 0 !important; }
 :lang(ur) *, [dir="rtl"] * { letter-spacing: 0 !important; }
 [lang="en-roman-ur"], .roman-urdu { font-family: "Inter Variable", Arial, sans-serif; } /* Roman Urdu and Hinglish stay in Inter */

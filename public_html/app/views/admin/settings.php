@@ -23,7 +23,7 @@ $items = [
     <?php else: ?>
       <div class="space-y-6">
         <?php ob_start(); ?><ul class="divide-y divide-line"><?php foreach ($items as [$name, $ok, $detail, $where]): ?>
-          <li class="flex flex-wrap items-center gap-3 px-6 py-3.5.5"><span class="flex h-8 w-8 items-center justify-center rounded-full <?= $ok ? 'bg-success-soft text-success' : 'bg-warning-soft text-warning' ?>"><?= icon($ok ? 'check' : 'alert', 15) ?></span>
+          <li class="flex flex-wrap items-center gap-3 px-6 py-3.5"><span class="flex h-8 w-8 items-center justify-center rounded-full <?= $ok ? 'bg-success-soft text-success' : 'bg-warning-soft text-warning' ?>"><?= icon($ok ? 'check' : 'alert', 15) ?></span>
             <div class="min-w-0 flex-1"><div class="text-sm font-bold"><?= e($name) ?></div><div class="text-xs text-muted"><?= e($detail) ?></div></div><code class="rounded bg-surface-2 px-2 py-1 text-xs text-muted"><?= e($where) ?></code></li><?php endforeach; ?></ul>
         <?= card(ob_get_clean(), '', 'Integrations', 'Configured in config.php so secrets never touch the database.') ?>
         <?php ob_start(); ?><div class="flex flex-wrap items-center gap-3 px-6 pb-6">

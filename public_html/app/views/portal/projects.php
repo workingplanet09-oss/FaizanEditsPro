@@ -6,5 +6,5 @@ $rows = ['delivered' => $delivered, 'all' => $all][$tab] ?? $active;
 <?php if ($rows): ?>
   <div class="grid grid-cols-1 gap-4 md:grid-cols-2 xl:grid-cols-3"><?php foreach ($rows as $p): ?><?= project_card($p) ?><?php endforeach; ?></div>
 <?php else: ?>
-  <?= card(ui_empty($tab === 'delivered' ? 'Nothing delivered yet' : 'No projects here', $tab === 'delivered' ? 'Finished projects and their final files will be kept here.' : 'Start a project and it will appear here with a live progress tracker.', 'film', ui_link('/start-project', 'Start a project'))) ?>
+  <?= card(ui_empty($tab === 'delivered' ? 'Nothing delivered yet' : 'No projects here', $tab === 'delivered' ? 'Finished projects and their final files will be kept here.' : 'Start a project and it will appear here with a live progress tracker.', 'film', ui_link('/start-project', 'Discuss your project'))) ?>
 <?php endif; ?>

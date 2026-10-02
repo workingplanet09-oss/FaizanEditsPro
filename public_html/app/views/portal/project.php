@@ -96,7 +96,7 @@ if ($production) { $tabs[] = ['changes', 'Change requests']; }
       <?php endforeach; ?></div>
       <?php if ($revisions): ?>
         <?php ob_start(); ?><ul class="divide-y divide-line"><?php foreach ($revisions as $r): ?>
-          <li class="flex flex-wrap items-center justify-between gap-3 px-6 py-3.5.5"><div class="min-w-0"><div class="text-sm font-bold">Round <?= (int)$r['roundNumber'] ?> · <?= e($r['versionLabel']) ?></div><div class="truncate text-xs text-muted"><?= e(($r['description'] ?: 'Timestamped notes') . ' · ' . (int)($r['commentCount'] ?? 0) . ' note' . ((int)($r['commentCount'] ?? 0) === 1 ? '' : 's')) ?></div></div>
+          <li class="flex flex-wrap items-center justify-between gap-3 px-6 py-3.5"><div class="min-w-0"><div class="text-sm font-bold">Round <?= (int)$r['roundNumber'] ?> · <?= e($r['versionLabel']) ?></div><div class="truncate text-xs text-muted"><?= e(($r['description'] ?: 'Timestamped notes') . ' · ' . (int)($r['commentCount'] ?? 0) . ' note' . ((int)($r['commentCount'] ?? 0) === 1 ? '' : 's')) ?></div></div>
             <div class="flex items-center gap-3"><span class="text-xs text-subtle"><?= ago($r['createdAt']) ?></span><?= meta_badge('REVISION_STATUS', $r['status']) ?></div></li><?php endforeach; ?></ul>
         <?= card(ob_get_clean(), '', 'Revision rounds', 'Each round is a batch of timestamped notes you sent.') ?>
       <?php endif; ?>
@@ -112,7 +112,7 @@ if ($production) { $tabs[] = ['changes', 'Change requests']; }
     $docList = function (string $title, array $rows) {
         $h = '<ul class="divide-y divide-line">';
         foreach ($rows as $r) {
-            $h .= '<li><a href="' . e($r['href']) . '" class="flex items-center gap-4 px-6 py-3.5.5 transition hover:bg-surface-2/60"><div class="min-w-0 flex-1"><div class="text-sm font-bold">' . e($r['title']) . '</div><div class="truncate text-xs text-muted">' . e($r['sub']) . '</div></div><div class="hidden text-sm font-semibold tabular-nums sm:block">' . e($r['right']) . '</div>' . $r['badge'] . icon('chevron-right', 16, 'text-subtle') . '</a></li>';
+            $h .= '<li><a href="' . e($r['href']) . '" class="flex items-center gap-4 px-6 py-3.5 transition hover:bg-surface-2/60"><div class="min-w-0 flex-1"><div class="text-sm font-bold">' . e($r['title']) . '</div><div class="truncate text-xs text-muted">' . e($r['sub']) . '</div></div><div class="hidden text-sm font-semibold tabular-nums sm:block">' . e($r['right']) . '</div>' . $r['badge'] . icon('chevron-right', 16, 'text-subtle') . '</a></li>';
         }
         return card($h . '</ul>', '', $title);
     }; ?>

@@ -249,7 +249,7 @@ function validate_answer(array $q, mixed $value): ?string
             $min = $meta['minLength'] ?? null;
             $len = mb_strlen(js_str($s));
             if ($min && $len < $min) {
-                return "Please write at least {$min} characters so we can help properly.";
+                return "Please write at least {$min} characters so I can help properly.";
             }
             return $len > $max ? "Keep this under {$max} characters." : null;
     }

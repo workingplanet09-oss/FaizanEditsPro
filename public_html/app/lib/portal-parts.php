@@ -39,8 +39,8 @@ function doc_lines(array $d): string
     if (!empty($d['amountPaid'])) {
         $t .= $row('Paid', '− ' . $m($d['amountPaid'])) . $row('Amount due', $m(max(0, $d['total'] - $d['amountPaid'])), true);
     }
-    return '<div><table class="responsive-table w-full text-left text-sm"><thead><tr class="border-b border-line text-xs font-semibold text-subtle"><th class="py-2 pr-4 font-semibold">Description</th><th class="w-20 py-2 pr-4 text-right font-semibold">Qty</th><th class="w-32 py-2 pr-4 text-right font-semibold">Unit price</th><th class="w-32 py-2 text-right font-semibold">Amount</th></tr></thead>'
-        . '<tbody class="divide-y divide-line">' . $rows . '</tbody></table><dl class="ml-auto mt-4 w-full max-w-xs space-y-1.5 text-sm">' . $t . '</dl></div>';
+    return '<div><table class="responsive-table w-full text-left text-sm"><thead><tr class="border-b border-line text-xs font-semibold text-subtle"><th class="py-2 pr-4 font-semibold">Description</th><th class="w-20 py-2 pr-4 text-right font-semibold">Qty</th><th class="w-32 py-2 pr-4 text-right font-semibold">Unit price (' . e(strtoupper($cur)) . ')</th><th class="w-32 py-2 text-right font-semibold">Amount (' . e(strtoupper($cur)) . ')</th></tr></thead>'
+        . '<tbody class="divide-y divide-line">' . $rows . '</tbody></table><dl class="ml-auto mt-4 w-full max-w-xs space-y-1.5 text-sm">' . $t . '</dl><p class="mt-4 text-right text-sm text-muted">All amounts are in <b class="text-fg">' . e(strtoupper($cur)) . '</b>.</p></div>';
 }
 
 // ───────────────────────────── files ─────────────────────────────

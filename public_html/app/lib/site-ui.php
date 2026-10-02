@@ -90,8 +90,8 @@ function service_card(array $s, bool $compact = false): string
     if ($deliv) {
         $h .= '<p class="mt-5 text-sm font-medium text-fg">What you receive</p><ul class="mt-2 flex flex-wrap gap-2">' . implode('', array_map(fn($d) => '<li class="rounded-full bg-surface-2 px-3 py-1 text-sm font-medium text-fg">' . e($d) . '</li>', $deliv)) . '</ul>';
     }
-    return $h . '<div class="mt-auto flex items-center justify-between gap-3 border-t border-line pt-5 text-sm"><span class="font-semibold">' . e(price_from($s)) . '</span>'
-        . (!empty($s['turnaround']) ? '<span class="inline-flex items-center gap-1.5 text-muted">' . icon('clock', 14) . e($s['turnaround']) . '</span>' : '') . '</div></a>';
+    return $h . '<div class="mt-auto pt-6"><div class="flex items-center justify-between gap-3 border-t border-line pt-5 text-sm"><span class="font-semibold">' . e(price_from($s)) . '</span>'
+        . (!empty($s['turnaround']) ? '<span class="inline-flex items-center gap-1.5 text-muted">' . icon('clock', 14) . e($s['turnaround']) . '</span>' : '') . '</div></div></a>';
 }
 
 function plan_card(array $p): string
