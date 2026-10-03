@@ -68,6 +68,18 @@ That page disappears once your account exists. That's it — the site is live.
 
 ---
 
+## Installing on Hostinger (hPanel) — for example on a test sub-domain
+
+The five steps above are the same; only the buttons have other names. (Written from Hostinger's help pages; not yet verified on a Hostinger account.)
+
+1. **Sub-domain:** hPanel → **Websites** → your domain → **Dashboard** → **Domains → Subdomains** → create it (for example `text.cyberify.app`). Its folder is normally `public_html/text`; upload into *that* folder, not into the main site's folder.
+2. **PHP:** the sub-domain's dashboard → **PHP Configuration** → choose **8.2 or newer** and check the extensions `pdo_mysql`, `mbstring`, `openssl`, `ctype`, `json`, `curl`.
+3. **SSL:** **Security → SSL → Install SSL**, then switch on **Force HTTPS** once it is active.
+4. **Database:** **Databases → Management** → create a database, a user and a password. Hostinger puts a prefix such as `u123456789_` in front of the database and the user name; put the **full** names in `config.php`. The host stays `localhost`. Then **phpMyAdmin → Import → `database.sql`**.
+5. **Files:** **File Manager** → the sub-domain's folder → upload `faizan-ali-website.zip` → **Extract**. `index.php`, `config.php` and `.htaccess` must sit directly in that folder (show hidden files to see `.htaccess`).
+6. **`config.php`:** the database name, user and password, a new `'secret'`, and `'app_url'` — it is already set to `https://text.cyberify.app` in this copy; change it if your address differs.
+7. Open the address and finish the setup page. For e-mail, Hostinger's usual SMTP settings are host `smtp.hostinger.com`, port `465`, encryption `ssl` (check them in hPanel → Emails).
+
 ## After installing
 
 ### Make it yours (brand details)
